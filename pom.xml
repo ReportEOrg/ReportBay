@@ -1,0 +1,125 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>reporte</groupId>
+  <artifactId>reporte</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <name>ReportE Project</name>
+  
+  <modules>
+    <module>report-common</module>
+    <module>report-features</module>
+    <module>report-web</module>
+  </modules>
+  
+  <properties>
+    <jdk.version>1.7</jdk.version>
+    <nexus.url>http://code.it.savvis.net/nexus/content</nexus.url>
+    <owb.version>1.2.6</owb.version>
+  </properties>
+
+  <build>
+    <finalName>report</finalName>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>2.5.1</version>
+        <configuration>
+          <source>${jdk.version}</source>
+          <target>${jdk.version}</target>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <dependencies>
+    <!-- CDI -->
+    <dependency>
+      <groupId>javax.enterprise</groupId>
+      <artifactId>cdi-api</artifactId>
+      <version>1.2</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- EJB -->
+    <dependency>
+      <groupId>javax</groupId>
+      <artifactId>javaee-api</artifactId>
+      <version>7.0</version>
+      <scope>provided</scope>
+    </dependency>
+  
+    <!-- Apache Commons -->
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>3.3.2</version>
+      <scope>provided</scope>
+    </dependency>
+  
+    <dependency>
+      <groupId>commons-collections</groupId>
+      <artifactId>commons-collections</artifactId>
+      <version>3.2.1</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- Slf4j Logger -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <version>1.7.7</version>
+    </dependency>
+  </dependencies>
+  
+<!--
+<repositories>
+<repository>
+<id>savvis-cto-metagroup</id>
+<url>${nexus.url}/groups/savvis-cto-metagroup</url>
+<snapshots>
+<enabled>false</enabled>
+</snapshots>
+</repository>
+<repository>
+<id>prime-repo</id>
+<name>Prime Repo</name>
+<url>http://repository.primefaces.org</url>
+</repository>
+</repositories>
+-->
+
+  <profiles>
+    <profile>
+      <id>openshift</id>
+      <build>
+        <pluginManagement>
+          <plugins>
+            <!-- Git repo is checked out into /var/lib/openshift/54895edffcf933029d000179/app-root/runtime/repo
+              and Maven is started in this directory. Deployable artifacts, mainly ROOT.war,
+              must be copiend into /var/lib/openshift/54895edffcf933029d000179/app-root/runtime/repo/webapps/ROOT.war
+              Because web-app is module in subdirectory and I would expect <outputDirectory>../webapps</outputDirectory>
+              value but interestingly it is not true and it must be <outputDirectory>webapps</outputDirectory> -->
+            <plugin>
+              <artifactId>maven-war-plugin</artifactId>
+              <configuration>
+                <outputDirectory>webapps</outputDirectory>
+                <warName>reporte</warName>
+              </configuration>
+            </plugin>
+
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-enforcer-plugin</artifactId>
+              <configuration>
+                <skip>true</skip>
+              </configuration>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+      </build>
+    </profile>
+  </profiles>
+</project>
