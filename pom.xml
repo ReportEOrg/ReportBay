@@ -82,11 +82,7 @@
 						<enabled>false</enabled>
 					</snapshots>
 				</repository>
-				<repository>
-					<id>prime-repo</id>
-					<name>Prime Repo</name>
-					<url>http://repository.primefaces.org</url>
-				</repository>
+
 			</repositories>
 			
 			<!-- Centurylink internal repo for plugin -->
@@ -160,6 +156,15 @@
 				<jdk.version>1.7</jdk.version>
 				<owb.version>1.2.6</owb.version>
 			</properties>
+			
 		</profile>
 	</profiles>
+	
+	<repositories>
+		<repository>
+			<id>prime-repo</id>
+			<name>Prime Repo</name>
+			<url>http://repository.primefaces.org</url>
+		</repository>
+	</repositories>
 </project>
