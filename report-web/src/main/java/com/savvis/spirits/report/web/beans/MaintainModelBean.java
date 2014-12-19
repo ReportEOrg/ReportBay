@@ -172,17 +172,18 @@ public class MaintainModelBean implements Serializable {
 	public void onDialogReturn(SelectEvent event) {
 		@SuppressWarnings("unchecked")
 		Map<String, String> data = (Map<String, String>) event.getObject();
-		String status = (String) data.get("status");
-		String action = (String) data.get("action");
-		String completedAction = action.equals("create") ? "created" : "updated";
-		String completingAction = action.equals("create") ? "creating" : "updating";
+		if (data != null) {
+			String status = (String) data.get("status");
+			String action = (String) data.get("action");
+			String completedAction = action.equals("create") ? "created" : "updated";
+			String completingAction = action.equals("create") ? "creating" : "updating";
 
-		if (status.equals("success")) {
-			String modelName = (String) data.get("payload");
-			WebUtils.addInfoMessage("Model '%s' has been successfully %s.", modelName, completedAction);
-		} else {
-			WebUtils.addErrorMessage("An error was encountered while %s Model.", completingAction);
+			if (status.equals("success")) {
+				String modelName = (String) data.get("payload");
+				WebUtils.addInfoMessage("Model '%s' has been successfully %s.", modelName, completedAction);
+			} else {
+				WebUtils.addErrorMessage("An error was encountered while %s Model.", completingAction);
+			}
 		}
-
 	}
 }

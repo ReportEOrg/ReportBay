@@ -2,6 +2,8 @@ package com.savvis.spirits.report.web.beans;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -26,9 +28,9 @@ import com.savvis.spirits.report.model.domain.AttributeMapping;
 import com.savvis.spirits.report.model.domain.ColumnMetadata;
 import com.savvis.spirits.report.model.domain.Datasource;
 import com.savvis.spirits.report.model.domain.Model;
+import com.savvis.spirits.report.model.domain.Model.Approach;
 import com.savvis.spirits.report.model.domain.ModelQuery;
 import com.savvis.spirits.report.model.domain.SimpleModel;
-import com.savvis.spirits.report.model.domain.Model.Approach;
 import com.savvis.spirits.report.model.services.DatasourceHandlerException;
 import com.savvis.spirits.report.model.services.JdbcClientException;
 import com.savvis.spirits.report.model.services.ModelService;
@@ -39,7 +41,8 @@ import com.savvis.spirits.report.web.util.WebUtils;
 @ViewScoped
 public class ModelWizardBean implements Serializable {
 	private static final long serialVersionUID = 4607556957265028946L;
-	private static final Logger LOG = LoggerFactory.getLogger(ModelWizardBean.class);
+	private static final Logger LOG = LoggerFactory
+			.getLogger(ModelWizardBean.class);
 
 	private static final String SINGLE_TABLE = "Single Table";
 	private static final String JOIN_QUERY = "Join Query";
@@ -64,61 +67,83 @@ public class ModelWizardBean implements Serializable {
 	private boolean requiredDatasource = true;
 	private boolean requiredTargetTbl = true;
 	private boolean disabledNextNav = false;
-	private String order;
-	
+
 	// Parameters passed via Dialog Framework
 	private int modelId;
 	private String title;
-	
+
 	@Inject
 	private ModelService modelService;
 
 	@PostConstruct
 	public void init() {
 		// Retrieve the params passed via Dialog Framework.
-		Map<String, String> requestParams = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap(); 
+		Map<String, String> requestParams = FacesContext.getCurrentInstance()
+				.getExternalContext().getRequestParameterMap();
 		title = requestParams.get("title");
-		modelId = requestParams.containsKey("id") ? Integer.valueOf(requestParams.get("id")) : 0;
-		
+		modelId = requestParams.containsKey("id") ? Integer
+				.valueOf(requestParams.get("id")) : 0;
+
 		if (modelId != 0) {
 			try {
 				model = modelService.find(modelId);
 			} catch (ModelServiceException e) {
-				LOG.error("Error loading model with given Id[" + modelId + "].", e);
+				LOG.error(
+						"Error loading model with given Id[" + modelId + "].",
+						e);
 			}
-			
+
 			try {
-				tableNames = modelService.getJdbcClient().getTableNames(model.getDatasource());
+				tableNames = modelService.getJdbcClient().getTableNames(
+						model.getDatasource());
 			} catch (JdbcClientException e) {
-				LOG.error("Error loading available table names from target datasource[" + model.getDatasource().getName() + "].", e);
+				LOG.error(
+						"Error loading available table names from target datasource["
+								+ model.getDatasource().getName() + "].", e);
 			}
-			
-			
+
 			try {
 				if (model.getApproach().equals(Approach.SINGLE_TABLE)) {
-					columnNames = convertIntoAttributeMappings(modelService.getJdbcClient().getColumns(model.getDatasource(), ((SimpleModel) model).getTable()));
+					columnNames = convertIntoAttributeMappings(modelService
+							.getJdbcClient().getColumns(model.getDatasource(),
+									((SimpleModel) model).getTable()));
 				} else {
-					columnNames = deriveColumnsFromQuery(model.getQuery().getValue());
+					columnNames = deriveColumnsFromQuery(model.getQuery()
+							.getValue());
 				}
+
+				for (AttributeMapping attribute : model.getAttributeBindings()) {
+					for (AttributeMapping column : columnNames) {
+						if (attribute.getReferencedColumn().equals(
+								column.getReferencedColumn())) {
+							column.setAlias(attribute.getAlias());
+							column.setId(attribute.getId());
+							break;
+						}
+					}
+				}
+
 			} catch (JdbcClientException e) {
-				LOG.error("Error resolving columns for selected Model[" + model.getName() + "].", e);
+				LOG.error(
+						"Error resolving columns for selected Model["
+								+ model.getName() + "].", e);
 			}
 		} else {
 			model = new SimpleModel();
 			model.setQuery(new ModelQuery());
 			model.setAttributeBindings(new ArrayList<AttributeMapping>());
 		}
-		
+
 		try {
 			datasources = modelService.getDatasourceHandler().findAll();
 		} catch (DatasourceHandlerException e) {
 			LOG.error("Failed to load existing datasources.", e);
 		}
 	}
-	
-	//////////////////////////////////////////////////
-	//				GETTER & SETTER METHODS			//
-	//////////////////////////////////////////////////
+
+	// ////////////////////////////////////////////////
+	// GETTER & SETTER METHODS //
+	// ////////////////////////////////////////////////
 
 	public Model getModel() {
 		return model;
@@ -256,14 +281,6 @@ public class ModelWizardBean implements Serializable {
 		this.disabledNextNav = disabledNextNav;
 	}
 
-	public String getOrder() {
-		return order;
-	}
-
-	public void setOrder(String order) {
-		this.order = order;
-	}
-	
 	public int getModelId() {
 		return modelId;
 	}
@@ -279,12 +296,13 @@ public class ModelWizardBean implements Serializable {
 	public void setTitle(String title) {
 		this.title = title;
 	}
-	
-	//////////////////////////////////////////////////
-	//				PRIVATE METHODS					//
-	//////////////////////////////////////////////////
-	
-	private List<AttributeMapping> convertIntoAttributeMappings(List<ColumnMetadata> colList) {
+
+	// ////////////////////////////////////////////////
+	// PRIVATE METHODS //
+	// ////////////////////////////////////////////////
+
+	private List<AttributeMapping> convertIntoAttributeMappings(
+			List<ColumnMetadata> colList) {
 		List<AttributeMapping> list = new ArrayList<AttributeMapping>();
 
 		if (CollectionUtils.isNotEmpty(colList)) {
@@ -301,22 +319,6 @@ public class ModelWizardBean implements Serializable {
 		}
 		return list;
 	}
-	
-	private List<AttributeMapping> rearrangeOrder(String orderString, List<AttributeMapping> list) {
-		List<AttributeMapping> result = new ArrayList<AttributeMapping>();
-		int i = 1;
-
-		for (String order : orderString.split(";")) {
-			for (AttributeMapping mapping : list) {
-				if (order.equals(String.valueOf(mapping.getOrder()))) {
-					mapping.setOrder(i++);
-					result.add(mapping);
-					break;
-				}
-			}
-		}
-		return result;
-	}
 
 	private List<Map<ColumnMetadata, String>> applyLimit(List<Map<ColumnMetadata, String>> resultSet, int limit) {
 		List<Map<ColumnMetadata, String>> rs = new ArrayList<Map<ColumnMetadata, String>>();
@@ -328,12 +330,11 @@ public class ModelWizardBean implements Serializable {
 		}
 		return rs;
 	}
-	
-	
-	//////////////////////////////////////////////////
-	//				ACTION LISTENER	METHODS			//
-	//////////////////////////////////////////////////
-	
+
+	// ////////////////////////////////////////////////
+	// ACTION LISTENER METHODS //
+	// ////////////////////////////////////////////////
+
 	public void onApproachChange() {
 		if (SINGLE_TABLE.equalsIgnoreCase(approach)) {
 			showSingleTablePanel = true;
@@ -363,10 +364,12 @@ public class ModelWizardBean implements Serializable {
 		Datasource selectedDatasource = model.getDatasource();
 		if (selectedDatasource != null) {
 			try {
-				tableNames = modelService.getJdbcClient().getTableNames(selectedDatasource);
+				tableNames = modelService.getJdbcClient().getTableNames(
+						selectedDatasource);
 			} catch (JdbcClientException e) {
-				LOG.error("Failed to load available table names for selected Datasource with name["
-						+ selectedDatasource.getName() + "].", e);
+				LOG.error(
+						"Failed to load available table names for selected Datasource with name["
+								+ selectedDatasource.getName() + "].", e);
 				tableNames = new ArrayList<String>();
 			}
 			setRequiredDatasource(false);
@@ -389,7 +392,8 @@ public class ModelWizardBean implements Serializable {
 						.getColumns(model.getDatasource(), tableName);
 				columnNames = convertIntoAttributeMappings(columns);
 			} catch (JdbcClientException e) {
-				LOG.error("Failed to load metadata columns for the table - " + tableName + ".");
+				LOG.error("Failed to load metadata columns for the table - "
+						+ tableName + ".");
 				columnNames = new ArrayList<AttributeMapping>();
 			}
 			model.getQuery().setValue(String.format(SELECT_QUERY, tableName));
@@ -410,44 +414,55 @@ public class ModelWizardBean implements Serializable {
 		activeIndex = 0;
 		disabledNextNav = true;
 	}
-	
+
 	public void onReorder(ReorderEvent event) {
-		int orgIndex = event.getFromIndex();
-		int newIndex = event.getToIndex();
-		
-		AttributeMapping orgMapping = model.getAttributeBindings().get(++orgIndex);
-		AttributeMapping newMapping = model.getAttributeBindings().get(++newIndex);
-		orgMapping.setOrder(newMapping.getOrder());
-		orgMapping.setOrder(newMapping.getOrder());
+		// During this event, the order on the UI reflect here. 
+		// So, we better reset the order here.
+		int i = 1;
+		for (AttributeMapping mapping : model.getAttributeBindings()) {
+			mapping.setOrder(i++);
+		}
 	}
-	
+
 	public String onFlowProcess(FlowEvent event) {
+		model.getAttributeBindings();
 		if (event.getNewStep().equals("confirmation")) {
-			// rearrange the mappings for display during summary according to
+			// Rearrange the mappings for display during summary according to
 			// the order as they were defined by user.
-			// model.setAttributeBindings(rearrangeOrder(order, model.getAttributeBindings()));
+			Collections.sort(model.getAttributeBindings(), new Comparator<AttributeMapping>() {
+
+				@Override
+				public int compare(AttributeMapping o1, AttributeMapping o2) {
+					return o1.getOrder() - o2.getOrder();
+				}
+			});
 		}
 		return event.getNewStep();
 	}
 
-	//////////////////////////////////////////////////
-	//					ACTION METHODS				//
-	//////////////////////////////////////////////////
-	
+	// ////////////////////////////////////////////////
+	// 				ACTION METHODS 					 //
+	// ////////////////////////////////////////////////
+
 	private String applyDefaultLimit(String query) {
-		query = query.trim().replace(";", "");
-		
-		String regex = "/\\s+LIMIT\\s+\\d+$/";
-		query = StringUtils.replacePattern(query, regex, "");
-		
+		query = query.replace(";", "");
+		// TODO: Regex is currently not working. Need to find out why.
+		String regex = "/\\s+LIMIT\\s+\\d+$/i";
+		if (query.matches(regex)) {
+			query = StringUtils.replacePattern(query.trim(), regex, "");
+		}
+
 		return query.concat(" LIMIT 20");
 	}
-	
-	private List<AttributeMapping> deriveColumnsFromQuery(String query) throws JdbcClientException {
+
+	private List<AttributeMapping> deriveColumnsFromQuery(String query)
+			throws JdbcClientException {
 		List<AttributeMapping> columnNames = new ArrayList<AttributeMapping>();
-		
+
 		String queryWithLimit = applyDefaultLimit(query);
-		originalResultSet = modelService.getJdbcClient().execute(model.getDatasource(), queryWithLimit);
+		originalResultSet = modelService.getJdbcClient().execute(
+				model.getDatasource(), queryWithLimit);
+		//TODO: do we really need this?
 		// noOfRowsReturned = originalResultSet.size();
 		resultSet = applyLimit(originalResultSet, limit);
 
@@ -466,7 +481,7 @@ public class ModelWizardBean implements Serializable {
 		}
 		return columnNames;
 	}
-	
+
 	public void verify() {
 		model.getAttributeBindings().clear();
 		columnNames = new ArrayList<AttributeMapping>();
@@ -482,7 +497,8 @@ public class ModelWizardBean implements Serializable {
 
 			WebUtils.addInfoMessage("Query verification was successful.");
 		} catch (JdbcClientException e) {
-			LOG.error("Query verification failed. Executed query = [" + model.getQuery().getValue() + "].", e);
+			LOG.error("Query verification failed. Executed query = ["
+					+ model.getQuery().getValue() + "].", e);
 			WebUtils.addErrorMessage(e.getCause().getMessage());
 		}
 	}
@@ -498,6 +514,7 @@ public class ModelWizardBean implements Serializable {
 		String status = null;
 
 		try {
+
 			if (modelId == 0) {
 				action = "create";
 				modelService.save(model);
@@ -515,7 +532,7 @@ public class ModelWizardBean implements Serializable {
 		data.put("action", action);
 		data.put("payload", model.getName());
 		data.put("status", status);
-		
+
 		RequestContext.getCurrentInstance().closeDialog(data);
 	}
 

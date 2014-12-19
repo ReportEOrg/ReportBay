@@ -6,14 +6,14 @@
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:cc="http://java.sun.com/jsf/composite">
 
-	<cc:interface>
+	<cc:interface componentType="designModel">
 		<cc:facet name="dynamicContent"></cc:facet>
 		<cc:attribute name="modelName" type="java.lang.String" required="true" />
 		<cc:attribute name="inputList" type="java.util.List" required="true" />
 		<cc:attribute name="outputList" type="java.util.List" required="true" />
 		<cc:attribute name="emptyMessage" type="java.lang.String" required="true" />
 		<cc:attribute name="renderedResultedModel" type="java.lang.Boolean" default="true" />
-		<cc:attribute name="onReorder" method-signature="void listener(org.primefaces.event.ReorderEvent)" />
+		<cc:attribute name="onReorderListener" method-signature="void listener(org.primefaces.event.ReorderEvent)" />
 	</cc:interface>
 	<cc:implementation>
 		<div id="#{cc.clientId}"> 
@@ -63,13 +63,11 @@
 				<p:dataTable id="modelTbl_#{cc.attrs.id}" value="#{cc.attrs.outputList}" var="row" border="1"
 					style="width:300px" draggableRows="true" emptyMessage="No attributes found." 
 					rendered="#{cc.attrs.renderedResultedModel}">
-					<p:ajax event="rowReorder" listener="#{cc.attrs.onReorder}" />
+					<p:ajax event="rowReorder" listener="#{cc.ajaxEventListener}" />
 					<f:facet name="header">
 						<h:outputText value="#{cc.attrs.modelName}" title="Model Name" />
 					</f:facet>
 					<p:column headerText="Attributes">
-						<h:inputHidden value="#{row['id']}"/>
-						<h:outputText value="#{row['order']}" styleClass="outputHidden"/>
 						<h:outputText value="#{row['alias']}" />
 					</p:column>
 				</p:dataTable>

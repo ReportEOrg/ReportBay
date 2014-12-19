@@ -170,7 +170,7 @@
 											inputList="#{modelWizard.columnNames}"
 											outputList="#{modelWizard.model.attributeBindings}"
 											emptyMessage="No columns found."
-											onReorder="#{modelWizard.onReorder}"> 
+											onReorderListener="#{modelWizard.onReorder}"> 
 											<f:facet name="dynamicContent">
 												<h:outputText value="Resulted Query View:"
 													style="font-weight:bold" />
@@ -192,7 +192,7 @@
 							emptyMessage="Select the table first."
 							renderedResultedModel="#{modelWizard.model.table != null}"
 							rendered="#{modelWizard.showSingleTablePanel}"
-							onReorder="#{modelWizard.onReorder}">
+							onReorderListener="#{modelWizard.onReorder}">
 							<f:facet name="dynamicContent">
 								<h:panelGrid columns="2" columnClasses="label, value">
 									<h:outputText value="Table: *" />
@@ -211,7 +211,6 @@
 						</cc:designModel>
 					</h:panelGroup>
 				</p:panel>
-				<h:inputHidden id="order" value="#{modelWizard.order}"/>
 				<h:panelGrid id="navPanel" columns="2" style="width:100%">
 					<h:panelGroup style="float:left">
 						<p:commandButton value="Back" icon="ui-icon-arrow-1-w"
@@ -219,7 +218,7 @@
 					</h:panelGroup>
 					<h:panelGroup style="float:right">
 						<p:commandButton value="Next" icon="ui-icon-arrow-1-e"
-							type="button" onclick="doOrder();PF('myWizard').next();"
+							type="button" onclick="PF('myWizard').next();"
 							disabled="#{modelWizard.disabledNextNav}" global="false" />
 					</h:panelGroup>
 				</h:panelGrid>
