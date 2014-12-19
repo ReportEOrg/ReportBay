@@ -7,5 +7,45 @@
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>report-features</artifactId>
-	<packaging>jar</packaging>
+	<packaging>pom</packaging>
+	
+	<name>Report Feature Modules</name>
+	<modules>
+		<module>report-model</module>
+	</modules>
+	<dependencies>
+		<dependency>
+			<groupId>reporte</groupId>
+			<artifactId>report-common</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+
+		<!-- EJB Test -->
+		<dependency>
+			<groupId>org.apache.openejb</groupId>
+			<artifactId>tomee-embedded</artifactId>
+			<version>1.7.1</version>
+			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<artifactId>slf4j-jdk14</artifactId>
+					<groupId>org.slf4j</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.11</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-dbcp</groupId>
+			<artifactId>commons-dbcp</artifactId>
+			<version>1.4</version>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
 </project>

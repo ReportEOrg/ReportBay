@@ -1,0 +1,28 @@
+/* global font */
+.ui-widget, .ui-widget .ui-widget {
+	font-size: 97%;
+}
+
+/* layout */
+.ui-layout-north {
+	z-index: 20 !important;
+	overflow: visible !important;
+	border: none !important;
+}
+
+.ui-layout-center {
+	border: none !important;
+}
+
+.ui-layout-north .ui-layout-unit-content {
+	overflow: visible !important;
+}
+
+/* data-table*/
+.vertical-align-top {
+	vertical-align: top;
+}
+
+.outputHidden {
+	display:none;
+}

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<title><ui:insert name="title">Default Title</ui:insert></title>
+	<h:outputStylesheet library="default" name="css/default.css" />
+</h:head>
+
+<h:body>
+	<p:layout fullPage="true">
+		<!-- Header -->
+		<p:layoutUnit position="north" size="57"
+			style="overflow-y:visible;z-index:20;">
+			<ui:include src="header.xhtml" />
+		</p:layoutUnit>
+		<!-- Footer -->
+		<p:layoutUnit position="south" size="30">
+			<ui:include src="footer.xhtml" />
+		</p:layoutUnit>
+		<!-- Menu -->
+		<p:layoutUnit position="west" size="300" header="#{west_header}"
+			resizable="true" collapsible="true" rendered="#{show_west}">
+			<ui:insert name="west">Menu</ui:insert>
+		</p:layoutUnit>
+		<!-- Properties -->
+		<p:layoutUnit position="east" size="300" header="#{east_header}"
+			resizable="true" collapsible="true" effect="drop"
+			rendered="#{show_east}">
+			<ui:insert name="east">Properties</ui:insert>
+		</p:layoutUnit>
+		<!-- Center -->
+		<p:layoutUnit position="center">
+			<ui:insert name="content">Default Content</ui:insert>
+		</p:layoutUnit>
+	</p:layout>
+</h:body>
+
+
+</html>

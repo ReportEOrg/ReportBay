@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:cc="http://java.sun.com/jsf/composite/components"
+	xmlns:svvs="http://savvis.com/jsf/facelets">
+<h:head>
+	<title>#{param['title']}</title>
+	<h:outputStylesheet library="default" name="css/default.css" />
+	<h:outputScript library="default" name="js/default.js"/>
+</h:head>
+
+<h:body>
+	<h:form id="form">
+		<h:messages />
+		<p:wizard id="wiz" widgetVar="myWizard"
+			flowListener="#{modelWizard.onFlowProcess}" showNavBar="false">
+			<p:tab id="details" title="Details">
+				<p:panel header="Basic Info" style="height:385px">
+					<p:spacer width="100%" height="20px" />
+					<h:panelGrid columns="3" rowClasses="vertical-align-top">
+						<svvs:input type="text" label="Name" bean="#{modelWizard.model}"
+							property="name" required="true" />
+						<svvs:input type="textArea" label="Description"
+							bean="#{modelWizard.model}" property="description"
+							required="false" />
+					</h:panelGrid>
+				</p:panel>
+				<h:panelGrid style="width:100%">
+					<h:panelGroup style="float:right">
+						<p:commandButton value="Next" icon="ui-icon-arrow-1-e"
+							type="button" onclick="PF('myWizard').next();" />
+					</h:panelGroup>
+				</h:panelGrid>
+			</p:tab>
+			<p:tab id="datasource" title="Datasource">
+				<p:panel header="Select Datasource" style="height:385px;">
+					<p:messages autoUpdate="true" />
+					<p:spacer width="100%" height="20px" />
+					<cc:inputDatasource value="#{modelWizard.model.datasource}"
+						list="#{modelWizard.datasources}"
+						onValueChanged="#{modelWizard.onDatasourceSltOneMenuChange}"
+						mandatory="#{modelWizard.requiredDatasource}" />
+				</p:panel>
+				<h:panelGrid columns="2" style="width:100%">
+					<h:panelGroup style="float:left">
+						<p:commandButton value="Back" icon="ui-icon-arrow-1-w"
+							type="button" onclick="PF('myWizard').back();" global="false" />
+					</h:panelGroup>
+					<h:panelGroup style="float:right">
+						<p:commandButton value="Next" icon="ui-icon-arrow-1-e"
+							type="button" onclick="PF('myWizard').next();" global="false" />
+					</h:panelGroup>
+				</h:panelGrid>
+			</p:tab>
+			<p:tab id="design" title="Design">
+				<p:panel header="Configure Your Model"
+					style="height:385px;overflow:auto;">
+					<h:panelGrid columns="2" columnClasses="label, value">
+						<h:outputText value="Approach: *" />
+						<h:selectOneRadio value="#{modelWizard.approach}">
+							<p:ajax listener="#{modelWizard.onApproachChange}"
+								update="infoPanel,joinQueryPanel,singleTablePanel,:form:navPanel" global="false"/>
+							<f:selectItem itemLabel="Single Table" itemValue="Single Table" />
+							<f:selectItem itemLabel="Join Query" itemValue="Join Query" />
+						</h:selectOneRadio>
+					</h:panelGrid>
+					<h:panelGroup id="infoPanel">
+						<p:outputPanel rendered="#{modelWizard.showSingleTablePanel}"
+							style="background-color:#E8E8E8; width:60%; font-size:small">
+							<p>*Option to create simple model with information only from
+								single table.</p>
+						</p:outputPanel>
+						<p:outputPanel rendered="#{modelWizard.showJoinQueryPanel}"
+							style="background-color:#E8E8E8; width:65%; font-size:small">
+							<p>*Option to create complex model with information from more
+								than one tables.</p>
+						</p:outputPanel>
+					</h:panelGroup>
+					<p:separator />
+
+					<h:panelGroup id="joinQueryPanel">
+						<h:panelGroup rendered="#{modelWizard.showJoinQueryPanel}">
+							<p:messages closable="true" autoUpdate="true" />
+							<p:tabView id="jqTabView"
+								activeIndex="#{modelWizard.activeIndex}" style="width:100%;">
+								<p:tab title="Query">
+									<h:panelGrid columns="3" style="width:101%;">
+										Define Query here *:
+										<p:ajaxStatus>
+											<f:facet name="start">
+												<h:panelGrid columns="2" style="verticle-align:middle">
+													<h:graphicImage library="default"
+														name="images/connect_active.gif" />
+													Verifying...
+												</h:panelGrid>
+											</f:facet>
+										</p:ajaxStatus>
+										<h:panelGroup style="float:right;">
+											<p:commandButton value="Verify" icon="ui-icon-arrowthick-1-e"
+												action="#{modelWizard.verify}" update="jqTabView" />
+										</h:panelGroup>
+									</h:panelGrid>
+
+									<p:inputTextarea id="query"
+										placeholder="Use #{modelWizard.model.datasource.schema};"
+										value="#{modelWizard.model.query.value}" autoResize="false"
+										style="width:100%;height:200px" required="true" label="Query">
+										<p:ajax event="change"
+											listener="#{modelWizard.onChangeTxtAreaQuery}"
+											update="jqTabView,:form:navPanel"
+											disabled="#{modelWizard.disabledResultTab}" />
+									</p:inputTextarea>
+
+								</p:tab>
+								<p:tab title="Result"
+									disabled="#{modelWizard.disabledResultTab}" style="width:100%;">
+									<h:panelGrid columns="2" width="100%">
+										<b>Resultset Returned:</b>
+										<h:panelGroup style="float:right">
+											<p:commandButton value="Proceed To Model" global="false"
+												action="#{modelWizard.proceedToModel}"
+												update="jqTabView,:form:navPanel" />
+										</h:panelGroup>
+									</h:panelGrid>
+									<p:separator />
+									<h:panelGrid columns="3" width="100%">
+										<span style="font-size: x-small">*#{modelWizard.noOfRowsReturned}
+											rows returned.</span>
+										<p:ajaxStatus>
+											<f:facet name="start">
+												<h:panelGrid columns="2" style="vertical-align:middle">
+													<h:graphicImage library="default"
+														name="images/connect_active.gif" />
+													Loading...
+												</h:panelGrid>
+											</f:facet>
+										</p:ajaxStatus>
+										<h:panelGroup style="float:right">
+											<p:outputLabel for="limit" value="No. of rows being displayed: " />
+											<p:selectOneMenu id="limit" value="#{modelWizard.limit}"
+												style="vertical-align:middle;">
+												<p:ajax listener="#{modelWizard.onLimitSltOneMenuChange}"
+													update="resultSetTbl" />
+												<f:selectItem itemLabel="5" itemValue="5" />
+												<f:selectItem itemLabel="10" itemValue="10" />
+												<f:selectItem itemLabel="20" itemValue="20" />
+											</p:selectOneMenu>
+										</h:panelGroup>
+									</h:panelGrid>
+
+									<p:dataTable id="resultSetTbl" value="#{modelWizard.resultSet}"
+										var="row" scrollable="true" scrollWidth="95%"
+										scrollHeight="155" border="1" resizableColumns="true">
+										<p:columns value="#{modelWizard.columns}" var="column"
+											width="150">
+											<f:facet name="header">
+												<h:outputText value="#{column.label}" />
+											</f:facet>
+											<h:outputText value="#{row[column]}" />
+										</p:columns>
+									</p:dataTable>
+								</p:tab>
+								<p:tab title="*Model" disabled="#{modelWizard.disabledModelTab}">
+									<h:panelGroup rendered="#{modelWizard.showJoinQueryPanel}">
+										<cc:designModel id="joinQuery"
+											modelName="#{modelWizard.model.name}"
+											inputList="#{modelWizard.columnNames}"
+											outputList="#{modelWizard.model.attributeBindings}"
+											emptyMessage="No columns found."
+											onReorder="#{modelWizard.onReorder}"> 
+											<f:facet name="dynamicContent">
+												<h:outputText value="Resulted Query View:"
+													style="font-weight:bold" />
+											</f:facet>
+										</cc:designModel>
+									</h:panelGroup>
+
+								</p:tab>
+							</p:tabView>
+						</h:panelGroup>
+					</h:panelGroup>
+
+					<h:panelGroup id="singleTablePanel" binding="#{singleTablePanel}">
+						<p:messages closable="true" autoUpdate="true" rendered="#{modelWizard.showSingleTablePanel}"/>
+						<cc:designModel id="singleTable"
+							modelName="#{modelWizard.model.name}"
+							inputList="#{modelWizard.columnNames}"
+							outputList="#{modelWizard.model.attributeBindings}"
+							emptyMessage="Select the table first."
+							renderedResultedModel="#{modelWizard.model.table != null}"
+							rendered="#{modelWizard.showSingleTablePanel}"
+							onReorder="#{modelWizard.onReorder}">
+							<f:facet name="dynamicContent">
+								<h:panelGrid columns="2" columnClasses="label, value">
+									<h:outputText value="Table: *" />
+									<p:selectOneMenu id="table"
+										required="#{modelWizard.requiredTargetTbl}"
+										value="#{modelWizard.model.table}" style="width:180px"
+										label="Table">
+										<p:ajax listener="#{modelWizard.onTableSltOneMenuChange}"
+											update=":#{singleTablePanel.clientId}" />
+										<f:selectItem itemLabel="Select Table" itemValue="#{null}"
+											noSelectionOption="true" />
+										<f:selectItems value="#{modelWizard.tableNames}" />
+									</p:selectOneMenu>
+								</h:panelGrid>
+							</f:facet>
+						</cc:designModel>
+					</h:panelGroup>
+				</p:panel>
+				<h:inputHidden id="order" value="#{modelWizard.order}"/>
+				<h:panelGrid id="navPanel" columns="2" style="width:100%">
+					<h:panelGroup style="float:left">
+						<p:commandButton value="Back" icon="ui-icon-arrow-1-w"
+							type="button" onclick="PF('myWizard').back();" global="false" />
+					</h:panelGroup>
+					<h:panelGroup style="float:right">
+						<p:commandButton value="Next" icon="ui-icon-arrow-1-e"
+							type="button" onclick="doOrder();PF('myWizard').next();"
+							disabled="#{modelWizard.disabledNextNav}" global="false" />
+					</h:panelGroup>
+				</h:panelGrid>
+			</p:tab>
+			<p:tab id="confirmation" title="Confirmation">
+				<p:panel header="Confirmation" style="height:385px;overflow:auto;">
+					<h:panelGrid style="width:100%">
+						<p:fieldset legend="Summary"
+							style="background-color:#E8E8E8;height:280px;overflow:auto;">
+							<h:panelGrid columns="2" rowClasses="vertical-align-top"
+								style="width:100%">
+								<h:panelGroup>
+									<h:panelGrid columns="2">
+										<h:outputText value="Model" style="font-weight:bold" />
+										<h:panelGroup />
+
+										<svvs:output label="Description" bean="#{modelWizard.model}"
+											property="description" />
+										<svvs:output label="Name" bean="#{modelWizard.model}"
+											property="name" />
+									</h:panelGrid>
+									<svvs:output label="Attributes"
+										list="#{modelWizard.model.attributeBindings}"
+										itemLabelProperty="alias" itemValueProperty="typeName"
+										labelStyle="font-size:small;font-weight:bold;" />
+								</h:panelGroup>
+								<h:panelGrid columns="2">
+									<h:outputText value="Datasource" style="font-weight:bold" />
+									<h:panelGroup />
+
+									<svvs:output label="Name"
+										bean="#{modelWizard.model.datasource}" property="name" />
+									<svvs:output label="Host Name"
+										bean="#{modelWizard.model.datasource}" property="hostname" />
+									<svvs:output label="Port"
+										bean="#{modelWizard.model.datasource}" property="port" />
+									<svvs:output label="Schema"
+										bean="#{modelWizard.model.datasource}" property="schema" />
+								</h:panelGrid>
+							</h:panelGrid>
+						</p:fieldset>
+						
+						<h:panelGroup style="float:right">
+							<p:commandButton value="Cancel" immediate="true"
+								action="#{modelWizard.cancel}" />
+							<p:spacer width="5px" />
+							<p:commandButton value="Finish" action="#{modelWizard.finish}"/>
+						</h:panelGroup>
+					</h:panelGrid>
+				</p:panel>
+				<h:panelGrid style="width:100%">
+					<h:panelGroup style="float:left">
+						<p:commandButton value="Back" icon="ui-icon-arrow-1-w"
+							type="button" onclick="PF('myWizard').back();" global="false" />
+					</h:panelGroup>
+				</h:panelGrid>
+			</p:tab>
+		</p:wizard>
+	</h:form>
+</h:body>
+</html>

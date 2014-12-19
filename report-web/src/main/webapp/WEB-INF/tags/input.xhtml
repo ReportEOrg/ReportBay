@@ -1,0 +1,56 @@
+<ui:composition
+    xmlns:c="http://java.sun.com/jsp/jstl/core"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:ui="http://java.sun.com/jsf/facelets">
+
+    <c:set var="id" value="#{not empty id ? id : (not empty property ? property : action)}" />
+    <c:set var="required" value="#{not empty required and required}" />
+
+    <c:choose>
+        <c:when test="#{type != 'submit'}">
+            <h:outputLabel for="#{id}" value="#{label}&#160;#{required ? '*&#160;' : ''}" />
+        </c:when>
+        <c:otherwise>
+            <h:panelGroup />
+        </c:otherwise>
+    </c:choose>
+
+    <c:choose>
+        <c:when test="#{type == 'text'}">
+            <p:inputText id="#{id}" value="#{bean[property]}" label="#{label}" required="#{required}">
+                <p:ajax event="blur" update="#{p:component(id.concat('-message'))}" />
+            </p:inputText>
+            <p:message id="#{id}-message" for="#{id}" />
+        </c:when>
+        <c:when test="#{type == 'textArea'}">
+            <p:inputTextarea id="#{id}" value="#{bean[property]}" label="#{label}" required="#{required}"
+            	autoResize="false" style="width:300px;height:80px">
+                <p:ajax event="blur" update="#{p:component(id.concat('-message'))}" />
+            </p:inputTextarea>
+            <p:message id="#{id}-message" for="#{id}" />
+        </c:when>
+        <c:when test="#{type == 'password'}">
+            <h:inputSecret id="#{id}" value="#{bean[property]}" label="#{label}" required="#{required}">
+                <p:ajax event="blur" update="#{p:component(id.concat('-message'))}" />
+            </h:inputSecret>
+            <p:message id="#{id}-message" for="#{id}" />
+        </c:when>
+        <c:when test="#{type == 'select'}">
+            <p:selectOneMenu id="#{id}" value="#{bean[property]}" label="#{label}" required="#{required}">
+                <f:selectItems value="#{options.entrySet()}" var="entry" itemValue="#{entry.key}" itemLabel="#{entry.value}" />
+                <p:ajax event="change" update="#{p:component(id.concat('-message'))}" />
+            </p:selectOneMenu>
+            <p:message id="#{id}-message" for="#{id}" />
+        </c:when>
+        <c:when test="#{type == 'submit'}">
+            <p:commandButton id="#{id}" value="#{label}" action="#{bean[action]}" />
+            <p:message id="#{id}-message" for="#{id}" />
+        </c:when>
+        <c:otherwise>
+            <h:panelGroup />
+            <h:panelGroup />
+        </c:otherwise>            
+    </c:choose>
+</ui:composition>

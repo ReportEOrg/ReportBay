@@ -1,0 +1,64 @@
+<ui:component xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:cc="http://java.sun.com/jsf/composite">
+
+	<cc:interface>
+		<cc:attribute name="value"
+			type="com.savvis.spirits.report.model.domain.Datasource"
+			required="true" />
+		<cc:attribute name="list" type="java.util.List" required="true" />
+		<cc:attribute name="onValueChanged" method-signature="void listener()" />
+		<cc:attribute name="displayDetailsOnSelect" type="java.lang.Boolean"
+			default="true" required="false" />
+		<cc:attribute name="mandatory" type="java.lang.Boolean" default="true"
+			required="false" />
+	</cc:interface>
+	<cc:implementation>
+		<span id="#{cc.clientId}" style="white-space: nowrap"> <h:panelGrid
+				columns="3" rowClasses="vertical-align-top" style="width:100%">
+				<h:panelGrid columns="2" columnClasses="label, value">
+					<h:outputText value="Datasource: *" />
+					<p:selectOneMenu id="sltDatasource" value="#{cc.attrs.value}"
+						required="#{cc.attrs.mandatory}" label="Datasource"
+						style="width:180px" converter="#{datasourceConverter}">
+						<p:ajax update="datasource_details"
+							listener="#{cc.attrs.onValueChanged}" />
+						<f:selectItem itemLabel="Select Datasource" itemValue="#{null}"
+							noSelectionOption="true" />
+						<f:selectItems value="#{cc.attrs.list}" var="datasource"
+							itemLabel="#{datasource.name}" itemValue="#{datasource}" />
+					</p:selectOneMenu>
+				</h:panelGrid>
+
+				<h:panelGroup id="datasource_details">
+					<p:ajaxStatus rendered="#{!datasourceDetail.rendered}">
+						<f:facet name="start">
+							<h:panelGrid columns="2" style="vertical-align:middle">
+								<h:graphicImage library="default" name="images/connect_active.gif" />
+								Loading...
+							</h:panelGrid>
+						</f:facet>
+					</p:ajaxStatus>
+					<p:fieldset binding="#{datasourceDetail}" legend="Datasource Details"
+						style="background-color:#E8E8E8"
+						rendered="#{cc.attrs.value != null and cc.attrs.displayDetailsOnSelect}">
+						<h:panelGrid columns="2" columnClasses="label, value">
+							<h:outputLabel value="Name: " />
+							<h:outputText value="#{cc.attrs.value.name}" />
+							<h:outputLabel value="Host Name: " />
+							<h:outputText value="#{cc.attrs.value.hostname}" />
+							<h:outputLabel value="Port: " />
+							<h:outputText value="#{cc.attrs.value.port}" />
+							<h:outputLabel value="Schema: " />
+							<h:outputText value="#{cc.attrs.value.schema}" />
+						</h:panelGrid>
+					</p:fieldset>
+				</h:panelGroup>
+				<p:spacer width="40px" />
+			</h:panelGrid>
+		</span>
+	</cc:implementation>
+</ui:component>

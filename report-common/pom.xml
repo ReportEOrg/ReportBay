@@ -8,4 +8,19 @@
 	</parent>
 	<artifactId>report-common</artifactId>
 	<packaging>jar</packaging>
+	
+	<name>Report Common Module</name>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-entitymanager</artifactId>
+			<version>4.2.16.Final</version>
+		</dependency>
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>5.1.6</version>
+		</dependency>
+	</dependencies>
 </project>

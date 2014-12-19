@@ -1,0 +1,104 @@
+<ui:composition template="../../WEB-INF/templates/layout.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:svvs="http://java.sun.com/jsf/composite/components">
+
+	<ui:param name="show_west" value="false" />
+	<ui:param name="show_east" value="false" />
+
+	<ui:define name="title">Report - Maintain Models</ui:define>
+
+	<ui:define name="content">
+		<h:form id="mainForm">
+			<p:panel header="Maintain Models">
+				<p:messages autoUpdate="true" closable="true"/>
+				<p:layout style="min-height:599px;">
+					<p:layoutUnit position="west" header="Models" collapsible="false"
+						resizable="true" size="244" minSize="200" maxSize="300"
+						style="height:50%;">
+						<h:panelGrid style="text-align:center;" columns="2">
+							<p:autoComplete placeholder="Filter.." size="26" />
+							<p:commandLink title="Add New Model" action="#{myBean.addModel}" >
+								<p:ajax event="dialogReturn" listener="#{myBean.onDialogReturn}" />
+								<h:graphicImage library="default" name="images/addnew-icon.png"
+									height="25" />
+							</p:commandLink>
+						</h:panelGrid>
+
+						<p:panelMenu model="#{myBean.menuModel}" style="width:99%" />
+					</p:layoutUnit>
+
+					<p:layoutUnit position="center" style="height:410px;">
+						<p:breadCrumb style="width:99%;border:none;background:none;">
+							<p:menuitem value="Categories" url="/views/home.xhtml" />
+							<p:menuitem value="Maintain Models"
+								url="/views/model/maintain_model.xhtml" />
+						</p:breadCrumb>
+						<p:panel header="View Model Details" style="">
+							<f:facet name="footer">
+								<p:commandButton value="Edit" icon="ui-icon-wrench" action="#{myBean.updateModel('8')}">
+									<p:ajax event="dialogReturn" listener="#{myBean.onDialogReturn}" />
+								</p:commandButton>
+								<p:spacer width="5px" />
+								<p:commandButton value="Delete" icon="ui-icon-trash" action="#{myBean.deleteModel('8')}">
+									<p:confirm header="Confirmation" message="Are you sure you want to delete?" icon="ui-icon-alert" />
+								</p:commandButton>
+							</f:facet>
+
+							<p:tabView>
+								<p:tab title="Basic Info">
+									<h:panelGrid columns="2">
+										<p:outputLabel value="Name:" />
+										<h:outputText value="#{myBean.model.name}" />
+										<p:outputLabel value="Description:" />
+										<h:outputText value="Employee Table" />
+									</h:panelGrid>
+								</p:tab>
+								<p:tab title="Datasource">
+
+								</p:tab>
+								<p:tab title="Attribute Mappings">
+									<h:panelGrid columnClasses="gridClass">
+										<h:panelGrid columns="2" style="width:50%">
+											<h:panelGroup style="float:left">
+												<h:outputLabel value="Approach: " style="font-weight:bold"/>
+												<h:outputText value="Single Table" />
+											</h:panelGroup>
+											<h:panelGroup style="float:right">
+												<h:outputLabel value="Table: " style="font-weight:bold"/>
+												<h:outputText value="Employee" />
+											</h:panelGroup>
+										</h:panelGrid>
+
+										<p:dataTable value="#{myBean.model.bindings}" var="row"
+											border="1" style="width:50%">
+											<p:columnGroup type="header">
+												<p:row>
+													<p:column rowspan="2" headerText="Attribute Name" />
+													<p:column headerText="Column References" />
+												</p:row>
+											</p:columnGroup>
+											<p:column>
+												<h:outputText value="#{row.attributeName}" />
+											</p:column>
+											<p:column>
+												<h:outputText value="#{row.tableName}.#{row.columnName}" />
+											</p:column>
+										</p:dataTable>
+									</h:panelGrid>
+
+								</p:tab>
+								<p:tab title="Join Query" rendered="#{false}">
+
+								</p:tab>
+							</p:tabView>
+						</p:panel>
+					</p:layoutUnit>
+				</p:layout>
+			</p:panel>
+		</h:form>
+	</ui:define>
+</ui:composition>

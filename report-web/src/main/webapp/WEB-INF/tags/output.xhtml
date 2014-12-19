@@ -1,0 +1,46 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+	<c:set var="indentWidth"
+		value="#{not empty indentWidth ? indentWidth : 20}" />
+	<c:set var="spaceWidth"
+		value="#{not empty spaceWidth ? spaceWidth : 20}" />
+	<c:set var="labelStyle"
+		value="#{not empty labelStyle ? labelStyle : 'font-size:small'}" />
+	<c:set var="valueStyle"
+		value="#{not empty valueStyle ? valueStyle : 'font-size:small'}" />
+	<c:set var="itemLabelStyle"
+		value="#{not empty itemLabelStyle ? itemLabelStyle : 'font-size:small;'}" />
+	<c:set var="itemValueStyle"
+		value="#{not empty itemValueStyle ? itemValueStyle : 'font-size:small;color:#828282;'}" />
+
+	<c:choose>
+		<c:when test="#{not empty list}">
+			<h:panelGrid>
+				<h:outputLabel value="#{label}:" style="#{labelStyle}" />
+				<h:panelGrid columns="2" width="100%">
+					<c:forEach var="item" items="#{list}" varStatus="status">
+						<h:panelGroup>
+							<p:spacer width="#{indentWidth}px" height="0px" />
+							<h:outputText value="#{item[itemLabelProperty]}"
+								style="#{itemLabelStyle}" />
+						</h:panelGroup>
+						<h:panelGroup>
+							<p:spacer width="#{spaceWidth}px" height="0px" />
+							<h:outputText value="#{item[itemValueProperty]}"
+								style="#{itemValueStyle}" />
+						</h:panelGroup>
+					</c:forEach>
+				</h:panelGrid>
+			</h:panelGrid>
+		</c:when>
+		<c:otherwise>
+			<h:outputLabel value="#{label}:" style="#{labelStyle}" />
+			<h:outputText value="#{bean[property]}" style="#{valueStyle}" />
+		</c:otherwise>
+	</c:choose>
+</ui:composition>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<h:form>
+		<p:growl id="messages" />
+		<p:menubar>
+			<p:menuitem value="Home" icon="ui-icon-home" url="/views/home.xhtml" />
+			<p:submenu label="Dashboard" icon="ui-icon-newwin">
+				<p:menuitem value="Browse Dashboards" />
+				<p:separator />
+				<p:menuitem value="Manage Dashboards" />
+				<p:menuitem value="New" />
+			</p:submenu>
+
+
+			<p:submenu label="Report" icon="ui-icon-contact">
+				<p:menuitem value="Browse Reports" />
+				<p:separator />
+				<p:menuitem value="Manage Reports" />
+				<p:submenu label="New">
+					<p:menuitem value="Chart Report" />
+					<p:menuitem value="CrossTab Report" />
+					<p:menuitem value="Report Document" />
+				</p:submenu>
+			</p:submenu>
+
+			<p:submenu label="Model" icon="ui-icon-document">
+				<p:menuitem value="Manage Models" url="/views/model/maintain_models.xhtml" />
+				<p:menuitem value="New Model" />
+			</p:submenu>
+
+			<f:facet name="options">
+				<p:commandButton type="button" value="Logout" icon="ui-icon-extlink" />
+			</f:facet>
+		</p:menubar>
+	</h:form>
+</ui:composition>
