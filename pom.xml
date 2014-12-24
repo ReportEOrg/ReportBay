@@ -104,7 +104,7 @@
 			</pluginRepositories>
 			
 			<properties>
-				<jdk.version>1.7</jdk.version>
+				<jdk.version>1.6</jdk.version>
 				<nexus.url>http://code.it.savvis.net/nexus/content</nexus.url>
 				<owb.version>1.2.6</owb.version>
 			</properties>
@@ -153,7 +153,7 @@
 			</build>
 			
 			<properties>
-				<jdk.version>1.7</jdk.version>
+				<jdk.version>1.6</jdk.version>
 				<owb.version>1.2.6</owb.version>
 			</properties>
 			
