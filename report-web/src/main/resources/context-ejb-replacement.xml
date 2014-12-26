@@ -39,7 +39,7 @@
     </bean>
     
     <bean id="reportEDataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
-        <property name="jndiName" value="java:comp/env/jdbc/jbossews"/>
+        <property name="jndiName" value="java:comp/env/jdbc/MySQLDS"/>
         <property name="lookupOnStartup" value="false"/>
         <property name="cache" value="true"/>
         <property name="proxyInterface" value="javax.sql.DataSource"/>
