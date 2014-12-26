@@ -45,7 +45,17 @@
 	</servlet-mapping>
 
 	<!-- CDI Integration -->
-	<listener>
+<!-- 	<listener>
 		<listener-class>org.apache.webbeans.servlet.WebBeansConfigurationListener</listener-class>
+	</listener> -->
+	
+	<!-- Spring framework configuration -->
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>classpath:context-application.xml</param-value>
+	</context-param>
+
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
 </web-app>
