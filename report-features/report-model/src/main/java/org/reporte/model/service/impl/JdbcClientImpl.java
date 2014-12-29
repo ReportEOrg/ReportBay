@@ -211,6 +211,45 @@ public class JdbcClientImpl implements JdbcClient {
 			release(conn, stmt, rs);
 		}
 	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	public int findQueryCount(Datasource ds, String query) throws JdbcClientException {
+		int resultCount = 0;
+		
+		if(query!=null){
+			String tempQuery = query.toUpperCase();
+			int idx = tempQuery.indexOf("FROM ");
+			
+			if(idx!=-1){
+				tempQuery = "select count(*) "+query.substring(idx);
+				
+				Connection conn = null;
+				Statement stmt = null;
+				ResultSet rs = null;
+				try {
+					DataSource dbcpDs = getDatasource(ds);
+					LOG.trace("Getting connection from DataSource..");
+					conn = dbcpDs.getConnection();
+					stmt = conn.createStatement();
+					
+					rs = stmt.executeQuery(tempQuery);
+					
+					if(rs.next()){
+						resultCount = rs.getInt(1);
+					}
+					
+				} catch (SQLException e) {
+					throw new JdbcClientException("Query execution failed.", e);
+				} finally {
+					release(conn, stmt, rs);
+				}
+			}
+		}
+		
+		return resultCount;
+	}
 
 	/**
 	 * {@inheritDoc}

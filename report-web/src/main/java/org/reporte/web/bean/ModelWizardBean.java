@@ -64,7 +64,7 @@ public class ModelWizardBean implements Serializable {
 	private List<Map<ColumnMetadata, String>> originalResultSet;
 	private int activeIndex;
 	private int limit = DEFAULT_QUERY_ROW_LIMIT;
-	private int noOfRowsReturned;
+	private int noOfRecordMatched;
 	private String approach = "Single Table";
 	private boolean requiredDatasource = true;
 	private boolean requiredTargetTbl = true;
@@ -255,12 +255,12 @@ public class ModelWizardBean implements Serializable {
 		this.requiredTargetTbl = requiredTargetTbl;
 	}
 
-	public int getNoOfRowsReturned() {
-		return noOfRowsReturned;
+	public int getNoOfRecordMatched() {
+		return noOfRecordMatched;
 	}
 
-	public void setNoOfRowsReturned(int noOfRowsReturned) {
-		this.noOfRowsReturned = noOfRowsReturned;
+	public void setRecordMatched(int noOfRecordMatched) {
+		this.noOfRecordMatched = noOfRecordMatched;
 	}
 
 	public boolean isDisabledNextNav() {
@@ -433,8 +433,7 @@ public class ModelWizardBean implements Serializable {
 		List<AttributeMapping> columnNames = new ArrayList<AttributeMapping>();
 
 		originalResultSet = modelService.getJdbcClient().execute(model.getDatasource(), query);
-		//TODO: do we really need this?
-		// noOfRowsReturned = originalResultSet.size();
+
 		resultSet = applyLimit(originalResultSet, limit);
 
 		if (CollectionUtils.isNotEmpty(resultSet)) {
@@ -452,6 +451,15 @@ public class ModelWizardBean implements Serializable {
 		}
 		return columnNames;
 	}
+	/**
+	 * 
+	 * @param model
+	 * @return
+	 * @throws JdbcClientException
+	 */
+	private int findResultMatchedCount(Model model) throws JdbcClientException{
+		return modelService.getJdbcClient().findQueryCount(model.getDatasource(), model.getQuery().getValue());
+	}
 
 	public void verify() {
 		model.getAttributeBindings().clear();
@@ -461,6 +469,13 @@ public class ModelWizardBean implements Serializable {
 		try {
 			columnNames = deriveColumnsFromQuery(model.getQuery().getValue());
 			model.getAttributeBindings().addAll(columnNames);
+			
+			if(!columnNames.isEmpty()){
+				noOfRecordMatched = findResultMatchedCount(model);
+			}
+			else{
+				noOfRecordMatched = 0;
+			}
 
 			// Enable and move to 'Result' tab.
 			disabledResultTab = false;

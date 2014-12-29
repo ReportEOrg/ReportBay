@@ -40,4 +40,13 @@ public interface JdbcClient {
 	 * @return
 	 */
 	boolean testConnection(Datasource ds);
+	
+	/**
+	 * 
+	 * @param ds
+	 * @param query
+	 * @return
+	 * @throws JdbcClientException
+	 */
+	int findQueryCount(Datasource ds, String query) throws JdbcClientException;
 }
