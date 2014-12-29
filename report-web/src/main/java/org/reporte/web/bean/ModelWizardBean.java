@@ -44,8 +44,7 @@ import org.slf4j.LoggerFactory;
 @ViewScoped
 public class ModelWizardBean implements Serializable {
 	private static final long serialVersionUID = 4607556957265028946L;
-	private static final Logger LOG = LoggerFactory
-			.getLogger(ModelWizardBean.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ModelWizardBean.class);
 
 	private static final String SINGLE_TABLE = "Single Table";
 	private static final String JOIN_QUERY = "Join Query";
@@ -81,44 +80,34 @@ public class ModelWizardBean implements Serializable {
 	@PostConstruct
 	public void init() {
 		// Retrieve the params passed via Dialog Framework.
-		Map<String, String> requestParams = FacesContext.getCurrentInstance()
-				.getExternalContext().getRequestParameterMap();
+		Map<String, String> requestParams = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 		title = requestParams.get("title");
-		modelId = requestParams.containsKey("id") ? Integer
-				.valueOf(requestParams.get("id")) : 0;
+		modelId = requestParams.containsKey("id") ? Integer.valueOf(requestParams.get("id")) : 0;
 
 		if (modelId != 0) {
 			try {
 				model = modelService.find(modelId);
 			} catch (ModelServiceException e) {
-				LOG.error(
-						"Error loading model with given Id[" + modelId + "].",
-						e);
+				LOG.error("Error loading model with given Id[" + modelId + "].",e);
 			}
 
 			try {
-				tableNames = modelService.getJdbcClient().getTableNames(
-						model.getDatasource());
+				tableNames = modelService.getJdbcClient().getTableNames(model.getDatasource());
 			} catch (JdbcClientException e) {
-				LOG.error(
-						"Error loading available table names from target datasource["
-								+ model.getDatasource().getName() + "].", e);
+				LOG.error("Error loading available table names from target datasource["+ model.getDatasource().getName() + "].", e);
 			}
 
 			try {
 				if (model.getApproach().equals(Approach.SINGLE_TABLE)) {
-					columnNames = convertIntoAttributeMappings(modelService
-							.getJdbcClient().getColumns(model.getDatasource(),
-									((SimpleModel) model).getTable()));
+					columnNames = convertIntoAttributeMappings(modelService.getJdbcClient().getColumns(model.getDatasource(),
+																									   ((SimpleModel) model).getTable()));
 				} else {
-					columnNames = deriveColumnsFromQuery(model.getQuery()
-							.getValue());
+					columnNames = deriveColumnsFromQuery(model.getQuery().getValue());
 				}
 
 				for (AttributeMapping attribute : model.getAttributeBindings()) {
 					for (AttributeMapping column : columnNames) {
-						if (attribute.getReferencedColumn().equals(
-								column.getReferencedColumn())) {
+						if (attribute.getReferencedColumn().equals(column.getReferencedColumn())) {
 							column.setAlias(attribute.getAlias());
 							column.setId(attribute.getId());
 							break;
@@ -127,9 +116,7 @@ public class ModelWizardBean implements Serializable {
 				}
 
 			} catch (JdbcClientException e) {
-				LOG.error(
-						"Error resolving columns for selected Model["
-								+ model.getName() + "].", e);
+				LOG.error("Error resolving columns for selected Model["+ model.getName() + "].", e);
 			}
 		} else {
 			model = new SimpleModel();
@@ -304,8 +291,7 @@ public class ModelWizardBean implements Serializable {
 	// PRIVATE METHODS //
 	// ////////////////////////////////////////////////
 
-	private List<AttributeMapping> convertIntoAttributeMappings(
-			List<ColumnMetadata> colList) {
+	private List<AttributeMapping> convertIntoAttributeMappings(List<ColumnMetadata> colList) {
 		List<AttributeMapping> list = new ArrayList<AttributeMapping>();
 
 		if (CollectionUtils.isNotEmpty(colList)) {
@@ -367,12 +353,9 @@ public class ModelWizardBean implements Serializable {
 		Datasource selectedDatasource = model.getDatasource();
 		if (selectedDatasource != null) {
 			try {
-				tableNames = modelService.getJdbcClient().getTableNames(
-						selectedDatasource);
+				tableNames = modelService.getJdbcClient().getTableNames(selectedDatasource);
 			} catch (JdbcClientException e) {
-				LOG.error(
-						"Failed to load available table names for selected Datasource with name["
-								+ selectedDatasource.getName() + "].", e);
+				LOG.error("Failed to load available table names for selected Datasource with name["+ selectedDatasource.getName() + "].", e);
 				tableNames = new ArrayList<String>();
 			}
 			setRequiredDatasource(false);
@@ -391,12 +374,10 @@ public class ModelWizardBean implements Serializable {
 		String tableName = ((SimpleModel) model).getTable();
 		if (StringUtils.isNotEmpty(tableName)) {
 			try {
-				List<ColumnMetadata> columns = modelService.getJdbcClient()
-						.getColumns(model.getDatasource(), tableName);
+				List<ColumnMetadata> columns = modelService.getJdbcClient().getColumns(model.getDatasource(), tableName);
 				columnNames = convertIntoAttributeMappings(columns);
 			} catch (JdbcClientException e) {
-				LOG.error("Failed to load metadata columns for the table - "
-						+ tableName + ".");
+				LOG.error("Failed to load metadata columns for the table - "+ tableName + ".");
 				columnNames = new ArrayList<AttributeMapping>();
 			}
 			model.getQuery().setValue(String.format(SELECT_QUERY, tableName));
@@ -447,37 +428,24 @@ public class ModelWizardBean implements Serializable {
 	// 				ACTION METHODS 					 //
 	// ////////////////////////////////////////////////
 
-	private String applyDefaultLimit(String query) {
-		query = query.replace(";", "");
-		// TODO: Regex is currently not working. Need to find out why.
-		String regex = "/\\s+LIMIT\\s+\\d+$/i";
-		if (query.matches(regex)) {
-			query = StringUtils.replacePattern(query.trim(), regex, "");
-		}
-
-		return query.concat(" LIMIT 20");
-	}
-
 	private List<AttributeMapping> deriveColumnsFromQuery(String query)
 			throws JdbcClientException {
 		List<AttributeMapping> columnNames = new ArrayList<AttributeMapping>();
 
-		String queryWithLimit = applyDefaultLimit(query);
-		originalResultSet = modelService.getJdbcClient().execute(
-				model.getDatasource(), queryWithLimit);
+		originalResultSet = modelService.getJdbcClient().execute(model.getDatasource(), query);
 		//TODO: do we really need this?
 		// noOfRowsReturned = originalResultSet.size();
 		resultSet = applyLimit(originalResultSet, limit);
 
 		if (CollectionUtils.isNotEmpty(resultSet)) {
 			columns = resultSet.get(0).keySet();
-			int i = 1;
+			int order = 1;
 			for (ColumnMetadata column : columns) {
 				AttributeMapping mapping = new AttributeMapping();
 				mapping.setReferencedColumn(column.getLabel());
 				mapping.setTypeName(column.getTypeName());
 				mapping.setAlias(column.getLabel());
-				mapping.setOrder(i++);
+				mapping.setOrder(order++);
 
 				columnNames.add(mapping);
 			}
@@ -500,8 +468,7 @@ public class ModelWizardBean implements Serializable {
 
 			WebUtils.addInfoMessage("Query verification was successful.");
 		} catch (JdbcClientException e) {
-			LOG.error("Query verification failed. Executed query = ["
-					+ model.getQuery().getValue() + "].", e);
+			LOG.error("Query verification failed. Executed query = ["+ model.getQuery().getValue() + "].", e);
 			WebUtils.addErrorMessage(e.getCause().getMessage());
 		}
 	}

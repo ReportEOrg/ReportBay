@@ -13,7 +13,6 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import org.apache.commons.dbcp.BasicDataSource;
-import org.apache.commons.lang3.StringUtils;
 import org.reporte.model.domain.ColumnMetadata;
 import org.reporte.model.domain.Datasource;
 import org.reporte.model.service.JdbcClient;
@@ -25,6 +24,9 @@ public class JdbcClientImpl implements JdbcClient {
 	private static final Logger LOG = LoggerFactory.getLogger(JdbcClientImpl.class);
 	private static final int TABLE_NAME = 3;
 	private static final String SELECT_ALL = "SELECT * FROM %s";
+	private static final int MAX_RESULT_ROWS = 20;
+	// Note: Column index starts from 1
+	private static final int DB_COLUMN_START_IDX = 1;
 
 	/**
 	 * Apache Commons DBCP API helps us in getting rid of tightly coupleness to
@@ -126,10 +128,12 @@ public class JdbcClientImpl implements JdbcClient {
 			ResultSetMetaData metadata = rs.getMetaData();
 			List<ColumnMetadata> columnNames = new ArrayList<ColumnMetadata>();
 			int noOfCols = metadata.getColumnCount();
-			// Note: Column index starts from 1
-			for (int i = 1; i <= noOfCols; i++) {
-				columnNames.add(new ColumnMetadata(metadata.getColumnName(i), metadata.getColumnTypeName(i), metadata
-						.getColumnClassName(i), i));
+			
+			for (int colIdx = DB_COLUMN_START_IDX; colIdx <= noOfCols; colIdx++) {
+				columnNames.add(new ColumnMetadata(metadata.getColumnName(colIdx), 
+												   metadata.getColumnTypeName(colIdx), 
+												   metadata.getColumnClassName(colIdx), 
+												   colIdx));
 			}
 			LOG.trace("Column names returned: {}", columnNames);
 
@@ -155,10 +159,10 @@ public class JdbcClientImpl implements JdbcClient {
 		int noOfCols = metadata.getColumnCount();
 
 		List<ColumnMetadata> columns = new ArrayList<ColumnMetadata>();
-		for (int i = 1; i <= noOfCols; i++) {
+		for (int colIdx = DB_COLUMN_START_IDX; colIdx <= noOfCols; colIdx++) {
 			ColumnMetadata column = new ColumnMetadata();
-			column.setLabel(metadata.getColumnLabel(i));
-			column.setTypeName(metadata.getColumnTypeName(i));
+			column.setLabel(metadata.getColumnLabel(colIdx));
+			column.setTypeName(metadata.getColumnTypeName(colIdx));
 			
 			columns.add(column);
 		}
@@ -193,12 +197,12 @@ public class JdbcClientImpl implements JdbcClient {
 			LOG.trace("Getting connection from DataSource..");
 			conn = dbcpDs.getConnection();
 			stmt = conn.createStatement();
+			//limit result rows to max row defined
+			stmt.setMaxRows(MAX_RESULT_ROWS);
 			LOG.debug("Executing given query in the respective database..");
-			// Remove ';' in the end if any
-			query = StringUtils.removeEnd(query.trim(), ";");
-			LOG.debug("Query before being executed - [{}]", query);
 
 			rs = stmt.executeQuery(query);
+
 			LOG.debug("Query execution completed.");
 			return process(rs);
 		} catch (SQLException e) {
