@@ -21,14 +21,23 @@
 						style="height:50%;">
 						<h:panelGrid style="text-align:center;" columns="2">
 							<p:autoComplete placeholder="Filter.." size="26" />
-							<p:commandLink title="Add New Model" action="#{myBean.addModel}" >
-								<p:ajax event="dialogReturn" listener="#{myBean.onDialogReturn}" />
+							<p:commandLink title="Add New Model" action="#{maintainModel.addModel}" >
+								<p:ajax event="dialogReturn" listener="#{maintainModel.onDialogReturn}" />
 								<h:graphicImage library="default" name="images/addnew-icon.png"
 									height="25" />
 							</p:commandLink>
 						</h:panelGrid>
 
-						<p:panelMenu model="#{myBean.menuModel}" style="width:99%" />
+						<p:tree id="tree" value="#{maintainModel.modelTreeRoot}" var="node" selectionMode="single">
+							<p:treeNode>
+								<h:outputText value="#{node}"/>
+							</p:treeNode>
+						
+							<p:treeNode type="modelNode" icon="ui-icon-disk">
+								<h:outputText value="#{node.modelName}"/>
+							</p:treeNode>
+							
+						</p:tree>
 					</p:layoutUnit>
 
 					<p:layoutUnit position="center" style="height:410px;">
@@ -39,11 +48,11 @@
 						</p:breadCrumb>
 						<p:panel header="View Model Details" style="">
 							<f:facet name="footer">
-								<p:commandButton value="Edit" icon="ui-icon-wrench" action="#{myBean.updateModel('8')}">
-									<p:ajax event="dialogReturn" listener="#{myBean.onDialogReturn}" />
+								<p:commandButton value="Edit" icon="ui-icon-wrench" action="#{maintainModel.updateModel('8')}">
+									<p:ajax event="dialogReturn" listener="#{maintainModel.onDialogReturn}" />
 								</p:commandButton>
 								<p:spacer width="5px" />
-								<p:commandButton value="Delete" icon="ui-icon-trash" action="#{myBean.deleteModel('8')}">
+								<p:commandButton value="Delete" icon="ui-icon-trash" action="#{maintainModel.deleteModel('8')}">
 									<p:confirm header="Confirmation" message="Are you sure you want to delete?" icon="ui-icon-alert" />
 								</p:commandButton>
 							</f:facet>
@@ -52,7 +61,7 @@
 								<p:tab title="Basic Info">
 									<h:panelGrid columns="2">
 										<p:outputLabel value="Name:" />
-										<h:outputText value="#{myBean.model.name}" />
+										<h:outputText value="#{maintainModel.model.name}" />
 										<p:outputLabel value="Description:" />
 										<h:outputText value="Employee Table" />
 									</h:panelGrid>
@@ -73,7 +82,7 @@
 											</h:panelGroup>
 										</h:panelGrid>
 
-										<p:dataTable value="#{myBean.model.bindings}" var="row"
+										<p:dataTable value="#{maintainModel.model.bindings}" var="row"
 											border="1" style="width:50%">
 											<p:columnGroup type="header">
 												<p:row>

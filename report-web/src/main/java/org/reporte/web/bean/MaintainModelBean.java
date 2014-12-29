@@ -16,26 +16,26 @@ import javax.inject.Named;
 import org.apache.log4j.Logger;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.SelectEvent;
-import org.primefaces.model.menu.DefaultMenuItem;
-import org.primefaces.model.menu.DefaultMenuModel;
-import org.primefaces.model.menu.DefaultSubMenu;
-import org.primefaces.model.menu.MenuModel;
+import org.primefaces.model.DefaultTreeNode;
+import org.primefaces.model.TreeNode;
 import org.reporte.model.domain.Model;
 import org.reporte.model.service.ModelService;
 import org.reporte.model.service.exception.ModelServiceException;
+import org.reporte.web.component.ModelNode;
 import org.reporte.web.util.WebUtils;
 
 /**
  * Maintain Model JSF Backing bean 
  *
  */
-@Named("myBean")
+@Named("maintainModel")
 @ViewScoped
 public class MaintainModelBean implements Serializable {
 	private static final long serialVersionUID = 696889640817167336L;
 	private static final Logger LOG = Logger.getLogger(MaintainModelBean.class);
 
-	private MenuModel menuModel;
+	private TreeNode modelTreeRoot;
+
 	private Model model;
 	private String query;
 	private boolean renderedName;
@@ -46,8 +46,7 @@ public class MaintainModelBean implements Serializable {
 
 	@PostConstruct
 	public void init() {
-		menuModel = prepareLHSMenu();
-		
+		initTreeNode();
 		try {
 			model = modelService.find(modelId);
 		} catch (ModelServiceException e) {
@@ -65,14 +64,6 @@ public class MaintainModelBean implements Serializable {
 
 	public void setQuery(String query) {
 		this.query = query;
-	}
-
-	public MenuModel getMenuModel() {
-		return menuModel;
-	}
-
-	public void setMenuModel(MenuModel menuModel) {
-		this.menuModel = menuModel;
 	}
 
 	public boolean isRenderedName() {
@@ -103,30 +94,45 @@ public class MaintainModelBean implements Serializable {
 		return map;
 	}
 
-	private MenuModel prepareLHSMenu() {
-		MenuModel menuModel = new DefaultMenuModel();
-
+	/**
+	 * initialize the tree node(s) for Left hand side panel representing model(s) under respective datasource(s)
+	 */
+	private void initTreeNode(){
+		//1. create the root node
+		modelTreeRoot = new DefaultTreeNode("Root",null);
+		
 		try {
 			List<Model> allModels = modelService.findAll();
 			Map<String, List<String>> modelsPerDatasource = prepareModelsPerDatasource(allModels);
+			
+			TreeNode datasourceNode;
+			TreeNode modelNode;
+			
+			//2. for each datasource
 			for (Map.Entry<String, List<String>> entry : modelsPerDatasource.entrySet()) {
+				
+				//2.a create and append datasource node under root node 
+				datasourceNode = new DefaultTreeNode(entry.getKey(),modelTreeRoot);
+				
+				//2.b obtain the child node list for appending child node
+				List<TreeNode> modelNodeList = datasourceNode.getChildren();
+				
 				List<String> modelNames = entry.getValue();
-				// Sort the list in natural order.
+				
+				//2.c Sort the list in natural order.
 				Collections.sort(modelNames);
 
-				DefaultSubMenu subMenu = new DefaultSubMenu(entry.getKey());
+				//2.d for each model under datasource
 				for (String modelName : modelNames) {
-					DefaultMenuItem menuItem = new DefaultMenuItem(modelName);
-					menuItem.setIcon("ui-icon-disk");
-					subMenu.addElement(menuItem);
+					
+					//create and append model node under datasource node
+					modelNode = new DefaultTreeNode("modelNode", new ModelNode(modelName), datasourceNode);
+					modelNodeList.add(modelNode);
 				}
-				menuModel.addElement(subMenu);
 			}
 		} catch (ModelServiceException e) {
 			LOG.error("Failed to load all existing Models.", e);
 		}
-
-		return menuModel;
 	}
 
 	private void openModelWizardDialog(Map<String, String> params) {
@@ -189,4 +195,9 @@ public class MaintainModelBean implements Serializable {
 			}
 		}
 	}
+	
+	public TreeNode getModelTreeRoot() {
+		return modelTreeRoot;
+	}
+
 }
