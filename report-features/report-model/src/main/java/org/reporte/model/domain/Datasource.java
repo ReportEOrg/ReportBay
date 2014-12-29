@@ -22,8 +22,8 @@ import org.reporte.common.interceptor.JPAEntity;
 public class Datasource extends JPAEntity implements Serializable {
 	private static final long serialVersionUID = 604370700984201521L;
 
-	@TableGenerator(name = "Datasource_Gen", table = "ID_GEN", pkColumnName = "GEN_NAME", 
-					valueColumnName = "GEN_VAL", pkColumnValue = "Datasource_Gen", 
+	@TableGenerator(name = "Datasource_Gen", table = "id_gen", pkColumnName = "gen_name", 
+					valueColumnName = "gen_val", pkColumnValue = "Datasource_Gen", 
 					allocationSize = 1)
 	@Id
 	@GeneratedValue(strategy = GenerationType.TABLE, generator = "Datasource_Gen")

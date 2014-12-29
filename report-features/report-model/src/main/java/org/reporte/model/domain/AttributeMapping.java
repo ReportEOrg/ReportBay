@@ -11,8 +11,8 @@ import javax.persistence.TableGenerator;
 @Entity
 @Table(name = "attribute_mapping")
 public class AttributeMapping {
-	@TableGenerator(name = "AttrMapping_Gen", table = "ID_GEN", pkColumnName = "GEN_NAME", 
-					valueColumnName = "GEN_VAL", pkColumnValue = "AttrMapping_Gen", 
+	@TableGenerator(name = "AttrMapping_Gen", table = "id_gen", pkColumnName = "gen_name", 
+					valueColumnName = "gen_val", pkColumnValue = "AttrMapping_Gen", 
 					allocationSize = 1)
 	@Id
 	@GeneratedValue(strategy = GenerationType.TABLE, generator = "AttrMapping_Gen")

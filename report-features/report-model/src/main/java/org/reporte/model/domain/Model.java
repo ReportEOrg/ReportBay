@@ -38,8 +38,8 @@ public abstract class Model extends JPAEntity implements Serializable {
 		SINGLE_TABLE, JOIN_QUERY;
 	}
 
-	@TableGenerator(name = "Model_Gen", table = "ID_GEN", pkColumnName = "GEN_NAME", 
-					valueColumnName = "GEN_VAL", pkColumnValue = "Model_Gen", 
+	@TableGenerator(name = "Model_Gen", table = "id_gen", pkColumnName = "gen_name", 
+					valueColumnName = "gen_val", pkColumnValue = "Model_Gen", 
 					allocationSize = 1)
 	@Id
 	@GeneratedValue(strategy = GenerationType.TABLE, generator="Model_Gen")

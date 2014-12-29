@@ -22,8 +22,8 @@ public class DatabaseType extends JPAEntity {
 		MsSQL, MySQL, Oracle
 	}
 
-	@TableGenerator(name = "DbType_Gen", table = "ID_GEN", pkColumnName = "GEN_NAME", 
-					valueColumnName = "GEN_VAL", pkColumnValue = "DbType_Gen", 
+	@TableGenerator(name = "DbType_Gen", table = "id_gen", pkColumnName = "gen_name", 
+					valueColumnName = "gen_val", pkColumnValue = "DbType_Gen", 
 					allocationSize = 1)
 	@Id
 	@GeneratedValue(strategy = GenerationType.TABLE, generator = "DbType_Gen")
