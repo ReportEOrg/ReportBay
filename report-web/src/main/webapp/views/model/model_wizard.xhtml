@@ -5,7 +5,7 @@
 	xmlns:p="http://primefaces.org/ui"
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:cc="http://java.sun.com/jsf/composite/components"
-	xmlns:svvs="http://savvis.com/jsf/facelets">
+	xmlns:reporte="http://org.reporte/jsf/facelets">
 <h:head>
 	<title>#{param['title']}</title>
 	<h:outputStylesheet library="default" name="css/default.css" />
@@ -21,9 +21,9 @@
 				<p:panel header="Basic Info" style="height:385px">
 					<p:spacer width="100%" height="20px" />
 					<h:panelGrid columns="3" rowClasses="vertical-align-top">
-						<svvs:input type="text" label="Name" bean="#{modelWizard.model}"
+						<reporte:input type="text" label="Name" bean="#{modelWizard.model}"
 							property="name" required="true" />
-						<svvs:input type="textArea" label="Description"
+						<reporte:input type="textArea" label="Description"
 							bean="#{modelWizard.model}" property="description"
 							required="false" />
 					</h:panelGrid>
@@ -235,12 +235,12 @@
 										<h:outputText value="Model" style="font-weight:bold" />
 										<h:panelGroup />
 
-										<svvs:output label="Description" bean="#{modelWizard.model}"
+										<reporte:output label="Description" bean="#{modelWizard.model}"
 											property="description" />
-										<svvs:output label="Name" bean="#{modelWizard.model}"
+										<reporte:output label="Name" bean="#{modelWizard.model}"
 											property="name" />
 									</h:panelGrid>
-									<svvs:output label="Attributes"
+									<reporte:output label="Attributes"
 										list="#{modelWizard.model.attributeBindings}"
 										itemLabelProperty="alias" itemValueProperty="typeName"
 										labelStyle="font-size:small;font-weight:bold;" />
@@ -249,13 +249,13 @@
 									<h:outputText value="Datasource" style="font-weight:bold" />
 									<h:panelGroup />
 
-									<svvs:output label="Name"
+									<reporte:output label="Name"
 										bean="#{modelWizard.model.datasource}" property="name" />
-									<svvs:output label="Host Name"
+									<reporte:output label="Host Name"
 										bean="#{modelWizard.model.datasource}" property="hostname" />
-									<svvs:output label="Port"
+									<reporte:output label="Port"
 										bean="#{modelWizard.model.datasource}" property="port" />
-									<svvs:output label="Schema"
+									<reporte:output label="Schema"
 										bean="#{modelWizard.model.datasource}" property="schema" />
 								</h:panelGrid>
 							</h:panelGrid>

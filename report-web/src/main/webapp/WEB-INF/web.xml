@@ -28,7 +28,7 @@
 
 	<!-- Welcome page -->
 	<welcome-file-list>
-		<welcome-file>/views/home.xhtml</welcome-file>
+		<welcome-file>views/home.xhtml</welcome-file>
 	</welcome-file-list>
 
 	<!-- JSF mapping -->

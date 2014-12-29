@@ -6,14 +6,14 @@
 	version="2.0">
 
 	<persistence-unit name="reporte">
-		<class>com.savvis.spirits.report.model.domain.AttributeMapping</class>
-		<class>com.savvis.spirits.report.model.domain.ColumnMetadata</class>
-		<class>com.savvis.spirits.report.model.domain.ComplexModel</class>
-		<class>com.savvis.spirits.report.model.domain.DatabaseType</class>
-		<class>com.savvis.spirits.report.model.domain.Datasource</class>
-		<class>com.savvis.spirits.report.model.domain.Model</class>
-		<class>com.savvis.spirits.report.model.domain.ModelQuery</class>
-		<class>com.savvis.spirits.report.model.domain.SimpleModel</class>
+		<class>org.reporte.model.domain.AttributeMapping</class>
+		<class>org.reporte.model.domain.ColumnMetadata</class>
+		<class>org.reporte.model.domain.ComplexModel</class>
+		<class>org.reporte.model.domain.DatabaseType</class>
+		<class>org.reporte.model.domain.Datasource</class>
+		<class>org.reporte.model.domain.Model</class>
+		<class>org.reporte.model.domain.ModelQuery</class>
+		<class>org.reporte.model.domain.SimpleModel</class>
 		<properties>
 			<property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
 			<property name="hibernate.show_sql" value="true" />
