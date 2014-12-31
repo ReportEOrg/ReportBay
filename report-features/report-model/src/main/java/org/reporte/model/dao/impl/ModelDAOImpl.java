@@ -12,11 +12,17 @@ import javax.interceptor.Interceptors;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
 import org.reporte.common.interceptor.DAOLogger;
 import org.reporte.common.interceptor.LogInterceptable;
 import org.reporte.model.dao.ModelDAO;
 import org.reporte.model.dao.exception.ModelDAOException;
+import org.reporte.model.domain.Datasource;
 import org.reporte.model.domain.Model;
 import org.reporte.model.domain.ModelQuery;
 import org.slf4j.Logger;
@@ -103,6 +109,43 @@ public class ModelDAOImpl implements ModelDAO, LogInterceptable<Model> {
 			return em.createNamedQuery("Model.findAll", Model.class).getResultList();
 		} catch(PersistenceException e) {
 			throw new ModelDAOException("Failed to find all Models.", e);
+		}
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	public List<Model> findAllOrderByDatasourceName() throws ModelDAOException{
+		
+		try {
+			// Get the criteria builder instance from entity manager
+			final CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+			
+			// create query indicate return result type as Model class
+			CriteriaQuery<Model> criteriaQuery = criteriaBuilder.createQuery(Model.class);
+			
+			//query from Model table
+			Root<Model> modelTable = criteriaQuery.from(Model.class);
+			Root<Datasource> datasourceTable = criteriaQuery.from(Datasource.class);
+
+			//select 
+			criteriaQuery.select(modelTable);
+
+			//where condition
+			Predicate whereCond = criteriaBuilder.equal(modelTable.get("datasource").get("id"),
+														datasourceTable.get("id"));
+			criteriaQuery.where(whereCond);
+			
+			//order by datastore.name asc, model.name asc
+			criteriaQuery.orderBy(criteriaBuilder.asc(datasourceTable.get("name")),
+						  		  criteriaBuilder.asc(modelTable.get("name")));
+			
+			//converted to actual query
+			final TypedQuery<Model> query = em.createQuery(criteriaQuery);
+			
+			return query.getResultList();
+		} catch(PersistenceException e) {
+			throw new ModelDAOException("Failed to find all Models ordered by datasource name, model name.", e);
 		}
 	}
 

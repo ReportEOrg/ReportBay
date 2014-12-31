@@ -44,6 +44,13 @@ public interface ModelService {
 	 * @throws ModelServiceException
 	 */
 	List<Model> findAll() throws ModelServiceException;
+	
+	/**
+	 * 
+	 * @return
+	 * @throws ModelServiceException
+	 */
+	List<Model> findAllOrderByDatasourceName() throws ModelServiceException;
 	/**
 	 * 
 	 * @return

@@ -38,4 +38,10 @@ public interface ModelDAO {
 	 * @throws ModelDAOException
 	 */
 	List<Model> findAll() throws ModelDAOException;
+	/**
+	 * 
+	 * @return
+	 * @throws ModelDAOException
+	 */
+	List<Model> findAllOrderByDatasourceName() throws ModelDAOException;
 }

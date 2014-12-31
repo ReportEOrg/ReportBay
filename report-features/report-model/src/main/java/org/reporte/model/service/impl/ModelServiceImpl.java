@@ -101,6 +101,17 @@ public class ModelServiceImpl implements ModelService {
 			throw new ModelServiceException("Failed to get all existing Models from persistence layer.", e);
 		}
 	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	public List<Model> findAllOrderByDatasourceName() throws ModelServiceException{
+		try {
+			return modelDAO.findAllOrderByDatasourceName();
+		} catch (ModelDAOException e) {
+			throw new ModelServiceException("Failed to get all existing Models order by datasource name, model name from persistence layer.", e);
+		}
+	}
 
 	/**
 	 * {@inheritDoc}
