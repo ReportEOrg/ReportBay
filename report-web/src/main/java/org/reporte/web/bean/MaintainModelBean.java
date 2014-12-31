@@ -2,11 +2,9 @@ package org.reporte.web.bean;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import javax.annotation.PostConstruct;
 import javax.faces.view.ViewScoped;
@@ -15,13 +13,14 @@ import javax.inject.Named;
 
 import org.apache.log4j.Logger;
 import org.primefaces.context.RequestContext;
+import org.primefaces.event.NodeSelectEvent;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 import org.reporte.model.domain.Model;
+import org.reporte.model.domain.SimpleModel;
 import org.reporte.model.service.ModelService;
 import org.reporte.model.service.exception.ModelServiceException;
-import org.reporte.web.component.ModelNode;
 import org.reporte.web.util.WebUtils;
 
 /**
@@ -35,20 +34,28 @@ public class MaintainModelBean implements Serializable {
 	private static final Logger LOG = Logger.getLogger(MaintainModelBean.class);
 
 	private TreeNode modelTreeRoot;
+	private TreeNode selectedNode;
 
 	private Model model;
 	private String query;
 	private boolean renderedName;
 	private int modelId;
+	//for simple model UI table name
+	private String modelTableName;
 
 	@Inject
 	private ModelService modelService;
 
 	@PostConstruct
 	public void init() {
-		initTreeNode();
+		initTreeNode(null,null);
 		try {
 			model = modelService.find(modelId);
+			
+			if(model instanceof SimpleModel){
+				modelTableName = ((SimpleModel)model).getTable();
+			}
+			
 		} catch (ModelServiceException e) {
 			LOG.error("Failed to load Model with given Id [" + modelId + "].", e);
 		}
@@ -74,67 +81,59 @@ public class MaintainModelBean implements Serializable {
 		this.renderedName = renderedName;
 	}
 
-	private Map<String, List<String>> prepareModelsPerDatasource(List<Model> models) {
-		// Used TreeMap to have keys in sorted order by their natural order.
-		Map<String, List<String>> map = new TreeMap<String, List<String>>();
-		for (Model model : models) {
-			String datasourceName = model.getDatasource().getName();
-			if (map.containsKey(datasourceName)) {
-				List<String> modelNames = map.get(datasourceName);
-				// add if not already included.
-				if (!modelNames.contains(model.getName())) {
-					modelNames.add(model.getName());
-				}
-			} else {
-				List<String> modelNames = new ArrayList<String>();
-				modelNames.add(model.getName());
-				map.put(datasourceName, modelNames);
-			}
-		}
-		return map;
-	}
-
 	/**
 	 * initialize the tree node(s) for Left hand side panel representing model(s) under respective datasource(s)
 	 */
-	private void initTreeNode(){
+	private Model initTreeNode(String refDatasourceName, String refModelName){
+		
+		Model refModel = null;
 		//1. create the root node
 		modelTreeRoot = new DefaultTreeNode("Root",null);
 		
 		try {
-			List<Model> allModels = modelService.findAll();
-			Map<String, List<String>> modelsPerDatasource = prepareModelsPerDatasource(allModels);
-			
+			Map<String, TreeNode> dataSourceNodeLookupMap = new HashMap<String, TreeNode>();
+			String datasourceName;
 			TreeNode datasourceNode;
 			TreeNode modelNode;
-			
-			//2. for each datasource
-			for (Map.Entry<String, List<String>> entry : modelsPerDatasource.entrySet()) {
-				
-				//2.a create and append datasource node under root node 
-				datasourceNode = new DefaultTreeNode(entry.getKey(),modelTreeRoot);
-				
-				//2.b obtain the child node list for appending child node
-				List<TreeNode> modelNodeList = datasourceNode.getChildren();
-				
-				List<String> modelNames = entry.getValue();
-				
-				//2.c Sort the list in natural order.
-				Collections.sort(modelNames);
 
-				//2.d for each model under datasource
-				for (String modelName : modelNames) {
+			//TODO: source datasource w/o model displayed too?
+			//1. obtain all model(s) order by datasource name, model name
+			List<Model> allModels = modelService.findAllOrderByDatasourceName();
+			
+			//2. for each model
+			for (Model model : allModels) {
+				
+				datasourceName = model.getDatasource().getName();
+
+				//2.a obtain datasource node based on datasource name
+				datasourceNode = dataSourceNodeLookupMap.get(datasourceName);
+				
+				//2.b not yet exist create one
+				if(datasourceNode==null){
+					datasourceNode = new DefaultTreeNode(datasourceName,modelTreeRoot);
+					dataSourceNodeLookupMap.put(datasourceName,datasourceNode);
+				}
+				
+				//2.c create and append model node under datasource node
+				modelNode = new DefaultTreeNode("modelNode", model, datasourceNode);
+				datasourceNode.getChildren().add(modelNode);
+				
+				if(refModel == null && 
+				   refDatasourceName!=null && refDatasourceName.equals(datasourceName) &&
+				   refModelName!=null && refModelName.equals(model.getName())){
+					refModel = model;
 					
-					//create and append model node under datasource node
-					modelNode = new DefaultTreeNode("modelNode", new ModelNode(modelName), datasourceNode);
-					modelNodeList.add(modelNode);
+					datasourceNode.setExpanded(true);
+					modelNode.setSelected(true);
 				}
 			}
 		} catch (ModelServiceException e) {
 			LOG.error("Failed to load all existing Models.", e);
 		}
+		
+		return refModel;
 	}
-
+	
 	private void openModelWizardDialog(Map<String, String> params) {
 		Map<String, Object> options = new HashMap<String, Object>();
 		options.put("modal", true);
@@ -188,16 +187,80 @@ public class MaintainModelBean implements Serializable {
 			String completingAction = action.equals("create") ? "creating" : "updating";
 
 			if (status.equals("success")) {
-				String modelName = (String) data.get("payload");
+				//obtain the datasource name and model name from dialog
+				String modelName = (String) data.get("modelName");
+				String datasourceName = (String)data.get("datasourceName");
 				WebUtils.addInfoMessage("Model '%s' has been successfully %s.", modelName, completedAction);
+				
+				//rebuild the tree and try to obtain the model reference of the model worked in dialog 
+				Model refModel = initTreeNode(datasourceName, modelName);
+				
+				//if present, make it as active model in view
+				if(refModel!=null){
+					model = refModel;
+					refreshViewModelTableName();
+				}
 			} else {
 				WebUtils.addErrorMessage("An error was encountered while %s Model.", completingAction);
 			}
 		}
 	}
 	
+	/**
+	 * handle select node event on tree's node
+	 * @param event
+	 */
+	public void onNodeSelect(NodeSelectEvent event){
+		String nodeType = event.getTreeNode().getType();
+		
+		//handle only if selected is model node
+		if("modelNode".equals(nodeType)){
+			model = (Model)event.getTreeNode().getData();
+			
+			refreshViewModelTableName();
+		}
+	}
+	
+	private void refreshViewModelTableName(){
+		if(model instanceof SimpleModel){
+			modelTableName = ((SimpleModel)model).getTable();
+		}
+		//otherwise clear value, for join query (complexModel )
+		else{
+			modelTableName = "";
+		}
+	}
+	
 	public TreeNode getModelTreeRoot() {
 		return modelTreeRoot;
+	}
+
+	/**
+	 * @return the selectedNode
+	 */
+	public TreeNode getSelectedNode() {
+		return selectedNode;
+	}
+
+	/**
+	 * @param selectedNode the selectedNode to set
+	 */
+	public void setSelectedNode(TreeNode selectedNode) {
+		this.selectedNode = selectedNode;
+	}
+
+	/**
+	 * @return the modelTableName
+	 */
+	public String getModelTableName() {
+		return modelTableName;
+	}
+
+	/**
+	 * @param modelTableName the modelTableName to set
+	 */
+	public void setModelTableName(String modelTableName) {
+		this.modelTableName = modelTableName;
 	}
 
 }

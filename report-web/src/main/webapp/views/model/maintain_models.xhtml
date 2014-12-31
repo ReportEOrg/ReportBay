@@ -22,19 +22,20 @@
 						<h:panelGrid style="text-align:center;" columns="2">
 							<p:autoComplete placeholder="Filter.." size="26" />
 							<p:commandLink title="Add New Model" action="#{maintainModel.addModel}" >
-								<p:ajax event="dialogReturn" listener="#{maintainModel.onDialogReturn}" />
-								<h:graphicImage library="default" name="images/addnew-icon.png"
-									height="25" />
+								<p:ajax event="dialogReturn" listener="#{maintainModel.onDialogReturn}" update=":mainForm:tree,:mainForm:viewModelDetailPanel"/>
+								<h:graphicImage library="default" name="images/addnew-icon.png" height="25" />
 							</p:commandLink>
 						</h:panelGrid>
 
-						<p:tree id="tree" value="#{maintainModel.modelTreeRoot}" var="node" selectionMode="single">
-							<p:treeNode>
+						<p:tree id="tree" value="#{maintainModel.modelTreeRoot}" var="node" selectionMode="single" 
+								selection="#{maintainModel.selectedNode}">
+							<p:ajax event="select" process="@form" update=":mainForm:viewModelDetailPanel" listener="#{maintainModel.onNodeSelect}"/>
+							<p:treeNode icon="ui-icon-disk">
 								<h:outputText value="#{node}"/>
 							</p:treeNode>
 						
-							<p:treeNode type="modelNode" icon="ui-icon-disk">
-								<h:outputText value="#{node.modelName}"/>
+							<p:treeNode type="modelNode">
+								<h:outputText value="#{node.name}"/>
 							</p:treeNode>
 							
 						</p:tree>
@@ -44,9 +45,9 @@
 						<p:breadCrumb style="width:99%;border:none;background:none;">
 							<p:menuitem value="Categories" url="/views/home.xhtml" />
 							<p:menuitem value="Maintain Models"
-								url="/views/model/maintain_model.xhtml" />
+								url="/views/model/maintain_models.xhtml" />
 						</p:breadCrumb>
-						<p:panel header="View Model Details" style="">
+						<p:panel header="View Model Details" style="" id="viewModelDetailPanel">
 							<f:facet name="footer">
 								<p:commandButton value="Edit" icon="ui-icon-wrench" action="#{maintainModel.updateModel('8')}">
 									<p:ajax event="dialogReturn" listener="#{maintainModel.onDialogReturn}" />
@@ -63,38 +64,52 @@
 										<p:outputLabel value="Name:" />
 										<h:outputText value="#{maintainModel.model.name}" />
 										<p:outputLabel value="Description:" />
-										<h:outputText value="Employee Table" />
+										<h:outputText value="#{maintainModel.model.description}" />
 									</h:panelGrid>
 								</p:tab>
 								<p:tab title="Datasource">
-
+									<p:fieldset legend="Datasource Details"
+												style="background-color:#E8E8E8" rendered="#{maintainModel.model.datasource != null}">
+										<h:panelGrid columns="2" columnClasses="label, value">
+											<h:outputLabel value="Name: " />
+											<h:outputText value="#{maintainModel.model.datasource.name}" />
+											<h:outputLabel value="Host Name: " />
+											<h:outputText value="#{maintainModel.model.datasource.hostname}" />
+											<h:outputLabel value="Port: " />
+											<h:outputText value="#{maintainModel.model.datasource.port}" />
+											<h:outputLabel value="Schema: " />
+											<h:outputText value="#{maintainModel.model.datasource.schema}" />
+										</h:panelGrid>
+									</p:fieldset>
 								</p:tab>
 								<p:tab title="Attribute Mappings">
 									<h:panelGrid columnClasses="gridClass">
 										<h:panelGrid columns="2" style="width:50%">
 											<h:panelGroup style="float:left">
 												<h:outputLabel value="Approach: " style="font-weight:bold"/>
-												<h:outputText value="Single Table" />
+												<h:outputText value="Single Table" rendered="#{maintainModel.model.approach == 'SINGLE_TABLE'}"/>
+												<h:outputText value="Join Query" rendered="#{maintainModel.model.approach == 'JOIN_QUERY'}"/>
 											</h:panelGroup>
-											<h:panelGroup style="float:right">
+											
+											<h:panelGroup style="float:right" rendered="#{maintainModel.model.approach == 'SINGLE_TABLE'}">
 												<h:outputLabel value="Table: " style="font-weight:bold"/>
-												<h:outputText value="Employee" />
+												<h:outputText value="#{maintainModel.modelTableName}" />
 											</h:panelGroup>
 										</h:panelGrid>
 
-										<p:dataTable value="#{maintainModel.model.bindings}" var="row"
+										<p:dataTable value="#{maintainModel.model.attributeBindings}" var="row"
 											border="1" style="width:50%">
 											<p:columnGroup type="header">
 												<p:row>
 													<p:column rowspan="2" headerText="Attribute Name" />
-													<p:column headerText="Column References" />
+													<p:column headerText="Column References" rendered="#{maintainModel.model.approach == 'SINGLE_TABLE'}" />
 												</p:row>
 											</p:columnGroup>
 											<p:column>
-												<h:outputText value="#{row.attributeName}" />
+												<h:outputText value="#{row.alias}" />
 											</p:column>
-											<p:column>
-												<h:outputText value="#{row.tableName}.#{row.columnName}" />
+											<p:column rendered="#{maintainModel.model.approach == 'SINGLE_TABLE'}">
+												<h:outputText value="#{maintainModel.modelTableName}.#{row.referencedColumn}" />
 											</p:column>
 										</p:dataTable>
 									</h:panelGrid>
