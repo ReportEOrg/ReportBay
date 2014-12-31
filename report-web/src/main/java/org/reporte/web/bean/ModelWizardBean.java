@@ -23,6 +23,7 @@ import org.primefaces.event.FlowEvent;
 import org.primefaces.event.ReorderEvent;
 import org.reporte.model.domain.AttributeMapping;
 import org.reporte.model.domain.ColumnMetadata;
+import org.reporte.model.domain.ComplexModel;
 import org.reporte.model.domain.Datasource;
 import org.reporte.model.domain.Model;
 import org.reporte.model.domain.ModelQuery;
@@ -502,6 +503,10 @@ public class ModelWizardBean implements Serializable {
 
 			if (modelId == 0) {
 				action = "create";
+				
+				if(JOIN_QUERY.equals(approach) && model instanceof SimpleModel){
+					model = convertToComplexModel(model);
+				}
 				modelService.save(model);
 			} else {
 				action = "update";
@@ -515,7 +520,8 @@ public class ModelWizardBean implements Serializable {
 		// Prepare data to pass it back to whatever that opened this dialog.
 		Map<String, Object> data = new HashMap<String, Object>();
 		data.put("action", action);
-		data.put("payload", model.getName());
+		data.put("modelName", model.getName());
+		data.put("datasourceName", model.getDatasource().getName());
 		data.put("status", status);
 
 		RequestContext.getCurrentInstance().closeDialog(data);
@@ -523,5 +529,23 @@ public class ModelWizardBean implements Serializable {
 
 	public void cancel() {
 		RequestContext.getCurrentInstance().closeDialog(null);
+	}
+	
+	/**
+	 * converted to complext model for join query type before persist as entity
+	 * @param simpleModel
+	 * @return
+	 */
+	private Model convertToComplexModel(Model simpleModel){
+		Model complexModel = new ComplexModel();
+		
+		complexModel.setName(simpleModel.getName());
+		complexModel.setDescription(simpleModel.getDescription());
+		complexModel.setDatasource(simpleModel.getDatasource());
+		complexModel.setAttributeBindings(simpleModel.getAttributeBindings());
+		
+		complexModel.setQuery(simpleModel.getQuery());
+		
+		return complexModel;
 	}
 }
