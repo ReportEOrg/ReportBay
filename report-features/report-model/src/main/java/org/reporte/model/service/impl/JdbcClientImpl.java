@@ -41,6 +41,7 @@ public class JdbcClientImpl implements JdbcClient {
 		LOG.trace("Getting datasource for " + ds.getName() + "..");
 
 		BasicDataSource dbcpDs = new BasicDataSource();
+		
 		dbcpDs.setDriverClassName(ds.getType().getDriverName());
 		dbcpDs.setUrl(String.format(ds.getType().getUrlPattern(), ds.getHostname(), ds.getPort(), ds.getSchema()));
 		dbcpDs.setUsername(ds.getUsername());
@@ -58,26 +59,46 @@ public class JdbcClientImpl implements JdbcClient {
 	 * @param stmt
 	 * @param rs
 	 */
-	private void release(Connection conn, Statement stmt, ResultSet rs) {
-		try {
-			LOG.debug("Attempting to release resources after use..");
-			if (rs != null) {
-				LOG.trace("Closing Resultset..");
+	private void release(DataSource ds, Connection conn, Statement stmt, ResultSet rs) {
+		LOG.debug("Attempting to release resources after use..");
+		if (rs != null) {
+			LOG.trace("Closing Resultset..");
+			try{
 				rs.close();
 				LOG.trace("Resultset closed.");
 			}
-			if (stmt != null) {
-				LOG.trace("Closing Statement..");
+			catch(Exception e){
+				LOG.warn("Error releasing Resultset.", e);
+			}
+		}
+		if (stmt != null) {
+			LOG.trace("Closing Statement..");
+			try{
 				stmt.close();
 				LOG.trace("Statement closed.");
 			}
-			if (conn != null) {
-				LOG.trace("Closing connection..");
+			catch(Exception e){
+				LOG.warn("Error releasing Statement.", e);
+			}
+		}
+		if (conn != null) {
+			LOG.trace("Closing connection..");
+			try{
 				conn.close();
 				LOG.trace("Connection closed.");
 			}
-		} catch (SQLException e) {
-			LOG.warn("Error releasing resources.", e);
+			catch(Exception e){
+				LOG.warn("Error releasing Connection.", e);
+			}
+		}
+		
+		if(ds instanceof BasicDataSource){
+			try{
+				((BasicDataSource)ds).close();
+			}
+			catch(Exception e){
+				LOG.warn("Error closing Basic Data source.", e);
+			}
 		}
 	}
 	/**
@@ -89,9 +110,9 @@ public class JdbcClientImpl implements JdbcClient {
 		LOG.trace("Target Database Schema Details = {}", ds);
 		Connection conn = null;
 		ResultSet rs = null;
-
+		DataSource dbcpDs = null;
 		try {
-			DataSource dbcpDs = getDatasource(ds);
+			dbcpDs = getDatasource(ds);
 			LOG.trace("Getting connection from DataSource..");
 			conn = dbcpDs.getConnection();
 			LOG.trace("Getting metadata table names..");
@@ -107,7 +128,7 @@ public class JdbcClientImpl implements JdbcClient {
 		} catch (SQLException e) {
 			throw new JdbcClientException("Failed to get metadata table names for given schema.", e);
 		} finally {
-			release(conn, null, rs);
+			release(dbcpDs, conn, null, rs);
 		}
 	}
 
@@ -117,9 +138,10 @@ public class JdbcClientImpl implements JdbcClient {
 		Connection conn = null;
 		Statement stmt = null;
 		ResultSet rs = null;
+		DataSource dbcpDs = null;
 
 		try {
-			DataSource dbcpDs = getDatasource(ds);
+			dbcpDs = getDatasource(ds);
 			LOG.trace("Getting connection from DataSource..");
 			conn = dbcpDs.getConnection();
 			stmt = conn.createStatement();
@@ -141,7 +163,7 @@ public class JdbcClientImpl implements JdbcClient {
 		} catch (SQLException e) {
 			throw new JdbcClientException("Failed to get metadata table names for given schema.", e);
 		} finally {
-			release(conn, stmt, rs);
+			release(dbcpDs, conn, stmt, rs);
 		}
 	}
 
@@ -191,9 +213,10 @@ public class JdbcClientImpl implements JdbcClient {
 		Connection conn = null;
 		Statement stmt = null;
 		ResultSet rs = null;
+		DataSource dbcpDs = null;
 
 		try {
-			DataSource dbcpDs = getDatasource(ds);
+			dbcpDs = getDatasource(ds);
 			LOG.trace("Getting connection from DataSource..");
 			conn = dbcpDs.getConnection();
 			stmt = conn.createStatement();
@@ -208,7 +231,7 @@ public class JdbcClientImpl implements JdbcClient {
 		} catch (SQLException e) {
 			throw new JdbcClientException("Query execution failed.", e);
 		} finally {
-			release(conn, stmt, rs);
+			release(dbcpDs, conn, stmt, rs);
 		}
 	}
 	
@@ -228,8 +251,9 @@ public class JdbcClientImpl implements JdbcClient {
 				Connection conn = null;
 				Statement stmt = null;
 				ResultSet rs = null;
+				DataSource dbcpDs = null;
 				try {
-					DataSource dbcpDs = getDatasource(ds);
+					dbcpDs = getDatasource(ds);
 					LOG.trace("Getting connection from DataSource..");
 					conn = dbcpDs.getConnection();
 					stmt = conn.createStatement();
@@ -243,7 +267,7 @@ public class JdbcClientImpl implements JdbcClient {
 				} catch (SQLException e) {
 					throw new JdbcClientException("Query execution failed.", e);
 				} finally {
-					release(conn, stmt, rs);
+					release(dbcpDs, conn, stmt, rs);
 				}
 			}
 		}
@@ -259,15 +283,16 @@ public class JdbcClientImpl implements JdbcClient {
 		LOG.debug("Trying to connect to database - {}@{}:{}..", ds.getSchema(), ds.getHostname(), ds.getPort());
 		boolean result = false;
 		Connection conn = null;
-
+		DataSource dataSource = null;
 		try {
-			conn = getDatasource(ds).getConnection();
+			dataSource = getDatasource(ds);
+			conn = dataSource.getConnection();
 			LOG.debug("Successfully established the connection.");
 			result = true;
 		} catch (SQLException e) {
 			LOG.debug("Failed to establish the connection.", e);
 		} finally {
-			release(conn, null, null);
+			release(dataSource, conn, null, null);
 		}
 		return result;
 	}

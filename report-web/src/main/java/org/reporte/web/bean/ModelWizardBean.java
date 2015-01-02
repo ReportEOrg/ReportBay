@@ -26,9 +26,9 @@ import org.reporte.model.domain.ColumnMetadata;
 import org.reporte.model.domain.ComplexModel;
 import org.reporte.model.domain.Datasource;
 import org.reporte.model.domain.Model;
+import org.reporte.model.domain.Model.Approach;
 import org.reporte.model.domain.ModelQuery;
 import org.reporte.model.domain.SimpleModel;
-import org.reporte.model.domain.Model.Approach;
 import org.reporte.model.service.ModelService;
 import org.reporte.model.service.exception.DatasourceHandlerException;
 import org.reporte.model.service.exception.JdbcClientException;
@@ -66,7 +66,7 @@ public class ModelWizardBean implements Serializable {
 	private int activeIndex;
 	private int limit = DEFAULT_QUERY_ROW_LIMIT;
 	private int noOfRecordMatched;
-	private String approach = "Single Table";
+	private String approach;
 	private boolean requiredDatasource = true;
 	private boolean requiredTargetTbl = true;
 	private boolean disabledNextNav = false;
@@ -120,9 +120,7 @@ public class ModelWizardBean implements Serializable {
 				LOG.error("Error resolving columns for selected Model["+ model.getName() + "].", e);
 			}
 		} else {
-			model = new SimpleModel();
-			model.setQuery(new ModelQuery());
-			model.setAttributeBindings(new ArrayList<AttributeMapping>());
+			initNewModel();
 		}
 
 		try {
@@ -495,12 +493,17 @@ public class ModelWizardBean implements Serializable {
 		disabledNextNav = false;
 	}
 
+	/**
+	 * 
+	 */
 	public void finish() {
 		String action = null;
 		String status = null;
-
+		String datasourceName = null;
+		String modelName = null;
 		try {
-
+			datasourceName = model.getDatasource().getName();
+			modelName = model.getName();
 			if (modelId == 0) {
 				action = "create";
 				
@@ -513,18 +516,23 @@ public class ModelWizardBean implements Serializable {
 				modelService.update(model);
 			}
 			status = "success";
+			//successfully save, clear the backing bean's model info for next entry
+			initNewModel();
 		} catch (ModelServiceException e) {
 			LOG.error("Failed to " + action + " Model.", e);
 			status = "failed";
 		}
-		// Prepare data to pass it back to whatever that opened this dialog.
-		Map<String, Object> data = new HashMap<String, Object>();
-		data.put("action", action);
-		data.put("modelName", model.getName());
-		data.put("datasourceName", model.getDatasource().getName());
-		data.put("status", status);
-
-		RequestContext.getCurrentInstance().closeDialog(data);
+		//in even of error must close the dialog too
+		finally{
+			// Prepare data to pass it back to whatever that opened this dialog.
+			Map<String, Object> data = new HashMap<String, Object>();
+			data.put("action", action);
+			data.put("modelName", modelName);
+			data.put("datasourceName", datasourceName);
+			data.put("status", status);
+			
+			RequestContext.getCurrentInstance().closeDialog(data);
+		}
 	}
 
 	public void cancel() {
@@ -548,4 +556,15 @@ public class ModelWizardBean implements Serializable {
 		
 		return complexModel;
 	}
+	
+	/**
+	 * 
+	 */
+	private void initNewModel(){
+		model = new SimpleModel();
+		model.setQuery(new ModelQuery());
+		model.setAttributeBindings(new ArrayList<AttributeMapping>());
+		approach = "Single Table";
+		onApproachChange();
+	}	
 }

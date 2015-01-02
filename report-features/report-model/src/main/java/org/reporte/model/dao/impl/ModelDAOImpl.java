@@ -22,6 +22,7 @@ import org.reporte.common.interceptor.DAOLogger;
 import org.reporte.common.interceptor.LogInterceptable;
 import org.reporte.model.dao.ModelDAO;
 import org.reporte.model.dao.exception.ModelDAOException;
+import org.reporte.model.domain.AttributeMapping;
 import org.reporte.model.domain.Datasource;
 import org.reporte.model.domain.Model;
 import org.reporte.model.domain.ModelQuery;
@@ -44,21 +45,43 @@ public class ModelDAOImpl implements ModelDAO, LogInterceptable<Model> {
 	@TransactionAttribute(TransactionAttributeType.REQUIRED)
 	@Override
 	public Model insert(Model model) throws ModelDAOException {
+		ModelQuery query = model.getQuery();
 		try {
 			// Below workaround is necessary as cascade operation doesn't work well with auto increment ID column.
 			// id get generated only when the changes are flushed to database. Otherwise, it will keep setting 
 			// 0 (zero) to FK id and thus causing it failed.
-			ModelQuery query = model.getQuery();
+			
 			model.setQuery(null);
 			em.persist(model);
 			em.flush();
 			query.setId(model.getId());
 			model.setQuery(query);
 			em.merge(model);
-		} catch(PersistenceException e) {
+		} 
+		catch(PersistenceException e) {
+			rollbackModelId(model);
+			model.setQuery(query);
 			throw new ModelDAOException("Failed to persist Model with given name[" + model.getName() + "].", e);
 		}
 		return model;
+	}
+	
+	/**
+	 * revert back id field of model and child records to 0 (uninitialized)
+	 * @param model
+	 */
+	private void rollbackModelId(Model model){
+		model.setId(0);
+		
+		List<AttributeMapping> attrList = model.getAttributeBindings();
+		
+		if(attrList!=null){
+			for (AttributeMapping attributeMapping : attrList) {
+				if(attributeMapping!=null){
+					attributeMapping.setId(0);
+				}
+			}
+		}
 	}
 
 	/**
