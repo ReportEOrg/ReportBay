@@ -48,16 +48,15 @@ public class MaintainModelBean implements Serializable {
 
 	@PostConstruct
 	public void init() {
-		initTreeNode(null,null);
-		try {
-			model = modelService.find(modelId);
+
+		Model refModel = initTreeNode(null,null);
+		
+		if(refModel !=null){
+			model = refModel;
 			
 			if(model instanceof SimpleModel){
 				modelTableName = ((SimpleModel)model).getTable();
 			}
-			
-		} catch (ModelServiceException e) {
-			LOG.error("Failed to load Model with given Id [" + modelId + "].", e);
 		}
 	}
 
@@ -118,9 +117,17 @@ public class MaintainModelBean implements Serializable {
 				modelNode = new DefaultTreeNode("modelNode", model, datasourceNode);
 				datasourceNode.getChildren().add(modelNode);
 				
-				if(refModel == null && 
-				   refDatasourceName!=null && refDatasourceName.equals(datasourceName) &&
-				   refModelName!=null && refModelName.equals(model.getName())){
+				//not yet identify reference
+				if(refModel == null
+				   &&
+				  //i. if not specified used first model found as reference
+				  ((refDatasourceName == null && refModelName ==null) 
+				   || 
+				   //ii. if specified and match, made model as reference
+				   (refDatasourceName!=null && refDatasourceName.equals(datasourceName) &&
+					refModelName!=null && refModelName.equals(model.getName())))
+				  )
+				{
 					refModel = model;
 					
 					datasourceNode.setExpanded(true);
@@ -166,14 +173,21 @@ public class MaintainModelBean implements Serializable {
 		openModelWizardDialog(params);
 	}
 
-	public void deleteModel(String id) {
+	public void deleteModel() {
+		String tableName= model.getName();
 		try {
 			modelService.delete(model);
-			WebUtils.addInfoMessage("Model '%s' has been successfully deleted.", model.getName());
+
+			//rebuild the tree and try to use 1st model as reference 
+			Model refModel = initTreeNode(null, null);
+			
+			refreshViewModelTableName(refModel);
+			
+			WebUtils.addInfoMessage("Model '%s' has been successfully deleted.", tableName);
 		} catch (ModelServiceException e) {
-			LOG.error("Failed to delete Model with given name '" + model.getName() + "'.", e);
+			LOG.error("Failed to delete Model with given name '" + tableName + "'.", e);
 			WebUtils.addErrorMessage("An error was encountered while deleting Model with given name '%s'.",
-					model.getName());
+					tableName);
 		}
 	}
 
@@ -195,11 +209,7 @@ public class MaintainModelBean implements Serializable {
 				//rebuild the tree and try to obtain the model reference of the model worked in dialog 
 				Model refModel = initTreeNode(datasourceName, modelName);
 				
-				//if present, make it as active model in view
-				if(refModel!=null){
-					model = refModel;
-					refreshViewModelTableName();
-				}
+				refreshViewModelTableName(refModel);
 			} else {
 				WebUtils.addErrorMessage("An error was encountered while %s Model.", completingAction);
 			}
@@ -215,19 +225,27 @@ public class MaintainModelBean implements Serializable {
 		
 		//handle only if selected is model node
 		if("modelNode".equals(nodeType)){
-			model = (Model)event.getTreeNode().getData();
-			
-			refreshViewModelTableName();
+			refreshViewModelTableName((Model)event.getTreeNode().getData());
 		}
 	}
 	
-	private void refreshViewModelTableName(){
-		if(model instanceof SimpleModel){
-			modelTableName = ((SimpleModel)model).getTable();
-		}
-		//otherwise clear value, for join query (complexModel )
-		else{
-			modelTableName = "";
+	/**
+	 * 
+	 * @param refModel
+	 */
+	private void refreshViewModelTableName(Model refModel){
+		
+		//if present, make it as active model in view
+		if(refModel!=null){
+			model = refModel;
+
+			if(model instanceof SimpleModel){
+				modelTableName = ((SimpleModel)model).getTable();
+			}
+			//otherwise clear value, for join query (complexModel )
+			else{
+				modelTableName = "";
+			}
 		}
 	}
 	
