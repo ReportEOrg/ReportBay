@@ -15,7 +15,7 @@
 <h:body>
 	<h:form id="form">
 		<h:messages />
-		<p:wizard id="wiz" widgetVar="myWizard"
+		<p:wizard id="wiz" widgetVar="myWizard" 
 			flowListener="#{modelWizard.onFlowProcess}" showNavBar="false">
 			<p:tab id="details" title="Details">
 				<p:panel header="Basic Info" style="height:385px">
@@ -262,8 +262,7 @@
 						</p:fieldset>
 						
 						<h:panelGroup style="float:right">
-							<p:commandButton value="Cancel" immediate="true"
-								action="#{modelWizard.cancel}" />
+							<p:commandButton value="Cancel" immediate="true" action="#{modelWizard.cancel}" />
 							<p:spacer width="5px" />
 							<p:commandButton value="Finish" action="#{modelWizard.finish}"/>
 						</h:panelGroup>

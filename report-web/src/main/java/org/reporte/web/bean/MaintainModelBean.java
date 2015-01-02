@@ -39,7 +39,6 @@ public class MaintainModelBean implements Serializable {
 	private Model model;
 	private String query;
 	private boolean renderedName;
-	private int modelId;
 	//for simple model UI table name
 	private String modelTableName;
 
