@@ -35,18 +35,30 @@ public class SimpleModel extends Model {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj){
 			return true;
-		if (!super.equals(obj))
+		}
+		if (!super.equals(obj)){
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()){
 			return false;
+		}
 		SimpleModel other = (SimpleModel) obj;
-		if (table == null) {
-			if (other.table != null)
-				return false;
-		} else if (!table.equals(other.table))
+		
+		/**
+		 * return false (not equals)
+		 * if 
+		 *    this == null && reference ! =null
+		 *    or
+		 *    this is not null (safe to access attribute's equal method) && this and reference not equal
+		 *    
+		 * Note: this == null and reference == null is captured at first test (this == obj)
+		 */
+		if (table == null ? other.table != null : !table.equals(other.table)){
 			return false;
+		}
+		
 		return true;
 	}
 

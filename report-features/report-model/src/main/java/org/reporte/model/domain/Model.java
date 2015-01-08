@@ -135,7 +135,6 @@ public abstract class Model extends JPAEntity implements Serializable {
 		return result;
 	}
 
-	//TODO: find a better way to implement this
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj){
@@ -145,18 +144,25 @@ public abstract class Model extends JPAEntity implements Serializable {
 		}
 
 		Model other = (Model) obj;
-		if ((attributeBindings == null && other.attributeBindings != null) ||
-			(!attributeBindings.equals(other.attributeBindings))){
+		
+		/**
+		 * return false (not equals)
+		 * if 
+		 *    this == null && reference ! =null
+		 *    or
+		 *    this is not null (safe to access attribute's equal method) && this and reference not equal
+		 *    
+		 * Note: this == null and reference == null is captured at first test (this == obj)
+		 */
+		if(attributeBindings==null ? other.attributeBindings != null : !attributeBindings.equals(other.attributeBindings)){
+			return false;
+		}
+				
+		if(datasource == null ? other.datasource != null : !datasource.equals(other.datasource)){
 				return false;
 		}
 		
-		if ((datasource == null && other.datasource != null) ||
-			(!datasource.equals(other.datasource))){
-				return false;
-		}
-		
-		if ((description == null && other.description != null) ||
-			(!description.equals(other.description))){
+		if(description == null ? other.description != null : !description.equals(other.description)){
 			return false;
 		}
 
@@ -164,13 +170,11 @@ public abstract class Model extends JPAEntity implements Serializable {
 			return false;
 		}
 		
-		if ((name == null && other.name != null) ||
-			(!name.equals(other.name))){
+		if(name == null ? other.name != null : !name.equals(other.name)){
 			return false;
 		}
 
-		if ((query == null && other.query != null) ||
-			(!query.equals(other.query))){
+		if(query == null ? other.query != null : !query.equals(other.query)){
 			return false;
 		}
 
