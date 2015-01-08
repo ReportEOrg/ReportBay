@@ -152,7 +152,7 @@ public abstract class Model extends JPAEntity implements Serializable {
 		 *    or
 		 *    this is not null (safe to access attribute's equal method) && this and reference not equal
 		 *    
-		 * Note: this == null and reference == null is captured at first test (this == obj)
+		 * Note: reference == null is captured at first test (obj==null)
 		 */
 		if(attributeBindings==null ? other.attributeBindings != null : !attributeBindings.equals(other.attributeBindings)){
 			return false;
