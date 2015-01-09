@@ -16,13 +16,17 @@
     <!-- replacement of DAO as spring bean -->
     <bean id="modelDAO" class="org.reporte.model.dao.impl.ModelDAOImpl" />
     <bean id="datasourceDAO" class="org.reporte.model.dao.impl.DatasourceDAOImpl"/>
-    <bean id="databaseType]DAO" class="org.reporte.model.dao.impl.DatabaseTypeDAOImpl"/>
+    <bean id="databaseTypeDAO" class="org.reporte.model.dao.impl.DatabaseTypeDAOImpl"/>
+    
+    <bean id="reportTemplateDAO" class="org.reporte.reporttemplate.dao.impl.ReportTemplateDAOImpl"/>
     
     <!-- replacement of Session bean as spring bean -->
     <bean id="modelService" class="org.reporte.model.service.impl.ModelServiceImpl"/>
     <bean id="databaseTypeService" class="org.reporte.model.service.impl.DatabaseTypeHandlerImpl"/>
     <bean id="datasourceService" class="org.reporte.model.service.impl.DatasourceHandlerImpl"/>
     <bean id="jdbcClientService" class="org.reporte.model.service.impl.JdbcClientImpl"/>
+    
+    <bean id="reportTemplateService" class="org.reporte.reporttemplate.service.impl.ReportTemplateServiceImpl"/>
     
     <!-- local JPA entity facotry -->
     <bean id="entityManagerFactory"
