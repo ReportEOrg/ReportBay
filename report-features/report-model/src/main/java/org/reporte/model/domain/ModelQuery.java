@@ -5,9 +5,17 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.reporte.common.domain.BaseJPAEntity;
+
 @Entity
 @Table(name="model_query")
-public class ModelQuery {
+public class ModelQuery extends BaseJPAEntity{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	@Id
 	@Column(name="model_id")
 	private int id;
@@ -28,32 +36,36 @@ public class ModelQuery {
 	public void setValue(String value) {
 		this.value = value;
 	}
-
+	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + id;
-		result = prime * result + ((value == null) ? 0 : value.hashCode());
-		return result;
+		
+		HashCodeBuilder hcb = new HashCodeBuilder(INITIAL_HASH, PRIME_HASH_MULTIPLIER);
+		
+		hcb.append(id)
+		   .append(value);
+		
+		return hcb.toHashCode();
 	}
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
+	public boolean equals(Object ref) {
+		
+		if(!super.equals(ref)){
 			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		ModelQuery other = (ModelQuery) obj;
-		if (id != other.id)
-			return false;
-		if (value == null) {
-			if (other.value != null)
-				return false;
-		} else if (!value.equals(other.value))
-			return false;
-		return true;
+		}
+		ModelQuery testRef = (ModelQuery) ref;
+		
+		EqualsBuilder eb = new EqualsBuilder();
+		
+		eb.append(id, testRef.id)
+		  .append(value, testRef.value);
+		
+		return eb.isEquals();
 	}
 }

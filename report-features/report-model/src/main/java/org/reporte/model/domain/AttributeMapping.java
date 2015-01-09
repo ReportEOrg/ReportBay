@@ -8,9 +8,18 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.reporte.common.domain.BaseJPAEntity;
+
 @Entity
 @Table(name = "attribute_mapping")
-public class AttributeMapping {
+public class AttributeMapping extends BaseJPAEntity{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	@TableGenerator(name = "AttrMapping_Gen", table = "id_gen", pkColumnName = "gen_name", 
 					valueColumnName = "gen_val", pkColumnValue = "AttrMapping_Gen", 
 					allocationSize = 1)
@@ -67,44 +76,37 @@ public class AttributeMapping {
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((alias == null) ? 0 : alias.hashCode());
-		result = prime * result + id;
-		result = prime * result + order;
-		result = prime * result + ((referencedColumn == null) ? 0 : referencedColumn.hashCode());
-		result = prime * result + ((typeName == null) ? 0 : typeName.hashCode());
-		return result;
+		
+		HashCodeBuilder hcb = new HashCodeBuilder(INITIAL_HASH, PRIME_HASH_MULTIPLIER);
+		
+		hcb.append(alias)
+		   .append(id)
+		   .append(order)
+		   .append(referencedColumn)
+		   .append(typeName);
+		
+		return hcb.toHashCode();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
+	public boolean equals(Object ref) {
+		if(!super.equals(ref)){
 			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		AttributeMapping other = (AttributeMapping) obj;
-		if (alias == null) {
-			if (other.alias != null)
-				return false;
-		} else if (!alias.equals(other.alias))
-			return false;
-		if (id != other.id)
-			return false;
-		if (order != other.order)
-			return false;
-		if (referencedColumn == null) {
-			if (other.referencedColumn != null)
-				return false;
-		} else if (!referencedColumn.equals(other.referencedColumn))
-			return false;
-		if (typeName == null) {
-			if (other.typeName != null)
-				return false;
-		} else if (!typeName.equals(other.typeName))
-			return false;
-		return true;
+		}
+		
+		AttributeMapping testRef = (AttributeMapping) ref;
+		
+		EqualsBuilder eb = new EqualsBuilder();
+		
+		eb.append(alias, testRef.alias)
+		  .append(id, testRef.id)
+		  .append(order, testRef.order)
+		  .append(referencedColumn, testRef.referencedColumn)
+		  .append(typeName, testRef.typeName);
+		
+		return eb.isEquals();
 	}
 }

@@ -4,6 +4,9 @@ import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 @Entity
 @DiscriminatorValue("S")
 public class SimpleModel extends Model {
@@ -25,41 +28,37 @@ public class SimpleModel extends Model {
 		return Approach.SINGLE_TABLE;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result + ((table == null) ? 0 : table.hashCode());
-		return result;
+		
+		HashCodeBuilder hcb = new HashCodeBuilder(INITIAL_HASH, PRIME_HASH_MULTIPLIER);
+		
+		hcb.appendSuper(super.hashCode())
+		   .append(table);
+		
+		return hcb.toHashCode();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj){
-			return true;
-		}
-		if (!super.equals(obj)){
-			return false;
-		}
-		if (getClass() != obj.getClass()){
-			return false;
-		}
-		SimpleModel other = (SimpleModel) obj;
+	public boolean equals(Object ref) {
 		
-		/**
-		 * return false (not equals)
-		 * if 
-		 *    this == null && reference ! =null
-		 *    or
-		 *    this is not null (safe to access attribute's equal method) && this and reference not equal
-		 *    
-		 * Note: this == null and reference == null is captured at first test (this == obj)
-		 */
-		if (table == null ? other.table != null : !table.equals(other.table)){
+		if(!super.equals(ref)){
 			return false;
 		}
 		
-		return true;
+		SimpleModel testRef = (SimpleModel) ref;
+		
+		EqualsBuilder eb = new EqualsBuilder();
+		
+		eb.append(table, testRef.table);
+		
+		return eb.isEquals();
 	}
 
 	@Override

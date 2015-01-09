@@ -12,12 +12,19 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 
-import org.reporte.common.interceptor.JPAEntity;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.reporte.common.domain.BaseJPAEntity;
 
 @Entity
 @Table(name = "database_type")
 @NamedQueries({ @NamedQuery(name = "DatabaseType.findAll", query = "SELECT dt FROM DatabaseType dt") })
-public class DatabaseType extends JPAEntity {
+public class DatabaseType extends BaseJPAEntity {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public enum DatabaseFamily {
 		MsSQL, MySQL, Oracle
 	}
@@ -75,52 +82,43 @@ public class DatabaseType extends JPAEntity {
 	public void setDriverName(String driverName) {
 		this.driverName = driverName;
 	}
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result
-				+ ((driverName == null) ? 0 : driverName.hashCode());
-		result = prime * result + ((family == null) ? 0 : family.hashCode());
-		result = prime * result + id;
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result
-				+ ((urlPattern == null) ? 0 : urlPattern.hashCode());
-		return result;
+		
+		HashCodeBuilder hcb = new HashCodeBuilder(INITIAL_HASH, PRIME_HASH_MULTIPLIER);
+		
+		hcb.append(driverName)
+		   .append(family)
+		   .append(id)
+		   .append(name)
+		   .append(urlPattern);
+
+		return hcb.toHashCode();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
+	public boolean equals(Object ref) {
+		
+		if(!super.equals(ref)){
 			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		DatabaseType other = (DatabaseType) obj;
-		if (driverName == null) {
-			if (other.driverName != null)
-				return false;
-		} else if (!driverName.equals(other.driverName))
-			return false;
-		if (family == null) {
-			if (other.family != null)
-				return false;
-		} else if (!family.equals(other.family))
-			return false;
-		if (id != other.id)
-			return false;
-		if (name == null) {
-			if (other.name != null)
-				return false;
-		} else if (!name.equals(other.name))
-			return false;
-		if (urlPattern == null) {
-			if (other.urlPattern != null)
-				return false;
-		} else if (!urlPattern.equals(other.urlPattern))
-			return false;
-		return true;
+		}
+		
+		DatabaseType testRef = (DatabaseType) ref;
+		
+		EqualsBuilder eb = new EqualsBuilder();
+		
+		eb.append(driverName, testRef.driverName)
+		  .append(family, testRef.family)
+		  .append(id, testRef.id)
+		  .append(name, testRef.name)
+		  .append(urlPattern, testRef.urlPattern);
+		
+		return eb.isEquals();
 	}
 }

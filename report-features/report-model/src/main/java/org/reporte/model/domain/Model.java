@@ -1,6 +1,5 @@
 package org.reporte.model.domain;
 
-import java.io.Serializable;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -24,14 +23,16 @@ import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 
-import org.reporte.common.interceptor.JPAEntity;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.reporte.common.domain.BaseJPAEntity;
 
 @Entity
 @NamedQueries({ @NamedQuery(name = "Model.findAll", query = "SELECT m FROM Model m") })
 @Table(name = "model")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "type", discriminatorType = DiscriminatorType.STRING)
-public abstract class Model extends JPAEntity implements Serializable {
+public abstract class Model extends BaseJPAEntity{
 	private static final long serialVersionUID = -754304945284440308L;
 
 	public enum Approach {
@@ -117,67 +118,46 @@ public abstract class Model extends JPAEntity implements Serializable {
 		this.query = query;
 	}
 	
-	//TODO: find a better way to implement this
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result
-				+ ((attributeBindings == null) ? 0 : attributeBindings.hashCode());
-		result = prime * result
-				+ ((datasource == null) ? 0 : datasource.hashCode());
-		result = prime * result
-				+ ((description == null) ? 0 : description.hashCode());
-		result = prime * result + id;
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result + ((query == null) ? 0 : query.hashCode());
-
-		return result;
+		
+		HashCodeBuilder hcb = new HashCodeBuilder(INITIAL_HASH, PRIME_HASH_MULTIPLIER);
+		
+		//use method instead of attribute for those possible lazy load (e.g. joinColumn) 
+		hcb.append(getAttributeBindings())
+		   .append(getDatasource())
+		   .append(description)
+		   .append(id)
+		   .append(name)
+		   .append(getQuery());
+		
+		return hcb.toHashCode();
 	}
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj){
-			return true;
-		}else if (obj == null || getClass() != obj.getClass()){
-			return false;
-		}
-
-		Model other = (Model) obj;
+	public boolean equals(Object ref) {
 		
-		/**
-		 * return false (not equals)
-		 * if 
-		 *    this == null && reference ! =null
-		 *    or
-		 *    this is not null (safe to access attribute's equal method) && this and reference not equal
-		 *    
-		 * Note: reference == null is captured at first test (obj==null)
-		 */
-		if(attributeBindings==null ? other.attributeBindings != null : !attributeBindings.equals(other.attributeBindings)){
+		if(!super.equals(ref)){
 			return false;
 		}
-				
-		if(datasource == null ? other.datasource != null : !datasource.equals(other.datasource)){
-				return false;
-		}
+
+		Model testRef = (Model) ref;
 		
-		if(description == null ? other.description != null : !description.equals(other.description)){
-			return false;
-		}
-
-		if (id != other.id){
-			return false;
-		}
+		EqualsBuilder eb = new EqualsBuilder();
 		
-		if(name == null ? other.name != null : !name.equals(other.name)){
-			return false;
-		}
+		//use method instead of attribute for those possible lazy load (e.g. joinColumn) 
+		eb.append(getAttributeBindings(), testRef.getAttributeBindings())
+		  .append(getDatasource(), testRef.getDatasource())
+		  .append(description, testRef.description)
+		  .append(id, testRef.id)
+		  .append(name, testRef.name)
+		  .append(getQuery(), testRef.getQuery());
 
-		if(query == null ? other.query != null : !query.equals(other.query)){
-			return false;
-		}
-
-		return true;
+		return eb.isEquals();
 	}
 }
