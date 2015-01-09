@@ -239,7 +239,7 @@ body {
 
 .center-center-layout .center-tabview-details {
 	border: none!important;
-	height: 550px;
+	height: 570px;
 	border-width:0!important;
 /* 	border:1px solid white; */
 }
@@ -262,7 +262,7 @@ body {
 	width:100%;
 	font-size: 9pt;
 	height:100%;
-/* 	border: 1px solid #5F9EA0 !important; */
+	border: 1px solid #BED6F8 !important;
 	padding-bottom: 40px!important;
 }
 
@@ -345,6 +345,7 @@ body {
 
 .createmodel-value-text {
 	font-size:10pt!important;
+	margin-left:5px;
 }
 
 .createmodel-dstab-title {

@@ -6,81 +6,76 @@
 	xmlns:p="http://primefaces.org/ui"
 	xmlns:reporte="http://java.sun.com/jsf/composite/components">
 
+	<ui:param name="show_west" value="false" />
+	<ui:param name="show_east" value="false" />
+
+
 	<ui:define name="content">
 		
+		<p:layout styleClass="center-layout" widgetVar="layoutWdgtContent">
 		
-		
-		<h:form id="mainForm">
-		
-		
-		
-<!-- 			<p:panel header="Maintain Models"> -->
-			
-			
-				<p:layout widgetVar="layoutWdgtContent">
-				
-				
-<!-- 					<p:layoutUnit position="west" header="Models" collapsible="false" -->
-<!-- 						resizable="true" size="244" minSize="200" maxSize="300" -->
-<!-- 						style="height:50%;"> -->
-						
-					<p:layoutUnit id="centerWest" position="west" size="275" collapsible="true" effect="drop" styleClass="center-west-layout">
-						
-						<h:panelGrid style="text-align:center;" columns="2">
-							<p:autoComplete placeholder="Filter.." size="26" />
-							<p:commandLink title="Add New Model" action="#{maintainModel.addModel}" >
-<!-- 								<p:ajax event="dialogReturn" listener="#{maintainModel.onDialogReturn}" update=":mainForm:tree,:mainForm:viewModelDetailPanel"/> -->
-								<h:graphicImage library="default" name="images/addnew-icon.png" height="25" />
-							</p:commandLink>
-						</h:panelGrid>
+			<p:layoutUnit id="centerWest" position="west" size="275" collapsible="true" effect="drop" styleClass="center-west-layout">
+				<f:facet name="header">
+			    	<p:outputLabel value="&#160;"/>
+					<p:outputLabel styleClass="fa fa-database"/>
+					<p:outputLabel value="&#160;&#160;"/>
+	        		<p:outputLabel value="Models" style="font-size:9pt;"/>
+    				<p:commandButton title="Refresh List" icon="ui-icon ui-icon-refresh" style="float:right;width:18px;height:18px;margin-top:-2px;"/>
+			    </f:facet>
 
-						<p:tree id="tree" value="#{maintainModel.modelTreeRoot}" var="node" selectionMode="single" 
-								selection="#{maintainModel.selectedNode}">
-<!-- 							<p:ajax event="select" process="@form" update=":mainForm:viewModelDetailPanel" listener="#{maintainModel.onNodeSelect}"/> -->
-							<p:treeNode icon="ui-icon-disk">
-								<h:outputText value="#{node}"/>
-							</p:treeNode>
+				<h:form id="westForm">
+					<h:panelGrid style="text-align:center;" columns="2">
+						<p:autoComplete placeholder="Filter.." size="40" />
+						<p:commandLink title="Add New Model" action="#{maintainModel.addModel}" >
+							<p:ajax event="dialogReturn" listener="#{maintainModel.onDialogReturn}" update=":westForm:modelTree,:centerForm:viewModelDetailPanel"/>
+							<h:graphicImage library="default" name="images/addnew-icon.png" height="25" />
+						</p:commandLink>
+					</h:panelGrid>
+					<p:tree id="modelTree" value="#{maintainModel.modelTreeRoot}" var="node" 
+							selectionMode="single" selection="#{maintainModel.selectedNode}"
+							animate="true"
+							styleClass="model-tree">
+							<p:ajax event="select" process="@form" update=":centerForm:viewModelDetailPanel" listener="#{maintainModel.onNodeSelect}"/>
+						<p:treeNode icon="fa fa-database">
+							<h:outputText value="#{node}"/>
+						</p:treeNode>
+						<p:treeNode type="modelNode" icon="fa fa-table">
+							<h:outputText value="#{node.name}"/>
+						</p:treeNode>
+					</p:tree>
+				</h:form>
 						
-							<p:treeNode type="modelNode" icon="ui-icon-gear">
-								<h:outputText value="#{node.name}"/>
-							</p:treeNode>
-							
-						</p:tree>
-						
-					</p:layoutUnit>
-
-					<p:layoutUnit id="centerCenter" position="center" styleClass="center-center-layout">
-					
-						<p:breadCrumb style="width:99%;border:none;background:none;">
-							<p:menuitem value="Categories" url="/views/home.xhtml" />
-							<p:menuitem value="Maintain Models"
-								url="/views/model/maintain_models.xhtml" />
+			</p:layoutUnit>
+			
+			<p:layoutUnit id="centerCenter" position="center" styleClass="center-center-layout">
+			
+				<p:panelGrid columns="1" styleClass="container-grid">
+			
+					<h:form id="centerForm">
+				
+						<p:breadCrumb style="border:none;background:none;">
+							<p:menuitem value="Home" url="/views/home.xhtml" />
+							<p:menuitem value="Model"/>
+							<p:menuitem value="Maintain Models" url="/views/model/maintain_models.xhtml" />
 						</p:breadCrumb>
-						<p:panel header="View Model Details" style="" id="viewModelDetailPanel">
-							<f:facet name="footer">
-								<p:commandButton value="Edit" icon="ui-icon-wrench" action="#{maintainModel.updateModel('8')}">
-									<p:ajax event="dialogReturn" listener="#{maintainModel.onDialogReturn}" />
-								</p:commandButton>
-								<p:spacer width="5px" />
-								<p:commandButton value="Delete" icon="ui-icon-trash" action="#{maintainModel.deleteModel}" 
-												 update=":mainForm:tree,:mainForm:viewModelDetailPanel">
-									<p:confirm header="Confirmation" message="Are you sure you want to delete current model?" icon="ui-icon-alert"/>
-								</p:commandButton>
-							</f:facet>
-
-							<p:tabView>
-								<p:tab title="Basic Info">
-									<h:panelGrid columns="2">
-										<p:outputLabel value="Name:" />
-										<h:outputText value="#{maintainModel.model.name}" />
-										<p:outputLabel value="Description:" />
-										<h:outputText value="#{maintainModel.model.description}" />
+					
+						<p:panel id="viewModelDetailPanel" header="View Model Details" styleClass="view-container-grid">
+					
+							<p:tabView id="center-tabview-details" styleClass="center-tabview-details">
+							
+					    		<p:tab title="Basic Information">
+					    			<h:panelGrid columns="2" styleClass="view-model-grid" style="margin-left:10px;">
+										<p:outputLabel value="Name:" styleClass="createmodel-label-text"/>
+										<h:outputText value="#{maintainModel.model.name}" styleClass="createmodel-value-text"/>
+										<p:outputLabel value="Description:" styleClass="createmodel-label-text"/>
+										<h:outputText value="#{maintainModel.model.description}" styleClass="createmodel-value-text"/>
 									</h:panelGrid>
-								</p:tab>
-								<p:tab title="Datasource">
-									<p:fieldset legend="Datasource Details"
-												style="background-color:#E8E8E8" rendered="#{maintainModel.model.datasource != null}">
-										<h:panelGrid columns="2" columnClasses="label, value">
+					    		</p:tab>
+					    		
+					    		<p:tab title="Datasource">
+				    				<p:fieldset legend="Datasource Details" style="background-color:#E8E8E8;width:300px!important;margin:15px!important;" 
+				    							rendered="#{maintainModel.model.datasource != null}">
+										<h:panelGrid columns="2" columnClasses="createmodel-label-text, createmodel-value-text" cellspacing="10" cellpadding="10">
 											<h:outputLabel value="Name: " />
 											<h:outputText value="#{maintainModel.model.datasource.name}" />
 											<h:outputLabel value="Host Name: " />
@@ -91,73 +86,83 @@
 											<h:outputText value="#{maintainModel.model.datasource.schema}" />
 										</h:panelGrid>
 									</p:fieldset>
-								</p:tab>
-								<p:tab title="Attribute Mappings">
-									<h:panelGrid columnClasses="gridClass">
+					    		</p:tab>
+					    		
+					    		<p:tab title="Attribute Mappings">
+					    		
+					    			<h:panelGrid columnClasses="gridClass" style="margin:15px!important;font-size:10pt!important;">
 										<h:panelGrid columns="2" style="width:50%">
 											<h:panelGroup style="float:left">
 												<h:outputLabel value="Approach: " style="font-weight:bold"/>
 												<h:outputText value="Single Table" rendered="#{maintainModel.model.approach == 'SINGLE_TABLE'}"/>
 												<h:outputText value="Join Query" rendered="#{maintainModel.model.approach == 'JOIN_QUERY'}"/>
 											</h:panelGroup>
-											
 											<h:panelGroup style="float:right" rendered="#{maintainModel.model.approach == 'SINGLE_TABLE'}">
 												<h:outputLabel value="Table: " style="font-weight:bold"/>
 												<h:outputText value="#{maintainModel.modelTableName}" />
 											</h:panelGroup>
 										</h:panelGrid>
-
-										<p:dataTable value="#{maintainModel.model.attributeBindings}" var="row"
-											border="1" style="width:50%">
+										<p:dataTable value="#{maintainModel.model.attributeBindings}" var="row" border="1" style="width:80%">
 											<p:columnGroup type="header">
 												<p:row>
-													<p:column rowspan="2" headerText="Attribute Name" />
-													<p:column headerText="Column References" rendered="#{maintainModel.model.approach == 'SINGLE_TABLE'}" />
+													<p:column rowspan="2" headerText="Attribute Name" style="font-size:10pt!important;"/>
+													<p:column headerText="Column References" rendered="#{maintainModel.model.approach == 'SINGLE_TABLE'}" style="font-size:10pt!important;"/>
 												</p:row>
 											</p:columnGroup>
 											<p:column>
-												<h:outputText value="#{row.alias}" />
+												<h:outputText value="#{row.alias}" style="font-size:10pt!important;"/>
 											</p:column>
 											<p:column rendered="#{maintainModel.model.approach == 'SINGLE_TABLE'}">
-												<h:outputText value="#{maintainModel.modelTableName}.#{row.referencedColumn}" />
+												<h:outputText value="#{maintainModel.modelTableName}.#{row.referencedColumn}" style="font-size:10pt!important;"/>
 											</p:column>
 										</p:dataTable>
 									</h:panelGrid>
-
-								</p:tab>
-								<p:tab title="Join Query" rendered="#{false}">
-
-								</p:tab>
-							</p:tabView>
+					    		
+					    		</p:tab>
+					    		
+					    	</p:tabView>
+				    	
+							<h:panelGroup style="float:right;">
+			    				<p:commandButton value="Edit" icon="ui-icon-pencil" action="#{maintainModel.updateModel('8')}">
+			    					<p:ajax event="dialogReturn" listener="#{maintainModel.onDialogReturn}" />
+			    				</p:commandButton>
+				    			<p:commandButton value="Delete" icon="ui-icon-trash" style="margin:0px 11px;" 
+				    					onclick="PF('deleteModel').show();"/>
+					    			<p:dialog id="deleteModelDialog" header="Delete Model" widgetVar="deleteModel" modal="true" height="100" width="280" 
+					    						resizable="false" appendTo="@(body)">
+					    				<p:panelGrid columns="1" styleClass="deletemodel-panelgrid">
+					    					<h:panelGroup>
+					    						<h:outputText value="Are you sure you want to delete model?" style="font-size:9pt;"/>
+					    					</h:panelGroup>
+					    					<h:panelGroup style="float:right;margin-top:10px;">
+		   										<p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-check" style="margin-right:10px;"
+		   													update=":westForm:modelTree,:centerForm:viewModelDetailPanel"/>
+		   										<p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" onclick="PF('deleteModel').hide();"/>
+		   									</h:panelGroup>
+					    				</p:panelGrid>
+									</p:dialog>
+					    	</h:panelGroup>
+					
 						</p:panel>
 						
-						
-					</p:layoutUnit>
-					
-					
-				</p:layout>
+					</h:form>
 				
+				</p:panelGrid>
 				
-				
-<!-- 			</p:panel> -->
+			</p:layoutUnit>
 			
 			
+			<p:layoutUnit id="centerEast" position="east" size="250" closable="true" collapsible="true">
+    			<f:facet name="header">
+    				<p:outputLabel value="&#160;"/>
+					<p:outputLabel styleClass="fa fa-table"/>
+					<p:outputLabel value="&#160;&#160;"/>
+	        		<p:outputLabel value="Relationships" style="font-size:9pt;"/>
+			    </f:facet>
+			</p:layoutUnit>
 			
-			
-<p:confirmDialog global="true">
-				<p:commandButton value="Yes" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" type="button"/>  
-   				<p:commandButton value="No" styleClass="ui-confirmdialog-no" icon="ui-icon-close" type="button"/>
-			</p:confirmDialog>
-
-			
-			
-			
-			
-			
-		</h:form>
-		
-		
-		
+		</p:layout>
 		
 	</ui:define>
+	
 </ui:composition>
