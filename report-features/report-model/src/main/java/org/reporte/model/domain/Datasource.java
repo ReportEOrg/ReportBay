@@ -1,7 +1,5 @@
 package org.reporte.model.domain;
 
-import java.io.Serializable;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -14,12 +12,14 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 
-import org.reporte.common.interceptor.JPAEntity;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.reporte.common.domain.BaseJPAEntity;
 
 @Entity
 @Table(name = "datasource")
 @NamedQueries({ @NamedQuery(name = "Datasource.findAll", query = "SELECT ds FROM Datasource ds") })
-public class Datasource extends JPAEntity implements Serializable {
+public class Datasource extends BaseJPAEntity{
 	private static final long serialVersionUID = 604370700984201521L;
 
 	@TableGenerator(name = "Datasource_Gen", table = "id_gen", pkColumnName = "gen_name", 
@@ -112,78 +112,54 @@ public class Datasource extends JPAEntity implements Serializable {
 		this.schema = schema;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result
-				+ ((description == null) ? 0 : description.hashCode());
-		result = prime * result
-				+ ((hostname == null) ? 0 : hostname.hashCode());
-		result = prime * result + id;
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result
-				+ ((password == null) ? 0 : password.hashCode());
-		result = prime * result + ((port == null) ? 0 : port.hashCode());
-		result = prime * result + ((schema == null) ? 0 : schema.hashCode());
-		result = prime * result + ((type == null) ? 0 : type.hashCode());
-		result = prime * result
-				+ ((username == null) ? 0 : username.hashCode());
-		return result;
+		
+		HashCodeBuilder hcb = new HashCodeBuilder(INITIAL_HASH, PRIME_HASH_MULTIPLIER);
+		
+		//use method instead of attribute for those possible lazy load (e.g. joinColumn) 
+		hcb.append(description)
+		   .append(hostname)
+		   .append(id)
+		   .append(name)
+		   .append(password)
+		   .append(port)
+		   .append(schema)
+		   .append(getType())
+		   .append(username);
+		
+		return hcb.toHashCode();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
+	public boolean equals(Object ref) {
+		
+		if(!super.equals(ref)){
 			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Datasource other = (Datasource) obj;
-		if (description == null) {
-			if (other.description != null)
-				return false;
-		} else if (!description.equals(other.description))
-			return false;
-		if (hostname == null) {
-			if (other.hostname != null)
-				return false;
-		} else if (!hostname.equals(other.hostname))
-			return false;
-		if (id != other.id)
-			return false;
-		if (name == null) {
-			if (other.name != null)
-				return false;
-		} else if (!name.equals(other.name))
-			return false;
-		if (password == null) {
-			if (other.password != null)
-				return false;
-		} else if (!password.equals(other.password))
-			return false;
-		if (port == null) {
-			if (other.port != null)
-				return false;
-		} else if (!port.equals(other.port))
-			return false;
-		if (schema == null) {
-			if (other.schema != null)
-				return false;
-		} else if (!schema.equals(other.schema))
-			return false;
-		if (type == null) {
-			if (other.type != null)
-				return false;
-		} else if (!type.equals(other.type))
-			return false;
-		if (username == null) {
-			if (other.username != null)
-				return false;
-		} else if (!username.equals(other.username))
-			return false;
-		return true;
+		}
+
+		Datasource testRef = (Datasource) ref;
+		
+		EqualsBuilder eb = new EqualsBuilder();
+		
+		//use method instead of attribute for those possible lazy load (e.g. joinColumn) 
+		eb.append(description, testRef.description)
+		  .append(hostname, testRef.hostname)
+		  .append(id, testRef.id)
+		  .append(name, testRef.name)
+		  .append(password, testRef.password)
+		  .append(port, testRef.port)
+		  .append(schema, testRef.schema)
+		  .append(getType(), testRef.getType())
+		  .append(username, testRef.username);
+
+		return eb.isEquals();
 	}
 
 	@Override

@@ -1,6 +1,16 @@
 package org.reporte.model.domain;
 
-public class ColumnMetadata {
+import java.io.Serializable;
+
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
+public class ColumnMetadata implements Serializable{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	private String label;
 	private String typeName;
@@ -43,46 +53,44 @@ public class ColumnMetadata {
 		this.order = order;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result
-				+ ((className == null) ? 0 : className.hashCode());
-		result = prime * result + ((label == null) ? 0 : label.hashCode());
-		result = prime * result + order;
-		result = prime * result
-				+ ((typeName == null) ? 0 : typeName.hashCode());
-		return result;
+		
+		HashCodeBuilder hcb = new HashCodeBuilder(1,31);
+		
+		hcb.append(className)
+		   .append(label)
+		   .append(order)
+		   .append(typeName);
+		
+		return hcb.toHashCode(); 
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj){
 			return true;
-		if (obj == null)
+		}
+
+		if (obj == null || (getClass() != obj.getClass())){
 			return false;
-		if (getClass() != obj.getClass())
-			return false;
+		}
 		ColumnMetadata other = (ColumnMetadata) obj;
-		if (className == null) {
-			if (other.className != null)
-				return false;
-		} else if (!className.equals(other.className))
-			return false;
-		if (label == null) {
-			if (other.label != null)
-				return false;
-		} else if (!label.equals(other.label))
-			return false;
-		if (order != other.order)
-			return false;
-		if (typeName == null) {
-			if (other.typeName != null)
-				return false;
-		} else if (!typeName.equals(other.typeName))
-			return false;
-		return true;
+		
+		EqualsBuilder eb = new EqualsBuilder();
+		
+		eb.append(className, other.className)
+		  .append(label, other.label)
+		  .append(order, other.order)
+		  .append(typeName, other.typeName);
+		
+		return eb.isEquals();
 	}
 	
 	@Override
