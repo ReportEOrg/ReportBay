@@ -2,10 +2,13 @@ package org.reporte.model.service.exception;
 
 import javax.ejb.ApplicationException;
 
-@SuppressWarnings("serial")
 @ApplicationException(rollback=true)
 public class DatabaseTypeHandlerException extends Exception {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	/**
 	 * 
 	 * @param message
