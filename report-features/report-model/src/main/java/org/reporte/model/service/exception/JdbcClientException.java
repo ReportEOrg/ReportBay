@@ -1,7 +1,11 @@
 package org.reporte.model.service.exception;
 
-@SuppressWarnings("serial")
 public class JdbcClientException extends Exception {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * 

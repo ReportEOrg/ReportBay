@@ -2,10 +2,13 @@ package org.reporte.model.dao.exception;
 
 import javax.ejb.ApplicationException;
 
-@SuppressWarnings("serial")
 @ApplicationException(rollback=true)
 public class DatabaseTypeDAOException extends Exception {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	/**
 	 * 
 	 * @param message
