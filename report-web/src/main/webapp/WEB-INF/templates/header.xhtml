@@ -4,10 +4,37 @@
 	xmlns:h="http://java.sun.com/jsf/html"
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:p="http://primefaces.org/ui">
+	
+	<style>
+	.north-panel .ui-widget-header {
+		border-top: none !important;
+	}
+	</style>	
 
-	<div id="header">
-		<div id="menu">
+	<!--p:panel styleClass="north-panel">
+		<f:facet name="header">
+			<h:graphicImage library="default" name="images/report.ico"/>
+			<p:outputLabel value="&#160;&#160;"/>
+			<p:outputLabel value="ReportE" styleClass="main-title" />
+		</f:facet>
+		<f:facet name="actions">
+			<p:commandButton type="button" value="Logout" icon="ui-icon-power"
+				styleClass="logout-link" />
+			<p:link value="Administrator" styleClass="user-link" />
+		</f:facet>
+	</p:panel>
+	
+	<ui:include src="menu_bar.xhtml" /-->
+
+	<div id="bannerTop" />
+
+	<p:panel styleClass="north-panel">
+		<f:facet name="header">
+			<h:graphicImage library="default" name="images/reporte_logo.png"/>
+		</f:facet>
+		<f:facet name="actions">
 			<ui:include src="menu_bar.xhtml" />
-		</div>
-	</div>
+		</f:facet>
+	</p:panel>
+    
 </ui:composition>

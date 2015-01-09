@@ -5,37 +5,50 @@
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:p="http://primefaces.org/ui">
 
+	<!--p:tabMenu id="main-menu" styleClass="main-menu" activeIndex="#{param.page}">
+		<p:menuitem value="Home" outcome="/views/home" icon="fa fa-home">
+			<f:param name="page" value="0" />
+		</p:menuitem>
+		<p:menuitem value="Report" outcome="/views/home" icon="fa fa-clipboard">
+			<f:param name="page" value="1" />
+		</p:menuitem>
+		<p:menuitem value="Model" outcome="/views/model/maintain_models" icon="fa fa-database">
+			<f:param name="page" value="2" />
+		</p:menuitem>
+	</p:tabMenu-->
+
 	<h:form>
-		<p:growl id="messages" />
-		<p:menubar>
-			<p:menuitem value="Home" icon="ui-icon-home" url="/views/home.xhtml" />
-			<p:submenu label="Dashboard" icon="ui-icon-newwin">
-				<p:menuitem value="Browse Dashboards" />
+		<p:menubar id="main-menu" styleClass="main-menu" autoDisplay="true">
+			<p:menuitem value="Home" icon="fa fa-home" url="/views/home.xhtml" />
+			<p:submenu label="Dashboard" icon="fa fa-dashboard">
+				<p:menuitem value="Browse Dashboards" icon="fa fa-search"/>
 				<p:separator />
-				<p:menuitem value="Manage Dashboards" />
-				<p:menuitem value="New" />
+				<p:menuitem value="Manage Dashboards" icon="fa fa-wrench"/>
+				<p:menuitem value="New" icon="fa fa-plus"/>
 			</p:submenu>
-
-
-			<p:submenu label="Report" icon="ui-icon-contact">
-				<p:menuitem value="Browse Reports" />
+			<p:submenu label="Report" icon="fa fa-clipboard">
+				<p:menuitem value="Browse Reports" url="/views/report/browse_reports.xhtml" icon="fa fa-search"/>
 				<p:separator />
-				<p:menuitem value="Manage Reports" />
-				<p:submenu label="New">
-					<p:menuitem value="Chart Report" />
-					<p:menuitem value="CrossTab Report" />
-					<p:menuitem value="Report Document" />
+				<p:menuitem value="Manage Reports" icon="fa fa-wrench"/>
+				<p:submenu label="New" icon="fa fa-plus">
+					<p:menuitem value="Chart Report" icon="fa fa-bar-chart"/>
+					<p:menuitem value="CrossTab Report" icon="fa fa-list-alt"/>
+					<p:menuitem value="Report Document" icon="fa fa-clipboard"/>
 				</p:submenu>
 			</p:submenu>
-
-			<p:submenu label="Model" icon="ui-icon-document">
-				<p:menuitem value="Manage Models" url="/views/model/maintain_models.xhtml" />
-				<p:menuitem value="New Model" />
+			<p:submenu label="Model" icon="fa fa-table">
+				<p:menuitem value="Manage Models" url="/views/model/maintain_models.xhtml" icon="fa fa-wrench"/>
+				<p:menuitem value="New Model" icon="fa fa-plus" action="#{maintainModel.addModel}">
+				</p:menuitem>
 			</p:submenu>
-
+			<p:submenu label="Datasource" icon="fa fa-database">
+				<p:menuitem value="Manage Datasources" url="/views/model/maintain_models.xhtml" icon="fa fa-wrench"/>
+				<p:menuitem value="New Datasource" icon="fa fa-plus"/>
+			</p:submenu>
 			<f:facet name="options">
-				<p:commandButton type="button" value="Logout" icon="ui-icon-extlink" />
+				<p:commandButton type="button" value="Logout" icon="ui-icon-extlink" style="margin-left:20px;font-size: 9pt!important;"/>
 			</f:facet>
 		</p:menubar>
 	</h:form>
+
 </ui:composition>

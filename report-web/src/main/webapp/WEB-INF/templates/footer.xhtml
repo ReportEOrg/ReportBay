@@ -3,15 +3,32 @@
     xmlns="http://www.w3.org/1999/xhtml"
     xmlns:f="http://java.sun.com/jsf/core"
     xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:p="http://primefaces.org/ui"
     xmlns:ui="http://java.sun.com/jsf/facelets">
     
-    <style type="text/css">
-    	p#copy_right {
-    		text-align: center;
-    		font-size: 10pt;
-    		margin-top: 0px;
-    	}
-    </style>
-
-	<p id="copy_right">demo version and strictly for authors.</p>    
+	<div id="footerBanner"/>
+	<div id="footerDiv">
+		<h:graphicImage 
+			name="images/facebook.png"
+			library="default"
+			onclick="window.open('https://www.facebook.com/', '_blank');"
+			styleClass="extLinks" />
+		<h:graphicImage
+			name="images/twitter.png"
+			library="default"
+			onclick="window.open('https://twitter.com/', '_blank');"
+			styleClass="extLinks" /> 
+		<h:graphicImage
+			name="images/linkedin.png"
+			library="default"
+			onclick="window.open('https://www.linkedin.com/', '_blank');"
+			styleClass="extLinks" /> 
+		<h:graphicImage
+			name="images/googleplus.png"
+			library="default"
+			onclick="window.open('https://plus.google.com/', '_blank');"
+			styleClass="extLinks" />
+		<p:outputLabel value="ReportE. Demo version."/>
+	</div>
+	    
 </ui:composition>

@@ -25,6 +25,11 @@
 		<param-name>javax.faces.FACELETS_LIBRARIES</param-name>
 		<param-value>/WEB-INF/custom.taglib.xml</param-value>
 	</context-param>
+	
+	<context-param>
+		<param-name>javax.faces.FACELETS_SKIP_COMMENTS</param-name>
+		<param-value>true</param-value>
+	</context-param>
 
 	<!-- Welcome page -->
 	<welcome-file-list>
@@ -41,11 +46,12 @@
 	<!-- Map these files with JSF -->
 	<servlet-mapping>
 		<servlet-name>Faces Servlet</servlet-name>
+		<url-pattern>/javax.faces.resource/*</url-pattern> <!-- for Font Awesome -->
 		<url-pattern>*.xhtml</url-pattern>
 	</servlet-mapping>
-
+	
 	<!-- CDI Integration -->
-<!-- 	<listener>
+	<!-- <listener>
 		<listener-class>org.apache.webbeans.servlet.WebBeansConfigurationListener</listener-class>
 	</listener> -->
 	

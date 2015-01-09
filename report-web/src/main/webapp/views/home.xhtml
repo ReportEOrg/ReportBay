@@ -4,14 +4,96 @@
 	xmlns:h="http://java.sun.com/jsf/html"
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:p="http://primefaces.org/ui">
-
-	<ui:param name="show_west" value="false" />
-	<ui:param name="show_east" value="false" />
-
-	<ui:define name="title">Report - Home</ui:define>
-
+	
 	<ui:define name="content">
-		<h1>Home Page</h1>
-		<p:messages autoUpdate="true" closable="true"/>
+	
+	<script>
+		$(document).ready(function() {
+
+			$(function() {
+				$('#accordion > li').hover(function() {
+					var $this = $(this);
+					$this.stop().animate({
+						'width' : '480px'
+					}, 500);
+				}, function() {
+					var $this = $(this);
+					$this.stop().animate({
+						'width' : '78px'
+					}, 1000);
+				});
+			});
+
+		});
+	</script>
+	
+	<!-- Accordion Start -->
+	<div id="accContent">
+		<ul class="accordion" id="accordion">
+			<li class="bg3">
+				<div class="heading">Line Charts</div>
+				<div class="bgDescription"></div>
+				<div class="description">
+					<!-- <h2 class="downHeading">Line Charts</h2> -->
+					<p>A line chart or line graph is a type of chart which displays
+						information as a series of data points called 'markers' connected
+						by straight line segments. It is a basic type of chart common in
+						many fields. It is similar to a scatter plot except that the
+						measurement points are ordered (typically by their x-axis value)
+						and joined with straight line segments. Line Charts show how a
+						particular data changes at equal intervals of time (time series).</p>
+					<a href="#">more</a>
+				</div>
+			</li>
+			<li class="bg2">
+				<div class="heading">Excel Reports</div>
+				<div class="bgDescription"></div>
+				<div class="description">
+					<!-- <h2 class="downHeading">Excel Reports</h2> -->
+					<p>Excel is a spreadsheet application developed by Microsoft
+						for Microsoft Windows and Mac OS. It features calculation,
+						graphing tools, pivot tables, and a macro programming language
+						called Visual Basic for Applications. It has been a very widely
+						applied spreadsheet for these platforms, especially since version
+						5 in 1993, and it has replaced Lotus 1-2-3 as the industry
+						standard for spreadsheets.</p>
+					<a href="#">more</a>
+				</div>
+
+			</li>
+			<li class="bg4">
+				<div class="heading">Pie Charts</div>
+				<div class="bgDescription"></div>
+				<div class="description">
+					<!-- <h2 class="downHeading">Pie Charts</h2> -->
+					<p>A pie chart (or a circle chart) is a circular statistical
+						graphic, which is divided into sectors to illustrate numerical
+						proportion. In a pie chart, the arc length of each sector (and
+						consequently its central angle and area), is proportional to the
+						quantity it represents. Pie charts are very widely used in the
+						business world and the mass media.</p>
+					<a href="#">more</a>
+				</div>
+			</li>
+			<li class="bg1">
+				<div class="bgDescription"></div>
+				<div class="heading">Bar Charts</div>
+				<div class="description">
+					<!-- <h2 class="downHeading">Bar Charts</h2> -->
+					<p>A bar chart or bar graph is a chart with rectangular bars
+						with lengths proportional to the values that they represent. The
+						bars can be plotted vertically or horizontally. A vertical bar
+						chart is sometimes called a column bar chart. A bar graph is a
+						chart that uses either horizontal or vertical bars to show
+						comparisons among categories. One axis of the chart shows the
+						specific categories being compared, and the other axis represents
+						a discrete value.</p>
+					<a href="#">more</a>
+				</div>
+			</li>
+		</ul>
+	</div>
+	
 	</ui:define>
+
 </ui:composition>
