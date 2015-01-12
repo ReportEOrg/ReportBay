@@ -79,7 +79,7 @@
 		
 		<dependency>
 			<groupId>reporte</groupId>
-			<artifactId>report-reporttemplate</artifactId>
+			<artifactId>report-template</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		

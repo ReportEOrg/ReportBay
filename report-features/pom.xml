@@ -12,7 +12,8 @@
 	<name>Report Feature Modules</name>
 	<modules>
 		<module>report-model</module>
-		<module>report-reporttemplate</module>
+		<module>report-template</module>
+		<module>report-gen</module>
 	</modules>
 	<dependencies>
 		<dependency>

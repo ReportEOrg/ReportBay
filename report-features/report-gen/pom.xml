@@ -5,6 +5,6 @@
     <artifactId>report-features</artifactId>
     <version>0.0.1-SNAPSHOT</version>
   </parent>
-  <artifactId>report-reporttemplate</artifactId>
-  <name>Report Template Module</name>
+  <artifactId>report-gen</artifactId>
+  <name>Report Generation Module</name>
 </project>
