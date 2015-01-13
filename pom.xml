@@ -85,7 +85,7 @@
 				</repository>
 
 			</repositories>
-			
+
 			<!-- Centurylink internal repo for plugin -->
 			<pluginRepositories>
 				<pluginRepository>
@@ -103,13 +103,13 @@
 					</releases>
 				</pluginRepository>
 			</pluginRepositories>
-			
+
 			<properties>
 				<jdk.version>1.6</jdk.version>
 				<nexus.url>http://code.it.savvis.net/nexus/content</nexus.url>
 				<owb.version>1.2.6</owb.version>
 			</properties>
-			
+
 			<build>
 				<pluginManagement>
 					<plugins>
@@ -123,7 +123,7 @@
 				</pluginManagement>
 			</build>
 		</profile>
-	
+
 		<!-- openshift jenkins build profile -->
 		<profile>
 			<id>openshift</id>
@@ -136,10 +136,26 @@
 							Because web-app is module in subdirectory and I would expect <outputDirectory>../webapps</outputDirectory> 
 							value but interestingly it is not true and it must be <outputDirectory>webapps</outputDirectory> -->
 						<plugin>
-							<artifactId>maven-war-plugin</artifactId>
+							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-ear-plugin</artifactId>
+							<version>2.10</version>
+							<!-- configuring the ear plugin -->
 							<configuration>
+								<defaultLibBundleDir>APP-INF/lib</defaultLibBundleDir>
+								<skinnyWars>false</skinnyWars>
 								<outputDirectory>deployments</outputDirectory>
-								<warName>reporte</warName>
+								<modules>
+									<webModule>
+										<groupId>reporte</groupId>
+										<artifactId>report-web</artifactId>
+									</webModule>
+									<ejbModule>
+										<groupId>reporte</groupId>
+										<artifactId>report-model</artifactId>
+									</ejbModule>
+									<!-- extra libraries into lib directory <jarModule> <groupId>mysql</groupId> 
+										<artifactId>mysql-connector-java</artifactId> </jarModule> -->
+								</modules>
 							</configuration>
 						</plugin>
 						<plugin>
@@ -152,15 +168,15 @@
 					</plugins>
 				</pluginManagement>
 			</build>
-			
+
 			<properties>
 				<jdk.version>1.6</jdk.version>
 				<owb.version>1.2.6</owb.version>
 			</properties>
-			
+
 		</profile>
 	</profiles>
-	
+
 	<repositories>
 		<repository>
 			<id>prime-repo</id>
