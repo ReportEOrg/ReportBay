@@ -31,14 +31,15 @@
 
 	<build>
 		<plugins>
-			<plugin>
+			<!-- <plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-ear-plugin</artifactId>
 				<version>2.10</version>
-				<!-- configuring the ear plugin -->
+				configuring the ear plugin
 				<configuration>
 					<defaultLibBundleDir>APP-INF/lib</defaultLibBundleDir>
 					<skinnyWars>false</skinnyWars>
+					<outputDirectory></outputDirectory>
 					<modules>
 						<webModule>
 							<groupId>reporte</groupId>
@@ -48,11 +49,11 @@
 							<groupId>reporte</groupId>
 							<artifactId>report-model</artifactId>
 						</ejbModule>
-						<!-- extra libraries into lib directory <jarModule> <groupId>mysql</groupId> 
-							<artifactId>mysql-connector-java</artifactId> </jarModule> -->
+						extra libraries into lib directory <jarModule> <groupId>mysql</groupId> 
+							<artifactId>mysql-connector-java</artifactId> </jarModule>
 					</modules>
 				</configuration>
-			</plugin>
+			</plugin> -->
 		</plugins>
 	</build>
 </project>
