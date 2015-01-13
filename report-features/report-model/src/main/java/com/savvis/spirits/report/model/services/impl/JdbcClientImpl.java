@@ -24,6 +24,7 @@ import com.savvis.spirits.report.model.services.JdbcClientException;
 
 public class JdbcClientImpl implements JdbcClient {
 	private static final Logger LOG = LoggerFactory.getLogger(JdbcClientImpl.class);
+	private static final int MAX_ROW_COUNT = 20;
 	private static final int TABLE_NAME = 3;
 	private static final String SELECT_ALL = "SELECT * FROM %s";
 
@@ -187,7 +188,8 @@ public class JdbcClientImpl implements JdbcClient {
 			// Remove ';' in the end if any
 			query = StringUtils.removeEnd(query.trim(), ";");
 			LOG.debug("Query before being executed - [{}]", query);
-
+			
+			stmt.setMaxRows(MAX_ROW_COUNT);
 			rs = stmt.executeQuery(query);
 			LOG.debug("Query execution completed.");
 			return process(rs);

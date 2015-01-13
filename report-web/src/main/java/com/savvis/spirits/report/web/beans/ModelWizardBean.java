@@ -444,24 +444,11 @@ public class ModelWizardBean implements Serializable {
 	// 				ACTION METHODS 					 //
 	// ////////////////////////////////////////////////
 
-	private String applyDefaultLimit(String query) {
-		query = query.replace(";", "");
-		// TODO: Regex is currently not working. Need to find out why.
-		String regex = "/\\s+LIMIT\\s+\\d+$/i";
-		if (query.matches(regex)) {
-			query = StringUtils.replacePattern(query.trim(), regex, "");
-		}
-
-		return query.concat(" LIMIT 20");
-	}
-
 	private List<AttributeMapping> deriveColumnsFromQuery(String query)
 			throws JdbcClientException {
 		List<AttributeMapping> columnNames = new ArrayList<AttributeMapping>();
 
-		String queryWithLimit = applyDefaultLimit(query);
-		originalResultSet = modelService.getJdbcClient().execute(
-				model.getDatasource(), queryWithLimit);
+		originalResultSet = modelService.getJdbcClient().execute(model.getDatasource(), query);
 		//TODO: do we really need this?
 		// noOfRowsReturned = originalResultSet.size();
 		resultSet = applyLimit(originalResultSet, limit);

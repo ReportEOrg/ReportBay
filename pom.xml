@@ -11,6 +11,7 @@
 		<module>report-common</module>
 		<module>report-features</module>
 		<module>report-web</module>
+		<module>report-ear</module>
 	</modules>
 
 	<dependencies>
@@ -137,7 +138,7 @@
 						<plugin>
 							<artifactId>maven-war-plugin</artifactId>
 							<configuration>
-								<outputDirectory>webapps</outputDirectory>
+								<outputDirectory>deployments</outputDirectory>
 								<warName>reporte</warName>
 							</configuration>
 						</plugin>
