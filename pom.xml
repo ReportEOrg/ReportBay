@@ -141,6 +141,7 @@
 							<version>2.10</version>
 							<!-- configuring the ear plugin -->
 							<configuration>
+								<finalName>reporte</finalName>
 								<defaultLibBundleDir>APP-INF/lib</defaultLibBundleDir>
 								<skinnyWars>false</skinnyWars>
 								<outputDirectory>deployments</outputDirectory>
