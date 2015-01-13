@@ -141,9 +141,9 @@ public class ModelWizardBean implements Serializable {
 		}
 	}
 
-	// ////////////////////////////////////////////////
-	// GETTER & SETTER METHODS //
-	// ////////////////////////////////////////////////
+	//////////////////////////////////////////////////
+	// 			GETTER & SETTER METHODS             //
+	//////////////////////////////////////////////////
 
 	public Model getModel() {
 		return model;
@@ -297,9 +297,9 @@ public class ModelWizardBean implements Serializable {
 		this.title = title;
 	}
 
-	// ////////////////////////////////////////////////
-	// PRIVATE METHODS //
-	// ////////////////////////////////////////////////
+	//////////////////////////////////////////////////
+	// 				PRIVATE METHODS 				//
+	//////////////////////////////////////////////////
 
 	private List<AttributeMapping> convertIntoAttributeMappings(
 			List<ColumnMetadata> colList) {
@@ -331,9 +331,9 @@ public class ModelWizardBean implements Serializable {
 		return rs;
 	}
 
-	// ////////////////////////////////////////////////
-	// ACTION LISTENER METHODS //
-	// ////////////////////////////////////////////////
+	//////////////////////////////////////////////////
+	//            ACTION LISTENER METHODS 			//
+	//////////////////////////////////////////////////
 
 	public void onApproachChange() {
 		if (SINGLE_TABLE.equalsIgnoreCase(approach)) {
@@ -364,11 +364,9 @@ public class ModelWizardBean implements Serializable {
 		Datasource selectedDatasource = model.getDatasource();
 		if (selectedDatasource != null) {
 			try {
-				tableNames = modelService.getJdbcClient().getTableNames(
-						selectedDatasource);
+				tableNames = modelService.getJdbcClient().getTableNames(selectedDatasource);
 			} catch (JdbcClientException e) {
-				LOG.error(
-						"Failed to load available table names for selected Datasource with name["
+				LOG.error("Failed to load available table names for selected Datasource with name["
 								+ selectedDatasource.getName() + "].", e);
 				tableNames = new ArrayList<String>();
 			}
@@ -440,16 +438,16 @@ public class ModelWizardBean implements Serializable {
 		return event.getNewStep();
 	}
 
-	// ////////////////////////////////////////////////
-	// 				ACTION METHODS 					 //
-	// ////////////////////////////////////////////////
+	//////////////////////////////////////////////////
+	//				ACTION METHODS 					//
+	//////////////////////////////////////////////////
 
 	private List<AttributeMapping> deriveColumnsFromQuery(String query)
 			throws JdbcClientException {
 		List<AttributeMapping> columnNames = new ArrayList<AttributeMapping>();
 
 		originalResultSet = modelService.getJdbcClient().execute(model.getDatasource(), query);
-		//TODO: do we really need this?
+		// TODO: do we really need this? currently always display '0' (zero).
 		// noOfRowsReturned = originalResultSet.size();
 		resultSet = applyLimit(originalResultSet, limit);
 

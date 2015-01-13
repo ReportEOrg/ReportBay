@@ -36,7 +36,7 @@ public class MaintainModelBean implements Serializable {
 	private Model model;
 	private String query;
 	private boolean renderedName;
-	private int modelId;
+	private int modelId = 8; // use this variable to reset everytime user clicked on on a model in LHS menu.
 
 	@Inject
 	private ModelService modelService;
