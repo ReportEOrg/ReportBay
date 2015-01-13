@@ -142,7 +142,7 @@
 							<!-- configuring the ear plugin -->
 							<configuration>
 								<finalName>reporte</finalName>
-								<defaultLibBundleDir>APP-INF/lib</defaultLibBundleDir>
+								<defaultLibBundleDir>lib</defaultLibBundleDir>
 								<skinnyWars>false</skinnyWars>
 								<outputDirectory>deployments</outputDirectory>
 								<modules>
