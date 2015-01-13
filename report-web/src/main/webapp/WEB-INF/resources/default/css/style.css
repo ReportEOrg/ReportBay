@@ -233,7 +233,7 @@ body {
 }
 
 .center-center-layout {
-	border-width:0;
+	border-width:0!important;
 	border: none!important;
 }
 
@@ -241,7 +241,6 @@ body {
 	border: none!important;
 	height: 570px;
 	border-width:0!important;
-/* 	border:1px solid white; */
 }
 
 .center-center-layout .center-tabview-details .ui-widget-header {
@@ -252,10 +251,14 @@ body {
 	width:100%;
 }
 
+.center-center-layout .container-grid .model-attribute-table td {
+	border: 1px solid #BED6F8!important;
+}
+
 .center-center-layout .container-grid .ui-widget-content, 
 	.center-center-layout .container-grid .ui-panelgrid-cell {
 	border: none!important;
-	border-width:0;
+	border-width:0!important;
 }
 
 .center-center-layout .container-grid .view-container-grid {
