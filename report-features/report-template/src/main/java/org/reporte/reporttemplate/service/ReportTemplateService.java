@@ -8,6 +8,7 @@ import org.reporte.reporttemplate.domain.BaseReportTemplate;
 import org.reporte.reporttemplate.domain.ColumnChartTemplate;
 import org.reporte.reporttemplate.domain.LineChartTemplate;
 import org.reporte.reporttemplate.domain.PieChartTemplate;
+import org.reporte.reporttemplate.domain.ReportQuery;
 import org.reporte.reporttemplate.service.exception.ReportTemplateServiceException;
 
 public interface ReportTemplateService{
@@ -177,4 +178,43 @@ public interface ReportTemplateService{
 	 * @throws ReportTemplateServiceException
 	 */
 	List<BaseReportTemplate> findAllReportTemplate() throws ReportTemplateServiceException;
+	
+	/**
+	 * 
+	 * @param template
+	 * @return
+	 * @throws ReportTemplateServiceException
+	 */
+	ReportQuery constructReportQuery(AreaChartTemplate template) throws ReportTemplateServiceException;
+	
+	/**
+	 * 
+	 * @param template
+	 * @return
+	 * @throws ReportTemplateServiceException
+	 */
+	ReportQuery constructReportQuery(BarChartTemplate template) throws ReportTemplateServiceException;
+	
+	/**
+	 * 
+	 * @param template
+	 * @return
+	 * @throws ReportTemplateServiceException
+	 */
+	ReportQuery constructReportQuery(ColumnChartTemplate template) throws ReportTemplateServiceException;
+	/**
+	 * 
+	 * @param template
+	 * @return
+	 * @throws ReportTemplateServiceException
+	 */
+	ReportQuery constructReportQuery(LineChartTemplate template) throws ReportTemplateServiceException;
+	
+	/**
+	 * 
+	 * @param template
+	 * @return
+	 * @throws ReportTemplateServiceException
+	 */
+	ReportQuery constructReportQuery(PieChartTemplate template) throws ReportTemplateServiceException;
 }

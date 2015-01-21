@@ -62,7 +62,7 @@ public abstract class BaseReportTemplate extends BaseJPAEntity {
 	 * 
 	 */
 	@Column(name="model_id", nullable=false)
-	private long modelId;
+	private int modelId;
 	/**
 	 * 
 	 */
@@ -73,6 +73,13 @@ public abstract class BaseReportTemplate extends BaseJPAEntity {
 	 */
 	@Column(name="report_display_name")
 	private String reportDisplayName;
+	
+	/**
+	 * this attribute is not persisted along with report template entity
+	 */
+	@Transient
+	private ReportQuery reportQuery;
+	
 	/**
 	 * 
 	 * @return 
@@ -91,14 +98,14 @@ public abstract class BaseReportTemplate extends BaseJPAEntity {
 	 * 
 	 * @return 
 	 */
-	public long getModelId() {
+	public int getModelId() {
 	 	 return modelId; 
 	}
 	/**
 	 * 
 	 * @param modelId 
 	 */
-	public void setModelId(long modelId) { 
+	public void setModelId(int modelId) { 
 		 this.modelId = modelId; 
 	}
 	/**
@@ -246,5 +253,17 @@ public abstract class BaseReportTemplate extends BaseJPAEntity {
 	 */
 	public void setDataSeries(List<TemplateSeries> dataSeries) { 
 		 this.dataSeries = dataSeries; 
+	}
+	/**
+	 * @return the reportQuery
+	 */
+	public ReportQuery getReportQuery() {
+		return reportQuery;
+	}
+	/**
+	 * @param reportQuery the reportQuery to set
+	 */
+	public void setReportQuery(ReportQuery reportQuery) {
+		this.reportQuery = reportQuery;
 	}
 }

@@ -11,6 +11,7 @@
 	
 	<name>Report Feature Modules</name>
 	<modules>
+		<module>report-datasource</module>
 		<module>report-model</module>
 		<module>report-template</module>
 		<module>report-gen</module>

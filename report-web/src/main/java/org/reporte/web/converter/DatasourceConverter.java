@@ -12,9 +12,9 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.reporte.model.domain.Datasource;
+import org.reporte.datasource.service.exception.DatasourceHandlerException;
+import org.reporte.datasource.domain.Datasource;
 import org.reporte.model.service.ModelService;
-import org.reporte.model.service.exception.DatasourceHandlerException;
 
 @Named
 @ApplicationScoped

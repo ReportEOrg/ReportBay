@@ -2,8 +2,10 @@ package org.reporte.reporttemplate.dao.exception;
 
 import javax.ejb.ApplicationException;
 
+import org.reporte.common.dao.exception.BaseDAOException;
+
 @ApplicationException(rollback=true)
-public class ReportTemplateDAOException extends Exception {
+public class ReportTemplateDAOException extends BaseDAOException {
 	/**
 	 * 
 	 */

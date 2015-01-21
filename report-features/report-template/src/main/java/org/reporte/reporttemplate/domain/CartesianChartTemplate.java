@@ -41,8 +41,27 @@ public class CartesianChartTemplate extends ChartTemplate {
 	@Column(name="y_axis_ind")
 	private boolean showYAxis;
 	
-	@Column(name="model_data_label_Field")
+	/**
+	 * 
+	 */
+	@Column(name="data_label_ind")
+	private boolean showDataLabel;
+	/**
+	 * 
+	 */
+	@Column(name="model_data_label_field")
 	private String modelDataLabelField;
+	/**
+	 * 
+	 */
+	@Column(name="model_data_value_field")
+	private String modelDataValueField;
+	/**
+	 * 
+	 */
+	@Column(name="model_series_grp_field")
+	private String modelSeriesGroupField;
+	
 	/**
 	 * 
 	 * @return 
@@ -146,6 +165,8 @@ public class CartesianChartTemplate extends ChartTemplate {
 		  .append(xAxisTitle, testRef.xAxisTitle)
 		  .append(yAxisTitle, testRef.yAxisTitle)
 		  .append(modelDataLabelField, testRef.modelDataLabelField)
+		  .append(modelDataValueField, testRef.modelDataValueField)
+		  .append(modelSeriesGroupField, testRef.modelSeriesGroupField)
 		  .append(getDataSeries(), testRef.getDataSeries());
 		
 		return eb.isEquals();
@@ -164,8 +185,52 @@ public class CartesianChartTemplate extends ChartTemplate {
 		   .append(xAxisTitle)
 		   .append(yAxisTitle)
 		   .append(modelDataLabelField)
+		   .append(modelDataValueField)
+		   .append(modelSeriesGroupField)
 		   .append(getDataSeries());
 		
 		return hcb.toHashCode();
+	}
+	/**
+	 * @return the showDataLabel
+	 */
+	public boolean isShowDataLabel() {
+		return showDataLabel;
+	}
+	/**
+	 * @param showDataLabel the showDataLabel to set
+	 */
+	public void setShowDataLabel(boolean showDataLabel) {
+		this.showDataLabel = showDataLabel;
+	}
+	/**
+	 * @return
+	 */
+	public boolean getShowDataLabel() {
+		return showDataLabel;
+	}
+	/**
+	 * @return the modelDataValueField
+	 */
+	public String getModelDataValueField() {
+		return modelDataValueField;
+	}
+	/**
+	 * @param modelDataValueField the modelDataValueField to set
+	 */
+	public void setModelDataValueField(String modelDataValueField) {
+		this.modelDataValueField = modelDataValueField;
+	}
+	/**
+	 * @return the modelSeriesGroupField
+	 */
+	public String getModelSeriesGroupField() {
+		return modelSeriesGroupField;
+	}
+	/**
+	 * @param modelSeriesGroupField the modelSeriesGroupField to set
+	 */
+	public void setModelSeriesGroupField(String modelSeriesGroupField) {
+		this.modelSeriesGroupField = modelSeriesGroupField;
 	}
 }

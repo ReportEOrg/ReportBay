@@ -14,17 +14,20 @@
        					   http://www.springframework.org/schema/tx/spring-tx-3.1.xsd">
 
     <!-- replacement of DAO as spring bean -->
+    <bean id="datasourceDAO" class="org.reporte.datasource.dao.impl.DatasourceDAOImpl"/>
+    <bean id="databaseTypeDAO" class="org.reporte.datasource.dao.impl.DatabaseTypeDAOImpl"/>
+
     <bean id="modelDAO" class="org.reporte.model.dao.impl.ModelDAOImpl" />
-    <bean id="datasourceDAO" class="org.reporte.model.dao.impl.DatasourceDAOImpl"/>
-    <bean id="databaseTypeDAO" class="org.reporte.model.dao.impl.DatabaseTypeDAOImpl"/>
     
+    <bean id="reportQueryDAO" class="org.reporte.reporttemplate.dao.impl.ReportQueryDAOImpl"/>
     <bean id="reportTemplateDAO" class="org.reporte.reporttemplate.dao.impl.ReportTemplateDAOImpl"/>
     
     <!-- replacement of Session bean as spring bean -->
+    <bean id="databaseTypeService" class="org.reporte.datasource.service.impl.DatabaseTypeHandlerImpl"/>
+    <bean id="datasourceService" class="org.reporte.datasource.service.impl.DatasourceHandlerImpl"/>
+	<bean id="jdbcClientService" class="org.reporte.datasource.service.impl.JdbcClientImpl"/>
+
     <bean id="modelService" class="org.reporte.model.service.impl.ModelServiceImpl"/>
-    <bean id="databaseTypeService" class="org.reporte.model.service.impl.DatabaseTypeHandlerImpl"/>
-    <bean id="datasourceService" class="org.reporte.model.service.impl.DatasourceHandlerImpl"/>
-    <bean id="jdbcClientService" class="org.reporte.model.service.impl.JdbcClientImpl"/>
     
     <bean id="reportTemplateService" class="org.reporte.reporttemplate.service.impl.ReportTemplateServiceImpl"/>
     
