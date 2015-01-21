@@ -11,12 +11,12 @@ import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 import javax.inject.Inject;
 
+import org.reporte.datasource.service.DatabaseTypeHandler;
+import org.reporte.datasource.service.DatasourceHandler;
+import org.reporte.datasource.service.JdbcClient;
 import org.reporte.model.dao.ModelDAO;
 import org.reporte.model.dao.exception.ModelDAOException;
 import org.reporte.model.domain.Model;
-import org.reporte.model.service.DatabaseTypeHandler;
-import org.reporte.model.service.DatasourceHandler;
-import org.reporte.model.service.JdbcClient;
 import org.reporte.model.service.ModelService;
 import org.reporte.model.service.exception.ModelServiceException;
 

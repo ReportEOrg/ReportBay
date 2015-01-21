@@ -21,17 +21,17 @@ import org.apache.commons.lang3.StringUtils;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.FlowEvent;
 import org.primefaces.event.ReorderEvent;
+import org.reporte.datasource.domain.ColumnMetadata;
+import org.reporte.datasource.domain.Datasource;
+import org.reporte.datasource.service.exception.DatasourceHandlerException;
+import org.reporte.datasource.service.exception.JdbcClientException;
 import org.reporte.model.domain.AttributeMapping;
-import org.reporte.model.domain.ColumnMetadata;
 import org.reporte.model.domain.ComplexModel;
-import org.reporte.model.domain.Datasource;
 import org.reporte.model.domain.Model;
 import org.reporte.model.domain.Model.Approach;
 import org.reporte.model.domain.ModelQuery;
 import org.reporte.model.domain.SimpleModel;
 import org.reporte.model.service.ModelService;
-import org.reporte.model.service.exception.DatasourceHandlerException;
-import org.reporte.model.service.exception.JdbcClientException;
 import org.reporte.model.service.exception.ModelServiceException;
 import org.reporte.web.util.WebUtils;
 import org.slf4j.Logger;
@@ -51,6 +51,7 @@ public class ModelWizardBean implements Serializable {
 	private static final String JOIN_QUERY = "Join Query";
 	private static final String SELECT_QUERY = "SELECT * FROM %s";
 	private static final int DEFAULT_QUERY_ROW_LIMIT = 5;
+	private static final int MAX_SAMPLE_ROW = 20;
 
 	private List<Datasource> datasources;
 	private List<String> tableNames;
@@ -431,7 +432,7 @@ public class ModelWizardBean implements Serializable {
 			throws JdbcClientException {
 		List<AttributeMapping> columnNames = new ArrayList<AttributeMapping>();
 
-		originalResultSet = modelService.getJdbcClient().execute(model.getDatasource(), query);
+		originalResultSet = modelService.getJdbcClient().execute(model.getDatasource(), query, MAX_SAMPLE_ROW);
 
 		resultSet = applyLimit(originalResultSet, limit);
 

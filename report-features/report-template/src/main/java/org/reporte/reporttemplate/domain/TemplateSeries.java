@@ -38,8 +38,8 @@ public class TemplateSeries extends BaseJPAEntity{
 	/**
 	 * 
 	 */
-	@Column(name="model_field")
-	private String modelField;
+	@Column(name="model_series_Value")
+	private String modelSeriesValue;
 	/**
 	 * 
 	 * @return 
@@ -58,15 +58,15 @@ public class TemplateSeries extends BaseJPAEntity{
 	 * 
 	 * @return 
 	 */
-	public String getModelField() {
-	 	 return modelField; 
+	public String getModelSeriesValue() {
+	 	 return modelSeriesValue; 
 	}
 	/**
 	 * 
-	 * @param modelField 
+	 * @param modelSeriesValue 
 	 */
-	public void setModelField(String modelField) { 
-		 this.modelField = modelField; 
+	public void setModelSeriesValue(String modelSeriesValue) { 
+		 this.modelSeriesValue = modelSeriesValue; 
 	}
 	/**
 	 * @return the id
@@ -94,7 +94,7 @@ public class TemplateSeries extends BaseJPAEntity{
 		EqualsBuilder eb = new EqualsBuilder();
 		
 		eb.append(id, testRef.id)
-		  .append(modelField, testRef.modelField)
+		  .append(modelSeriesValue, testRef.modelSeriesValue)
 		  .append(name, testRef.name);
 		
 		return eb.isEquals();
@@ -107,7 +107,7 @@ public class TemplateSeries extends BaseJPAEntity{
 		HashCodeBuilder hcb = new HashCodeBuilder(INITIAL_HASH, PRIME_HASH_MULTIPLIER);
 		
 		hcb.append(id)
-		   .append(modelField)
+		   .append(modelSeriesValue)
 		   .append(name);
 		
 		return hcb.toHashCode();

@@ -7,4 +7,12 @@
   </parent>
   <artifactId>report-template</artifactId>
   <name>Report Template Module</name>
+  
+  <dependencies>
+  	<dependency>
+  		<groupId>reporte</groupId>
+  		<artifactId>report-model</artifactId>
+  		<version>0.0.1-SNAPSHOT</version>
+  	</dependency>
+  </dependencies>
 </project>

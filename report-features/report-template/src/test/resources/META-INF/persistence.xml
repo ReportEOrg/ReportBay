@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="http://java.sun.com/xml/ns/persistence"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence
+    http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
+	version="2.0">
+
+	<persistence-unit name="reporte" transaction-type="JTA">
+		<provider>org.hibernate.ejb.HibernatePersistence</provider>
+		<jta-data-source>jdbc/reportDS</jta-data-source>
+		<!-- external reference class as entity -->
+		<class>org.reporte.datasource.domain.Datasource</class>
+		<class>org.reporte.datasource.domain.DatabaseType</class>
+		<class>org.reporte.datasource.domain.ColumnMetadata</class>
+		
+		<class>org.reporte.model.domain.AttributeMapping</class>
+		<class>org.reporte.model.domain.ComplexModel</class>
+		<class>org.reporte.model.domain.Model</class>
+		<class>org.reporte.model.domain.ModelQuery</class>
+		<class>org.reporte.model.domain.SimpleModel</class>
+		<properties>
+			<property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
+			<property name="hibernate.show_sql" value="true" />
+		</properties>
+	</persistence-unit>
+</persistence>

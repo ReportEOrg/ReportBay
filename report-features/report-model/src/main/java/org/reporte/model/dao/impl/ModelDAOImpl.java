@@ -23,7 +23,7 @@ import org.reporte.common.interceptor.LogInterceptable;
 import org.reporte.model.dao.ModelDAO;
 import org.reporte.model.dao.exception.ModelDAOException;
 import org.reporte.model.domain.AttributeMapping;
-import org.reporte.model.domain.Datasource;
+import org.reporte.datasource.domain.Datasource;
 import org.reporte.model.domain.Model;
 import org.reporte.model.domain.ModelQuery;
 import org.slf4j.Logger;
@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
 public class ModelDAOImpl implements ModelDAO, LogInterceptable<Model> {
 	private final Logger LOG = LoggerFactory.getLogger(ModelDAOImpl.class);
 	
-	@PersistenceContext
+	@PersistenceContext(unitName="reporte")
 	private EntityManager em;
 	
 	/**

@@ -6,11 +6,12 @@
 	version="2.0">
 
 	<persistence-unit name="reporte">
+		<class>org.reporte.datasource.domain.DatabaseType</class>
+		<class>org.reporte.datasource.domain.Datasource</class>
+		<class>org.reporte.datasource.domain.ColumnMetadata</class>
+		
 		<class>org.reporte.model.domain.AttributeMapping</class>
-		<class>org.reporte.model.domain.ColumnMetadata</class>
 		<class>org.reporte.model.domain.ComplexModel</class>
-		<class>org.reporte.model.domain.DatabaseType</class>
-		<class>org.reporte.model.domain.Datasource</class>
 		<class>org.reporte.model.domain.Model</class>
 		<class>org.reporte.model.domain.ModelQuery</class>
 		<class>org.reporte.model.domain.SimpleModel</class>
@@ -22,6 +23,8 @@
 		<class>org.reporte.reporttemplate.domain.ColumnChartTemplate</class>
 		<class>org.reporte.reporttemplate.domain.LineChartTemplate</class>
 		<class>org.reporte.reporttemplate.domain.PieChartTemplate</class>
+		<class>org.reporte.reporttemplate.domain.ReportQuery</class>
+		
 		<properties>
 			<property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
 			<property name="hibernate.show_sql" value="true" />

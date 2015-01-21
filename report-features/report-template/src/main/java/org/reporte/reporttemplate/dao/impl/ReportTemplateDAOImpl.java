@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.ejb.Local;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 import javax.interceptor.Interceptors;
@@ -30,7 +32,7 @@ public class ReportTemplateDAOImpl implements ReportTemplateDAO, LogInterceptabl
 
 	private final Logger LOG = LoggerFactory.getLogger(ReportTemplateDAOImpl.class);
 	
-	@PersistenceContext
+	@PersistenceContext(unitName="reporte")
 	private EntityManager em;
 	/**
 	 * {@inheritDoc}
@@ -43,6 +45,7 @@ public class ReportTemplateDAOImpl implements ReportTemplateDAO, LogInterceptabl
 	/**
 	 * {@inheritDoc}
 	 */
+	@TransactionAttribute(TransactionAttributeType.REQUIRED)
 	@Override
 	public BaseReportTemplate insert(BaseReportTemplate entity)
 			throws ReportTemplateDAOException {
@@ -53,7 +56,10 @@ public class ReportTemplateDAOImpl implements ReportTemplateDAO, LogInterceptabl
 		}
 		return entity;
 	}
-
+	/**
+	 * {@inheritDoc}
+	 */
+	@TransactionAttribute(TransactionAttributeType.REQUIRED)
 	@Override
 	public void update(BaseReportTemplate entity)
 			throws ReportTemplateDAOException {
@@ -66,6 +72,7 @@ public class ReportTemplateDAOImpl implements ReportTemplateDAO, LogInterceptabl
 		
 	}
 	
+	@TransactionAttribute(TransactionAttributeType.REQUIRED)
 	public BaseReportTemplate updateEntity(BaseReportTemplate entity)	throws ReportTemplateDAOException {
 		try {
 			return em.merge(entity);
@@ -76,6 +83,10 @@ public class ReportTemplateDAOImpl implements ReportTemplateDAO, LogInterceptabl
 		
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@TransactionAttribute(TransactionAttributeType.REQUIRED)
 	@Override
 	public void delete(BaseReportTemplate entity)
 			throws ReportTemplateDAOException {
@@ -104,7 +115,4 @@ public class ReportTemplateDAOImpl implements ReportTemplateDAO, LogInterceptabl
 			throw new ReportTemplateDAOException("Failed to find all ReportTemplate.", e);
 		}
 	}
-
-
-	
 }

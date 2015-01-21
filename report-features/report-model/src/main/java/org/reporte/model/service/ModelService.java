@@ -4,6 +4,9 @@ import java.util.List;
 
 import javax.ejb.Local;
 
+import org.reporte.datasource.service.DatabaseTypeHandler;
+import org.reporte.datasource.service.DatasourceHandler;
+import org.reporte.datasource.service.JdbcClient;
 import org.reporte.model.domain.Model;
 import org.reporte.model.service.exception.ModelServiceException;
 

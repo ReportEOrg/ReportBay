@@ -26,6 +26,7 @@ import javax.persistence.TableGenerator;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.reporte.common.domain.BaseJPAEntity;
+import org.reporte.datasource.domain.Datasource;
 
 @Entity
 @NamedQueries({ @NamedQuery(name = "Model.findAll", query = "SELECT m FROM Model m") })

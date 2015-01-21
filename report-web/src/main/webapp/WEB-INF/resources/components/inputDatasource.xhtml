@@ -6,30 +6,23 @@
 	xmlns:cc="http://java.sun.com/jsf/composite">
 
 	<cc:interface>
-		<cc:attribute name="value"
-			type="org.reporte.model.domain.Datasource"
-			required="true" />
+		<cc:attribute name="value" type="org.reporte.datasource.domain.Datasource" required="true" />
 		<cc:attribute name="list" type="java.util.List" required="true" />
 		<cc:attribute name="onValueChanged" method-signature="void listener()" />
-		<cc:attribute name="displayDetailsOnSelect" type="java.lang.Boolean"
-			default="true" required="false" />
-		<cc:attribute name="mandatory" type="java.lang.Boolean" default="true"
-			required="false" />
+		<cc:attribute name="displayDetailsOnSelect" type="java.lang.Boolean" default="true" required="false" />
+		<cc:attribute name="mandatory" type="java.lang.Boolean" default="true" required="false" />
 	</cc:interface>
 	<cc:implementation>
-		<span id="#{cc.clientId}" style="white-space: nowrap"> <h:panelGrid
-				columns="3" rowClasses="vertical-align-top" style="width:100%">
+		<span id="#{cc.clientId}" style="white-space: nowrap"> 
+			<h:panelGrid columns="3" rowClasses="vertical-align-top" style="width:100%">
 				<h:panelGrid columns="2" columnClasses="label, value">
 					<h:outputText value="Datasource: *" />
 					<p:selectOneMenu id="sltDatasource" value="#{cc.attrs.value}"
-						required="#{cc.attrs.mandatory}" label="Datasource"
-						style="width:180px" converter="#{datasourceConverter}">
-						<p:ajax update="datasource_details"
-							listener="#{cc.attrs.onValueChanged}" />
-						<f:selectItem itemLabel="Select Datasource" itemValue="#{null}"
-							noSelectionOption="true" />
-						<f:selectItems value="#{cc.attrs.list}" var="datasource"
-							itemLabel="#{datasource.name}" itemValue="#{datasource}" />
+									 required="#{cc.attrs.mandatory}" label="Datasource"
+									 style="width:180px" converter="#{datasourceConverter}">
+						<p:ajax update="datasource_details" listener="#{cc.attrs.onValueChanged}" />
+						<f:selectItem itemLabel="Select Datasource" itemValue="#{null}" noSelectionOption="true" />
+						<f:selectItems value="#{cc.attrs.list}" var="datasource" itemLabel="#{datasource.name}" itemValue="#{datasource}" />
 					</p:selectOneMenu>
 				</h:panelGrid>
 
