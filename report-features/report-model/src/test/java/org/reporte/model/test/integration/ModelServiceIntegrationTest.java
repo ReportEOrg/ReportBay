@@ -14,17 +14,17 @@ import junit.framework.TestCase;
 import org.apache.openejb.api.LocalClient;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.reporte.datasource.domain.ColumnMetadata;
 import org.reporte.datasource.domain.DatabaseType;
 import org.reporte.datasource.domain.Datasource;
 import org.reporte.datasource.service.exception.DatabaseTypeHandlerException;
 import org.reporte.datasource.service.exception.DatasourceHandlerException;
+import org.reporte.datasource.service.exception.JdbcClientException;
 import org.reporte.model.domain.AttributeMapping;
-import org.reporte.model.domain.ColumnMetadata;
 import org.reporte.model.domain.Model;
 import org.reporte.model.domain.ModelQuery;
 import org.reporte.model.domain.SimpleModel;
 import org.reporte.model.service.ModelService;
-import org.reporte.model.service.exception.JdbcClientException;
 import org.reporte.model.service.exception.ModelServiceException;
 
 // Any clients annotated with @LocalClient will be scanned at deployment time 
