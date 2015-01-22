@@ -31,6 +31,8 @@
     
     <bean id="reportTemplateService" class="org.reporte.reporttemplate.service.impl.ReportTemplateServiceImpl"/>
     
+    <bean id="reportGenService" class="org.reporte.report.service.impl.ReportGenerationServiceImpl"/>
+    
     <!-- local JPA entity facotry -->
     <bean id="entityManagerFactory"
           class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">

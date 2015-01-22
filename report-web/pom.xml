@@ -83,6 +83,12 @@
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		
+		<dependency>
+			<groupId>reporte</groupId>
+			<artifactId>report-gen</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		
 		<!-- Start of pure web apps setting -->
 
 		<!--  Spring framework  -->

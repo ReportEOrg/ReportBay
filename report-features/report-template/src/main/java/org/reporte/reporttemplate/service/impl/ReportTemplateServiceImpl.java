@@ -34,6 +34,8 @@ import org.reporte.reporttemplate.domain.PieChartTemplate;
 import org.reporte.reporttemplate.domain.ReportQuery;
 import org.reporte.reporttemplate.service.ReportTemplateService;
 import org.reporte.reporttemplate.service.exception.ReportTemplateServiceException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 //stateless session bean
 @Stateless
@@ -41,8 +43,12 @@ import org.reporte.reporttemplate.service.exception.ReportTemplateServiceExcepti
 @TransactionManagement(TransactionManagementType.CONTAINER)
 public class ReportTemplateServiceImpl implements ReportTemplateService{
 	
+	private final Logger LOG = LoggerFactory.getLogger(ReportTemplateServiceImpl.class);
+	
 	private static final String SELECT_KEY = "select ";
 	private static final String QUERY_SEPERATOR = ",";
+	private static final String AS_KEY = " as ";
+	private static final String APOSTROPHE_KEY = "'";
 	
 	@Inject
 	private ReportTemplateDAO reportTemplateDAO;
@@ -500,9 +506,8 @@ public class ReportTemplateServiceImpl implements ReportTemplateService{
 				if(expresses[eIdx]!=null &&
 				   expresses[eIdx].contains(entry.getValue())){
 					
-					
-					//TODO: replace the content of expresses alias by the '+entry.getKey+'
-					sb.append(expresses[eIdx]).append(QUERY_SEPERATOR);
+					//replace the expresses query alias with model alias 
+					sb.append(buildSelectArg(expresses[eIdx], entry)).append(QUERY_SEPERATOR);
 					foundColumnCount++;
 					
 					break;
@@ -533,6 +538,39 @@ public class ReportTemplateServiceImpl implements ReportTemplateService{
 		}
 		
 		return rq;
+	}
+	
+	private String buildSelectArg(String orginalStr, Map.Entry<String, String> entry){
+		
+		StringBuilder sb = new StringBuilder();
+		
+		String lowerCaseStr = orginalStr.toLowerCase();
+		
+		int idx = lowerCaseStr.indexOf(AS_KEY);
+		
+		//if no " as "
+		if(idx<0){
+			
+			if(StringUtils.isBlank(entry.getValue())){
+				LOG.info(entry.getValue()+" is invalid. Can't be replaced. use original value ");
+				sb.append(orginalStr);
+			}
+			else{
+				//take original value
+				sb.append(orginalStr);
+				//append with " as " followed by replacement of field with alias name
+				sb.append(AS_KEY)
+				  .append(APOSTROPHE_KEY).append(entry.getKey()).append(APOSTROPHE_KEY);
+			}
+		}
+		else{
+			//take until end of " as "
+			sb.append(orginalStr.substring(0, idx+AS_KEY.length()));
+			//append with replacement of field with alias name
+			sb.append(APOSTROPHE_KEY).append(entry.getKey()).append(APOSTROPHE_KEY);
+		}
+		
+		return sb.toString();
 	}
 	/**
 	 * 

@@ -173,9 +173,10 @@ public class PieChartTemplate extends ChartTemplate {
 	 */
 	public int hashCode(){
 		
-		HashCodeBuilder hcb = new HashCodeBuilder(super.hashCode(), PRIME_HASH_MULTIPLIER);
+		HashCodeBuilder hcb = new HashCodeBuilder(INITIAL_HASH, PRIME_HASH_MULTIPLIER);
 		
-		hcb.append(categoryName)
+		hcb.appendSuper(super.hashCode())
+		   .append(categoryName)
 		   .append(dataTypeFormat)
 		   .append(modelCategoryField)
 		   .append(modelDataField)
