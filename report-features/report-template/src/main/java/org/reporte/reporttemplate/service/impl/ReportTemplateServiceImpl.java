@@ -590,13 +590,13 @@ public class ReportTemplateServiceImpl implements ReportTemplateService{
 		StringBuilder sb = new StringBuilder();
 		
 		for (Map.Entry<String, String> entry : aliasLookUpMap.entrySet()) {
-			sb.append(entry.getValue()).append(" as ")
-			  .append(entry.getKey()).append(", ");
+			sb.append(" ").append(entry.getValue()).append(AS_KEY)
+			  .append(APOSTROPHE_KEY).append(entry.getKey()).append(APOSTROPHE_KEY).append(QUERY_SEPERATOR);
 		}
 		
-		//truncate the last ", "
+		//truncate the last ","
 		if(sb.length()>0){
-			sb.setLength(sb.length()-2); 
+			sb.setLength(sb.length()-QUERY_SEPERATOR.length()); 
 		}
 		
 		sb.insert(0, SELECT_KEY);
