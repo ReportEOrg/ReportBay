@@ -1,6 +1,6 @@
 package org.reporte.reporttemplate.domain;
 
-import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
@@ -215,7 +215,18 @@ public abstract class BaseReportTemplate extends BaseJPAEntity {
 		
 		return hcb.toHashCode();
 	}
-
+	/**
+	 * @return the reportQuery
+	 */
+	public ReportQuery getReportQuery() {
+		return reportQuery;
+	}
+	/**
+	 * @param reportQuery the reportQuery to set
+	 */
+	public void setReportQuery(ReportQuery reportQuery) {
+		this.reportQuery = reportQuery;
+	}
 	
 	/**********************************
 	 * due to the joined inheritence, oneToMany mapping has to be defined in the main joined table class
@@ -237,13 +248,13 @@ public abstract class BaseReportTemplate extends BaseJPAEntity {
 	@OneToMany(orphanRemoval=true, cascade =CascadeType.ALL , fetch=FetchType.EAGER)
 	//uni-directional one to many, as search direction only from chart_template to template_series not the other way round
 	@JoinColumn(name = "cart_chart_tmpt_id", referencedColumnName = "id", nullable=false)
-	private List<TemplateSeries> dataSeries;
+	private Set<TemplateSeries> dataSeries;
 	
 	/**
 	 * This method should only be used by class extends CartesianChartTemplate 
 	 * @return 
 	 */
-	public List<TemplateSeries> getDataSeries() {
+	public Set<TemplateSeries> getDataSeries() {
 	 	 return dataSeries; 
 	}
 	/**
@@ -251,19 +262,38 @@ public abstract class BaseReportTemplate extends BaseJPAEntity {
 	 * Setter of dataSeries
 	 * @param dataSeries
 	 */
-	public void setDataSeries(List<TemplateSeries> dataSeries) { 
+	public void setDataSeries(Set<TemplateSeries> dataSeries) { 
 		 this.dataSeries = dataSeries; 
 	}
-	/**
-	 * @return the reportQuery
-	 */
-	public ReportQuery getReportQuery() {
-		return reportQuery;
-	}
-	/**
-	 * @param reportQuery the reportQuery to set
-	 */
-	public void setReportQuery(ReportQuery reportQuery) {
-		this.reportQuery = reportQuery;
-	}
+	
+	/**********************************
+	 * due to the joined inheritence, oneToMany mapping has to be defined in the main joined table class
+	 * although in db level the oneToMany target child table FK relationship is to the joined target table class
+	 * 
+	 *  class
+	 *  ===========
+	 *  BaseReportTemplate [report_template]  <--oneToMany -- CrossTabTemplateGroup [xtab_template_grp]
+	 *     ^
+	 *     |
+	 *  CrossTabTemplate    [xtab_template]
+	 **********************************/
+//	@OneToMany(orphanRemoval=true, cascade =CascadeType.ALL , fetch=FetchType.EAGER)
+//	//uni-directional one to many, as search direction only from xtab_template to xtab_template_grp not the other way round
+//	@JoinColumn(name = "xtab_tmpt_id", referencedColumnName = "id", nullable=false)
+//	private Set<CrossTabTemplateGroup> crossTabTemplateGroups;
+//
+//	/**
+//	 * This method should only be used by class CrossTabTemplate 
+//	 * @return the crossTabTemplateGroups
+//	 */
+//	public Set<CrossTabTemplateGroup> getCrossTabTemplateGroups() {
+//		return crossTabTemplateGroups;
+//	}
+//	/**
+//	 * This method should only be used by class CrossTabTemplate
+//	 * @param crossTabTemplateGroups the crossTabTemplateGroups to set
+//	 */
+//	public void setCrossTabTemplateGroups(Set<CrossTabTemplateGroup> crossTabTemplateGroups) {
+//		this.crossTabTemplateGroups = crossTabTemplateGroups;
+//	}
 }
