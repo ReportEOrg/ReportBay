@@ -6,7 +6,17 @@ import org.reporte.report.domain.ColumnChartReport;
 import org.reporte.report.domain.LineChartReport;
 import org.reporte.report.domain.PieChartReport;
 import org.reporte.report.service.exception.ReportGenerationServiceException;
+import org.reporte.reporttemplate.domain.AreaChartTemplate;
+import org.reporte.reporttemplate.domain.BarChartTemplate;
+import org.reporte.reporttemplate.domain.ColumnChartTemplate;
+import org.reporte.reporttemplate.domain.LineChartTemplate;
+import org.reporte.reporttemplate.domain.PieChartTemplate;
 
+/**
+ * 
+ * Report Generation Service Interface
+ *
+ */
 public interface ReportGenerationService {
 
 	/**
@@ -17,6 +27,15 @@ public interface ReportGenerationService {
 	 */
 	AreaChartReport generateAreaChartReport(int reportTemplateId)
 			throws ReportGenerationServiceException;
+	
+	/**
+	 * 
+	 * @param reportTemplate
+	 * @return
+	 * @throws ReportGenerationServiceException
+	 */
+	AreaChartReport generateAreaChartReport(AreaChartTemplate reportTemplate)
+			throws ReportGenerationServiceException;
 
 	/**
 	 * 
@@ -26,6 +45,15 @@ public interface ReportGenerationService {
 	 */
 	BarChartReport generateBarChartReport(int reportTemplateId)
 			throws ReportGenerationServiceException;
+	
+	/**
+	 * 
+	 * @param reportTemplate
+	 * @return
+	 * @throws ReportGenerationServiceException
+	 */
+	BarChartReport generateBarChartReport(BarChartTemplate reportTemplate)
+			throws ReportGenerationServiceException;
 
 	/**
 	 * 
@@ -33,8 +61,17 @@ public interface ReportGenerationService {
 	 * @return
 	 * @throws ReportGenerationServiceException
 	 */
-	ColumnChartReport generateColumnChartReport(
-			int reportTemplateId) throws ReportGenerationServiceException;
+	ColumnChartReport generateColumnChartReport(int reportTemplateId) 
+			throws ReportGenerationServiceException;
+	
+	/**
+	 * 
+	 * @param reportTemplate
+	 * @return
+	 * @throws ReportGenerationServiceException
+	 */
+	ColumnChartReport generateColumnChartReport(ColumnChartTemplate reportTemplate) 
+			throws ReportGenerationServiceException;
 
 	/**
 	 * 
@@ -44,6 +81,15 @@ public interface ReportGenerationService {
 	 */
 	LineChartReport generateLineChartReport(int reportTemplateId)
 			throws ReportGenerationServiceException;
+	
+	/**
+	 * 
+	 * @param reportTemplate
+	 * @return
+	 * @throws ReportGenerationServiceException
+	 */
+	LineChartReport generateLineChartReport(LineChartTemplate reportTemplate)
+			throws ReportGenerationServiceException;
 
 	/**
 	 * 
@@ -52,6 +98,15 @@ public interface ReportGenerationService {
 	 * @throws ReportGenerationServiceException
 	 */
 	PieChartReport generatePieChartReport(int reportTemplateId)
+			throws ReportGenerationServiceException;
+	
+	/**
+	 * 
+	 * @param reportTemplate
+	 * @return
+	 * @throws ReportGenerationServiceException
+	 */
+	PieChartReport generatePieChartReport(PieChartTemplate reportTemplate)
 			throws ReportGenerationServiceException;
 
 }

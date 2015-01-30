@@ -30,7 +30,11 @@ import org.reporte.report.service.exception.ReportGenerationServiceException;
 import org.reporte.reporttemplate.dao.ReportQueryDAO;
 import org.reporte.reporttemplate.dao.ReportTemplateDAO;
 import org.reporte.reporttemplate.dao.exception.ReportQueryDAOException;
+import org.reporte.reporttemplate.domain.AreaChartTemplate;
+import org.reporte.reporttemplate.domain.BarChartTemplate;
 import org.reporte.reporttemplate.domain.CartesianChartTemplate;
+import org.reporte.reporttemplate.domain.ColumnChartTemplate;
+import org.reporte.reporttemplate.domain.LineChartTemplate;
 import org.reporte.reporttemplate.domain.PieChartTemplate;
 import org.reporte.reporttemplate.domain.ReportQuery;
 import org.reporte.reporttemplate.domain.TemplateSeries;
@@ -66,8 +70,24 @@ public class ReportGenerationServiceImpl implements ReportGenerationService{
 	 * {@inheritDoc}
 	 */
 	@Override
+	public AreaChartReport generateAreaChartReport(AreaChartTemplate reportTemplate) throws ReportGenerationServiceException{
+		return (AreaChartReport)generateCartesiantChartReport(reportTemplate, new AreaChartReport());
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public BarChartReport generateBarChartReport(int reportTemplateId) throws ReportGenerationServiceException{
 		return (BarChartReport)generateCartesiantChartReport(reportTemplateId, new BarChartReport());
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public BarChartReport generateBarChartReport(BarChartTemplate reportTemplate) throws ReportGenerationServiceException{
+		return (BarChartReport)generateCartesiantChartReport(reportTemplate, new BarChartReport());
 	}
 	
 	/**
@@ -82,10 +102,25 @@ public class ReportGenerationServiceImpl implements ReportGenerationService{
 	 * {@inheritDoc}
 	 */
 	@Override
+	public ColumnChartReport generateColumnChartReport(ColumnChartTemplate reportTemplate) throws ReportGenerationServiceException{
+		return (ColumnChartReport)generateCartesiantChartReport(reportTemplate, new ColumnChartReport());
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public LineChartReport generateLineChartReport(int reportTemplateId) throws ReportGenerationServiceException{
 		return (LineChartReport)generateCartesiantChartReport(reportTemplateId, new LineChartReport());
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public LineChartReport generateLineChartReport(LineChartTemplate reportTemplate) throws ReportGenerationServiceException{
+		return (LineChartReport)generateCartesiantChartReport(reportTemplate, new LineChartReport());
+	}
 	/**
 	 * {@inheritDoc}
 	 */
@@ -96,18 +131,34 @@ public class ReportGenerationServiceImpl implements ReportGenerationService{
 			//1. obtain the template
 			PieChartTemplate pieChartTemplate = (PieChartTemplate)reportTemplateDAO.find(reportTemplateId);
 			
-			//2. populate report with template setting
-			report = new PieChartReport();
-			populatePieChartReport(report, pieChartTemplate);
-			
-			//3. generate pie chart report
-			populatePieChartReportCategoryResult(report, pieChartTemplate);
+			//2. generate pie chart report based on template
+			report = generatePieChartReport(pieChartTemplate);
 		}
 		catch(BaseDAOException bde){
 			throw new ReportGenerationServiceException("Failed to generate pie chart Report for "+reportTemplateId, bde);
 		}
+		
+		return report;
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public PieChartReport generatePieChartReport(PieChartTemplate reportTemplate) throws ReportGenerationServiceException{
+		PieChartReport report = null;
+		try{
+			//1. populate report with template setting
+			report = new PieChartReport();
+			populatePieChartReport(report, reportTemplate);
+			
+			//2. generate pie chart report
+			populatePieChartReportCategoryResult(report, reportTemplate);
+		}
 		catch (JdbcClientException jce) {
-			throw new ReportGenerationServiceException("Failed to generate pie char report for "+ reportTemplateId, jce);
+			throw new ReportGenerationServiceException("Failed to generate pie char report for "+ reportTemplate.getTemplateName(), jce);
+		} catch (BaseDAOException bde) {
+			throw new ReportGenerationServiceException("Failed to generate pie char report for "+ reportTemplate.getTemplateName(), bde);
 		}
 		
 		return report;
@@ -144,10 +195,10 @@ public class ReportGenerationServiceImpl implements ReportGenerationService{
 	
 	/**
 	 * 
-	 * @param pieChartTemplate
-	 * @return
-	 * @throws ReportQueryDAOException 
-	 * @throws JdbcClientException 
+	 * @param report
+	 * @param chartTemplate
+	 * @throws ReportQueryDAOException
+	 * @throws JdbcClientException
 	 */
 	private void  populatePieChartReportCategoryResult(PieChartReport report, PieChartTemplate chartTemplate) 
 			throws ReportQueryDAOException, JdbcClientException{
@@ -202,20 +253,42 @@ public class ReportGenerationServiceImpl implements ReportGenerationService{
 			//1. obtain the template
 			CartesianChartTemplate chartTemplate = (CartesianChartTemplate)reportTemplateDAO.find(reportTemplateId);
 			
-			//2. populate report with template setting
-			populateCartesianReport(report, chartTemplate);
-			
-			//3. populate report with query result
-			populateCartesianReportSeriesResult(report, chartTemplate);
+			//2. generate cartesian chart report based on template
+			generateCartesiantChartReport(chartTemplate, report);
 		}
 		catch(BaseDAOException bde){
 			throw new ReportGenerationServiceException("Failed to generate cartesian chart report for "+reportTemplateId, bde);
-		} catch (JdbcClientException jce) {
-			throw new ReportGenerationServiceException("Failed to generate cartesian chart report for "+reportTemplateId, jce);
 		}
+
 		return report;
 	}
 	
+	/**
+	 * 
+	 * @param chartTemplate
+	 * @param report
+	 * @return
+	 * @throws ReportGenerationServiceException
+	 */
+	private CartesianChartReport generateCartesiantChartReport(CartesianChartTemplate chartTemplate, CartesianChartReport report) 
+			throws ReportGenerationServiceException{
+		
+		try{
+			//1. populate report with template setting
+			populateCartesianReport(report, chartTemplate);
+			
+			//2. populate report with query result
+			populateCartesianReportSeriesResult(report, chartTemplate);
+		}
+		catch (JdbcClientException jce) {
+			throw new ReportGenerationServiceException("Failed to generate cartesian chart report for "+chartTemplate.getTemplateName(), jce);
+		}
+		catch(BaseDAOException bde){
+			throw new ReportGenerationServiceException("Failed to generate cartesian chart report for "+chartTemplate.getTemplateName(), bde);
+		} 
+		
+		return report;
+	}
 	/**
 	 * 
 	 * @param report
