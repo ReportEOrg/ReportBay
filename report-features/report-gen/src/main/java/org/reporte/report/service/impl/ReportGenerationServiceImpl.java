@@ -338,7 +338,12 @@ public class ReportGenerationServiceImpl implements ReportGenerationService{
 		
 		report.setChartDataSeries(new ArrayList<ChartSeries>());
 		
-		ReportQuery reportQuery = reportQueryDAO.find(chartTemplate.getId());
+		//for preview case, template will supply report query
+		ReportQuery reportQuery = chartTemplate.getReportQuery();
+		
+		if(reportQuery==null){
+			reportQuery = reportQueryDAO.find(chartTemplate.getId());
+		}
 		
 		List<Map<ColumnMetadata, String>> resultList = jdbcClient.execute(reportQuery.getDatasource(), reportQuery.getQuery());
 		
