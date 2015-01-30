@@ -430,7 +430,7 @@ public class ReportTemplateServiceImpl implements ReportTemplateService{
 	 * @return
 	 * @throws ReportTemplateServiceException
 	 */
-	private ReportQuery constructCartesianChartReportQuery(CartesianChartTemplate template) 
+	public ReportQuery constructCartesianChartReportQuery(CartesianChartTemplate template) 
 			throws ReportTemplateServiceException{
 		ReportQuery reportQuery = null;
 		
