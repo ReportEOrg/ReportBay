@@ -18,6 +18,7 @@ import org.reporte.common.interceptor.LogInterceptable;
 import org.reporte.reporttemplate.dao.ReportTemplateDAO;
 import org.reporte.reporttemplate.dao.exception.ReportTemplateDAOException;
 import org.reporte.reporttemplate.domain.BaseReportTemplate;
+import org.reporte.reporttemplate.domain.CartesianChartTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,6 +51,9 @@ public class ReportTemplateDAOImpl implements ReportTemplateDAO, LogInterceptabl
 	public BaseReportTemplate insert(BaseReportTemplate entity)
 			throws ReportTemplateDAOException {
 		try {
+
+			processJoinTableChildRelationship(entity);
+
 			em.persist(entity);
 		} catch (PersistenceException e) {
 			throw new ReportTemplateDAOException("Failed to persist ReportTemplate with given name[" + entity.getTemplateName() + "].", e);
@@ -64,6 +68,8 @@ public class ReportTemplateDAOImpl implements ReportTemplateDAO, LogInterceptabl
 	public void update(BaseReportTemplate entity)
 			throws ReportTemplateDAOException {
 		try {
+			processJoinTableChildRelationship(entity);
+
 			em.merge(entity);
 			
 		} catch (PersistenceException e) {
@@ -75,6 +81,8 @@ public class ReportTemplateDAOImpl implements ReportTemplateDAO, LogInterceptabl
 	@TransactionAttribute(TransactionAttributeType.REQUIRED)
 	public BaseReportTemplate updateEntity(BaseReportTemplate entity)	throws ReportTemplateDAOException {
 		try {
+			processJoinTableChildRelationship(entity);
+			
 			return em.merge(entity);
 			
 		} catch (PersistenceException e) {
@@ -113,6 +121,20 @@ public class ReportTemplateDAOImpl implements ReportTemplateDAO, LogInterceptabl
 			return em.createNamedQuery("ReportTemplate.findAll", BaseReportTemplate.class).getResultList();
 		} catch (PersistenceException e) {
 			throw new ReportTemplateDAOException("Failed to find all ReportTemplate.", e);
+		}
+	}
+	/**
+	 * pre processing of the join table's child relationship which is link at main entity class due to JPA limitation
+	 * 
+	 * @param entity
+	 */
+	private void processJoinTableChildRelationship(BaseReportTemplate entity){
+		
+		//non cartesian chart type template, explicit remove data series to prevent accidently set
+		if(!(entity instanceof CartesianChartTemplate)){
+			if(entity.getDataSeries()!=null){
+				entity.getDataSeries().clear();
+			}
 		}
 	}
 }

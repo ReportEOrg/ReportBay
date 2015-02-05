@@ -341,6 +341,8 @@ public class ReportGenerationServiceImpl implements ReportGenerationService{
 		
 		report.setChartDataSeries(new ArrayList<ChartSeries>());
 		
+
+		//for preview case, template will supply report query
 		ReportQuery reportQuery = chartTemplate.getReportQuery();
 		
 		if(reportQuery==null){
