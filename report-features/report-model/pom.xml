@@ -7,7 +7,8 @@
   </parent>
   <artifactId>report-model</artifactId>
   <name>Report Model Module</name>
-  
+  <packaging>ejb</packaging>
+
   <dependencies>
   	<dependency>
   		<groupId>reporte</groupId>
