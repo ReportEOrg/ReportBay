@@ -44,8 +44,4 @@
 		<url-pattern>*.xhtml</url-pattern>
 	</servlet-mapping>
 
-	<!-- CDI Integration -->
-	<listener>
-		<listener-class>org.apache.webbeans.servlet.WebBeansConfigurationListener</listener-class>
-	</listener>
 </web-app>

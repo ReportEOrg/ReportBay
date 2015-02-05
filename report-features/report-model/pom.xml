@@ -7,4 +7,5 @@
   </parent>
   <artifactId>report-model</artifactId>
   <name>Report Model Module</name>
+  <packaging>ejb</packaging>
 </project>

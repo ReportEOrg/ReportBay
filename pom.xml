@@ -149,6 +149,7 @@
 									<webModule>
 										<groupId>reporte</groupId>
 										<artifactId>report-web</artifactId>
+										<contextRoot>reporte</contextRoot>
 									</webModule>
 									<ejbModule>
 										<groupId>reporte</groupId>
