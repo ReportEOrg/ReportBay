@@ -1,0 +1,177 @@
+<ui:composition template="../../WEB-INF/templates/layout.xhtml" xmlns="http://www.w3.org/1999/xhtml" xmlns:f="http://java.sun.com/jsf/core" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:p="http://primefaces.org/ui" xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:reporte="http://org.reporte/jsf/facelets">
+
+	<ui:param name="show_west" value="false" />
+	<ui:param name="show_east" value="false" />
+
+
+	<ui:define name="content">
+		<p:layout styleClass="center-layout" widgetVar="layoutWdgtContent">
+			<p:layoutUnit id="centerWest" position="west" size="302" collapsible="true" effect="drop" styleClass="center-west-layout">
+				<f:facet name="header">
+					<p:outputLabel value="&#160;" />
+					<p:outputLabel styleClass="fa fa-clipboard" />
+					<p:outputLabel value="&#160;&#160;" />
+					<p:outputLabel value="Report Templates" style="font-size:9pt;" />
+					<p:commandButton title="Refresh Templates" icon="ui-icon ui-icon-refresh" style="float:right;width:18px;height:18px;margin-top:-2px;" />
+				</f:facet>
+				<h:form id="westForm">
+					<h:panelGrid style="text-align:center;" columns="2" id="searchCont">
+						<p:inputText id="searchReportTemplate" placeholder="Search Template.." size="46">
+							<p:ajax event="keyup" listener="#{reportTemplate.filterExtReportTemplates}" update="extReportTemps" />
+						</p:inputText>
+						<p:commandLink id="addNewReport" title="Add New Report Template" action="#{reportTemplate.createNewReportTemplate}">
+							<p:ajax event="dialogReturn" listener="#{reportTemplate.onDialogReturn}" update=":westForm,:centerForm,:editDeletedCont" />
+							<h:graphicImage library="default" name="images/addnew-icon.png" height="25" style="margin-top:4px;" />
+						</p:commandLink>
+					</h:panelGrid>
+					<p:accordionPanel activeIndex="#{reportTemplate.tabActiveIndex}" id="extReportTemps" style="width:300px;" value="#{reportTemplate.extReportTemplateList}" var="report">
+						<p:ajax event="tabChange" listener="#{reportTemplate.onReportTemplateChange}" update=":centerForm:viewTemplateDetailPanel" />
+						<p:tab title="#{report.reportDisplayName}" titleStyle="font-size:14px;" />
+					</p:accordionPanel>
+				</h:form>
+			</p:layoutUnit>
+
+			<p:layoutUnit id="centerCenter" position="center" styleClass="center-center-layout">
+				<p:panelGrid columns="1" styleClass="container-grid" style="border:none!important;">
+					<h:form id="centerForm">
+						<p:panel id="viewTemplateDetailPanel" header="View Report Template Details" styleClass="view-container-grid" rendered="#{not empty reportTemplate.extReportTemplateList}">
+							<p:spacer width="100%" height="15px" />
+							<p:tabView id="center-tabview-details" styleClass="center-tabview-details-templates">
+								<p:tab title="Chart Info">
+									<h:panelGroup>
+										<p:spacer width="100%" height="50px" />
+										<h:panelGrid id="chartInfoOut" columns="1" rowClasses="vertical-align-top" style="margin-left:200px;boder:1px solid black;">
+											<p:panelGrid id="chartInfoIn" columns="2" columnClasses="label, value" cellpadding="6">
+												<h:outputText value="Template Name :&#160;" styleClass="manageTemplateLabel" />
+												<h:outputText id="templateName" value="#{reportTemplate.templateName}" styleClass="manageTemplateValue" />
+												<h:outputText value="Chart Type :&#160;" styleClass="manageTemplateLabel" />
+												<h:panelGrid columns="2">
+													<h:outputText id="chartType" value="#{reportTemplate.selectedChartType}" styleClass="manageTemplateValue" />
+													<p:graphicImage id="chartTypeImg" value="#{reportTemplate.chartTypeImgSrc}" style="padding-top: 4px;padding-left: 10px;" />
+												</h:panelGrid>
+												<h:outputText value="Chart Title :&#160;" styleClass="manageTemplateLabel" />
+												<h:outputText id="chartTitle" value="#{reportTemplate.chartTitle}" styleClass="manageTemplateValue" />
+												<h:outputText value="Report Display Name :&#160;" styleClass="manageTemplateLabel" />
+												<h:outputText id="reportDisplayName" value="#{reportTemplate.reportDisplayName}" styleClass="manageTemplateValue" />
+											</p:panelGrid>
+										</h:panelGrid>
+									</h:panelGroup>
+								</p:tab>
+								<p:tab title="Model">
+									<h:panelGroup>
+										<p:spacer width="100%" height="30px" />
+										<h:panelGrid columns="2" columnClasses="gridComponentsAlignTop" cellspacing="4" cellpadding="4" style="margin-left:100px;">
+											<h:panelGrid columns="2" columnClasses="label, value" cellpadding="6">
+												<h:outputText value="Model Name :&#160;" styleClass="manageTemplateLabel" />
+												<h:outputText id="modelName" value="#{reportTemplate.selectedModelName}" styleClass="manageTemplateValue" />
+												<h:outputText value="Model Description :&#160;" styleClass="manageTemplateLabel" id="modelDescText" />
+												<h:inputTextarea id="modelDescription" value="#{reportTemplate.selectedModelDescription}" rows="3" cols="1" style="width:295px;" readonly="true" />
+											</h:panelGrid>
+											<p:dataTable id="attributesTable" value="#{reportTemplate.modelAttrs}" var="attribute" border="1" style="margin-top:7px;width:300px;height:350px;overflow-y: auto;"
+												emptyMessage="No attributes found.">
+												<p:column headerText="Attributes">
+													<h:outputText value="#{attribute['alias']}" />
+												</p:column>
+											</p:dataTable>
+										</h:panelGrid>
+									</h:panelGroup>
+								</p:tab>
+								<p:tab title="Configuration">
+									<p:panel rendered="#{!reportTemplate.pieChart}">
+										<h:panelGrid columns="2" rowClasses="vertical-align-top" columnClasses="label,value">
+											<h:panelGrid columns="2" rowClasses="vertical-align-top" columnClasses="label, label" cellpadding="6" style="margin-left:65px;">
+												<h:outputText id="xAxisTitleText" value="x-Axis Title :&#160;" styleClass="manageTemplateLabel" />
+												<h:outputText id="xAxisTitle" value="#{reportTemplate.xAxisTitle}" styleClass="manageTemplateValue" />
+
+												<h:outputText id="yAxisTitleText" value="y-Axis Title :&#160;" styleClass="manageTemplateLabel" />
+												<h:outputText id="yAxisTitle" value="#{reportTemplate.yAxisTitle}" styleClass="manageTemplateValue" />
+
+												<h:outputText id="dataLabelFieldText" value="Data Label Field :&#160;" styleClass="manageTemplateLabel" />
+												<h:outputText id="dataLabelField" value="#{reportTemplate.modelDataLabelField}" styleClass="manageTemplateValue" />
+
+												<h:outputText id="dataValueFieldText" value="Data Value Field :&#160;" styleClass="manageTemplateLabel" />
+												<h:outputText id="dataValueField" value="#{reportTemplate.modelDataValueField}" styleClass="manageTemplateValue" />
+
+												<h:outputText id="seriesGroupFieldText" value="Series Group Field :&#160;" styleClass="manageTemplateLabel" />
+												<h:outputText id="seriesGroupField" value="#{reportTemplate.modelSeriesGroupField}" styleClass="manageTemplateValue" />
+												<h:outputText value="" />
+												<h:panelGrid columns="4" columnClasses="value,label">
+													<p:selectBooleanCheckbox id="showLegend" value="#{reportTemplate.showLegend}" disabled="true" rendered="#{reportTemplate.showLegend}" />
+													<h:outputText value="Show Legend&#160;&#160;&#160;" styleClass="manageTemplateLabel" rendered="#{reportTemplate.showLegend}" />
+													<p:selectBooleanCheckbox id="showDataLabel" value="#{reportTemplate.showDataLabel}" disabled="true" rendered="#{reportTemplate.showDataLabel}" />
+													<h:outputText value="Show Data Label" styleClass="manageTemplateLabel" rendered="#{reportTemplate.showDataLabel}" />
+												</h:panelGrid>
+											</h:panelGrid>
+
+											<h:panelGrid columns="2" rowClasses="vertical-align-top" columnClasses="label, value" cellpadding="4" style="margin-left:20px;margin-top:60px;">
+												<p:dataTable id="tempSeriesValueTable" var="tempSeries" value="#{reportTemplate.templateSeriesValues}" style="width:400px;height:250px;overflow-y: auto;"
+													emptyMessage="Atleast one Series's Name and Value needed.">
+													<f:facet name="header">
+           												Template Series Values
+       												</f:facet>
+													<p:column headerText="Name">
+														<h:outputText value="#{tempSeries.name}" />
+													</p:column>
+													<p:column headerText="Value">
+														<h:outputText value="#{tempSeries.modelSeriesValue}" />
+													</p:column>
+												</p:dataTable>
+											</h:panelGrid>
+										</h:panelGrid>
+
+									</p:panel>
+									<p:panel rendered="#{reportTemplate.pieChart}">
+										<h:panelGrid columns="2" rowClasses="vertical-align-top" columnClasses="label, label" cellpadding="4" style="margin-left:65px;margin-top:70px;">
+											<h:outputText id="pieDataFieldText" value="Data Field :&#160;" styleClass="manageTemplateLabel" />
+											<h:outputText id="pieDataField" value="#{reportTemplate.pieDataField}" styleClass="manageTemplateValue" />
+
+											<h:outputText id="pieCatagoryFieldText" value="Category Field :&#160;" styleClass="manageTemplateLabel" />
+											<h:outputText id="pieCatagoryField" value="#{reportTemplate.pieCatagoryField}" styleClass="manageTemplateValue" />
+
+
+											<h:outputText value="" />
+											<h:panelGrid columns="4" columnClasses="value,label">
+												<p:selectBooleanCheckbox id="pieShowLegend" value="#{reportTemplate.showLegend}" disabled="true" rendered="#{reportTemplate.showLegend}" />
+												<h:outputText value="Show Legend&#160;&#160;&#160;" style="font-size:13px;" rendered="#{reportTemplate.showLegend}" />
+												<p:selectBooleanCheckbox id="pieShowDataLabel" value="#{reportTemplate.showDataLabel}" disabled="true" rendered="#{reportTemplate.showDataLabel}" />
+												<h:outputText value="Show Data Label" style="font-size:13px;" rendered="#{reportTemplate.showDataLabel}" />
+											</h:panelGrid>
+										</h:panelGrid>
+									</p:panel>
+								</p:tab>
+								<p:tab title="Preview">
+									<p:panel>
+										<p:chart type="#{reportTemplate.chartType}" model="#{reportTemplate.chartModel}" style="height:400px;" />
+									</p:panel>
+								</p:tab>
+							</p:tabView>
+						</p:panel>
+					</h:form>
+				</p:panelGrid>
+				<p:panel id="editDeletedCont" style="width:150px;float:right;border:none;">
+					<h:panelGrid columns="2" columnClasses="value,value" cellpadding="1" rendered="#{not empty reportTemplate.extReportTemplateList}">
+						<p:commandButton value="Edit" icon="ui-icon-pencil" action="#{reportTemplate.editReportTemplate}">
+							<p:ajax event="dialogReturn" listener="#{reportTemplate.onDialogReturn}" />
+						</p:commandButton>
+						<p:commandButton value="Delete" icon="ui-icon-trash" onclick="PF('deleteTemplate').show();" />
+						<p:dialog id="confirmDeleteDialog" header="Delete Report Template" widgetVar="deleteTemplate" modal="true" height="70" width="280" resizable="false" appendTo="@(body)">
+							<h:panelGrid columns="1" columnClasses="value">
+								<h:panelGroup>
+									<h:outputText value="Are you sure you want to delete template?" style="font-size:9pt;" />
+								</h:panelGroup>
+								<h:panelGroup style="float:right;margin-top:10px;">
+									<p:commandButton value="Yes" styleClass="ui-confirmdialog-no" icon="ui-icon-check" style="margin-right:10px;" immediate="true" action="#{reportTemplate.deleteReportTemplate}"
+										update=":westForm:extReportTemps,:centerForm,:editDeletedCont" onclick="PF('deleteTemplate').hide();" />
+									<p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" onclick="PF('deleteTemplate').hide();" />
+								</h:panelGroup>
+							</h:panelGrid>
+						</p:dialog>
+					</h:panelGrid>
+				</p:panel>
+			</p:layoutUnit>
+
+		</p:layout>
+	</ui:define>
+
+</ui:composition>

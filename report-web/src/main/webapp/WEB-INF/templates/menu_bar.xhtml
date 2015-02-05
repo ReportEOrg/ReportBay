@@ -29,12 +29,17 @@
 			<p:submenu label="Report" icon="fa fa-clipboard">
 				<p:menuitem value="Browse Reports" url="/views/report/browse_reports.xhtml" icon="fa fa-search"/>
 				<p:separator />
-				<p:menuitem value="Manage Reports" icon="fa fa-wrench"/>
+				<!-- <p:menuitem value="Manage Reports" icon="fa fa-wrench"/> -->
+				<p:submenu label="Manage" icon="fa fa-wrench">
+				  <p:menuitem value="Reports" icon="fa fa-bar-chart"/>
+				  <!-- <p:menuitem value="Templates" icon="fa fa-clipboard" url="/views/template/manage_templates.xhtml"/> -->
+				  <p:menuitem value="Templates" icon="fa fa-clipboard" action="#{reportTemplate.loadReportTemplates}"/> 
+				</p:submenu>
 				<p:submenu label="New" icon="fa fa-plus">
 					<p:menuitem value="Chart Report" icon="fa fa-bar-chart"/>
 					<p:menuitem value="CrossTab Report" icon="fa fa-list-alt"/>
 					<p:menuitem value="Report Document" icon="fa fa-file"/>
-					<p:menuitem value="Report Template" action="#{reportTemplate.createNewReportTemplate}" icon="fa fa-clipboard"/>
+					<!-- <p:menuitem value="Report Template" action="#{reportTemplate.createNewReportTemplate}" icon="fa fa-clipboard"/> -->
 				</p:submenu>
 			</p:submenu>
 			<p:submenu label="Model" icon="fa fa-table">

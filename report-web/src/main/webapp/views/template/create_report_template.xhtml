@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:reporte="http://org.reporte/jsf/facelets">
+<h:head>
+	<title>#{param['title']}</title>
+	<h:outputStylesheet library="default" name="css/default.css" />
+	<h:outputScript library="default" name="js/default.js" />
+</h:head>
+<h:body>
+	<h:form id="createReportTemplate">
+		<p:wizard id="wiz" widgetVar="myWizard" flowListener="#{reportTemplate.onFlowProcess}" showNavBar="false">
+			<p:tab id="chartInfo" title="Chart Info">
+				<p:panel header="Chart Info" style="height:435px">
+					<p:spacer width="100%" height="5px" />
+					<h:panelGrid columns="3" rowClasses="vertical-align-top" style="margin-left:100px;">
+						<h:panelGrid columns="2" columnClasses="label, value" cellpadding="6">
+							<h:outputText value="Template Name  *   " />
+							<p:inputText id="templateName" value="#{reportTemplate.templateName}" required="true" requiredMessage="Templaname Name Mandatory" style="width:250px;height:20px;margin-left:7px;"></p:inputText>
+							<h:outputText value="Chart Type  *  " />
+							<h:panelGrid columns="2" style="margin-left:4px;">
+								<p:selectOneMenu value="#{reportTemplate.selectedChartType}" style="width:259px;height:28px;" required="true" requiredMessage="Chart Type Mandatory" rendered="#{!reportTemplate.edit}">
+									<f:selectItems value="#{reportTemplate.chartTypes}" />
+									<p:ajax event="valueChange" listener="#{reportTemplate.chartTypeChanged}" update=":createReportTemplate:chartTypeImg" />
+								</p:selectOneMenu>
+								<p:inputText id="chartType" value="#{reportTemplate.selectedChartType}" style="width:250px;height:20px;" readonly="true" rendered="#{reportTemplate.edit}" />
+								<p:graphicImage id="chartTypeImg" value="#{reportTemplate.chartTypeImgSrc}" style="padding-top: 7px;padding-left: 5px;"></p:graphicImage>
+							</h:panelGrid>
+							<h:outputText value="Chart Title  *   " />
+							<p:inputText id="chartTitle" value="#{reportTemplate.chartTitle}" required="true" requiredMessage="Chart Title Mandatory" style="width:250px;height:20px;margin-left:7px;"></p:inputText>
+							<h:outputText value="Report Display Name  *   " />
+							<p:inputText id="reportDisplayName" value="#{reportTemplate.reportDisplayName}" required="true" requiredMessage="Report Display Name Mandatory" style="width:250px;height:20px;margin-left:7px;"></p:inputText>
+						</h:panelGrid>
+					</h:panelGrid>
+				</p:panel>
+				<h:panelGrid style="width:100%">
+					<h:panelGroup style="float:right">
+						<p:commandButton value="Next" icon="ui-icon-arrow-1-e" type="button" onclick="PF('myWizard').next();" />
+					</h:panelGroup>
+				</h:panelGrid>
+			</p:tab>
+			<p:tab id="model" title="Model">
+				<p:panel header="Model" style="height:435px">
+					<h:panelGrid columns="1" rowClasses="vertical-align-top">
+						<h:panelGrid columns="2" cellspacing="4" cellpadding="4" rowClasses="vertical-align-top">
+							<h:panelGrid columns="2" columnClasses="label, value" cellpadding="6">
+								<h:outputText value="Model Name  *  &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;"/>
+								<p:selectOneMenu id="allExistingModels" value="#{reportTemplate.selectedModelName}" style="width:300px;height:28px;" required="true">
+									<f:selectItems value="#{reportTemplate.existingModelNames}" />
+									<p:ajax event="valueChange" listener="#{reportTemplate.modelChanged}" update=":createReportTemplate" />
+								</p:selectOneMenu>
+								<h:outputText value="Model Description &#160;&#160;" id="modelDescText" rendered="#{reportTemplate.showModelDetails}" style="width : 300px;" />
+								<h:inputTextarea id="modelDescription" value="#{reportTemplate.selectedModelDescription}" rows="3" cols="1" style="width:295px;" readonly="true" rendered="#{reportTemplate.showModelDetails}" />
+							</h:panelGrid>
+							<h:panelGrid columns="1" columnClasses="value" rendered="#{reportTemplate.showModelDetails}" cellpadding="6">
+								<p:dataTable id="attributesTable" value="#{reportTemplate.modelAttrs}" var="attribute" border="1" style="width:300px;height:350px;overflow-y: scroll;" emptyMessage="No attributes found.">
+									<p:column headerText="Attributes">
+										<h:outputText value="#{attribute['alias']}" />
+									</p:column>
+								</p:dataTable>
+							</h:panelGrid>
+						</h:panelGrid>
+					</h:panelGrid>
+				</p:panel>
+				<h:panelGrid columns="2" style="width:100%">
+					<h:panelGroup style="float:left">
+						<p:commandButton value="Back" icon="ui-icon-arrow-1-w" type="button" onclick="PF('myWizard').back();" global="false" />
+					</h:panelGroup>
+					<h:panelGroup style="float:right">
+						<p:commandButton value="Next" icon="ui-icon-arrow-1-e" type="button" onclick="PF('myWizard').next();" global="false" />
+					</h:panelGroup>
+				</h:panelGrid>
+			</p:tab>
+			<p:tab id="setup" title="Configuration">
+				<p:panel header="Setup" style="height:435px">
+					<p:panel rendered="#{reportTemplate.pieChart}" style="border:none;height:300px;">
+						<p:spacer width="100%" height="5px" />
+						<h:panelGrid columns="2" rowClasses="vertical-align-top" columnClasses="label,value">
+							<h:outputText id="pieDataFieldText" value="Data Field * " style="width:200px;" />
+							<p:selectOneMenu id="pieDataField" value="#{reportTemplate.pieDataField}" style="width:259px;margin-left:7px;" required="true">
+								<f:selectItem itemLabel="Select Data Field" itemValue="#{null}" noSelectionOption="true" />
+								<f:selectItems value="#{reportTemplate.onlyIntegerModelAttrs}" var="attribute" itemLabel="#{attribute.alias}" itemValue="#{attribute.alias}" />
+							</p:selectOneMenu>
+
+							<h:outputText id="pieCatagoryFieldText" value="Category Field * " style="width:200px;" />
+							<p:selectOneMenu id="pieCatagoryField" value="#{reportTemplate.pieCatagoryField}" style="width:259px;margin-left:7px;" required="true">
+								<f:selectItem itemLabel="Select Category Field" itemValue="#{null}" noSelectionOption="true" />
+								<f:selectItems value="#{reportTemplate.modelAttrs}" var="attribute" itemLabel="#{attribute.alias}" itemValue="#{attribute.alias}" />
+							</p:selectOneMenu>
+
+							<h:outputText value="" />
+							<h:panelGrid columns="4" columnClasses="value,label" style="margin-left:4px;">
+								<p:selectBooleanCheckbox id="pieShowLegend" value="#{reportTemplate.showLegend}" />
+								<h:outputText value="Show Legend" />
+								<p:selectBooleanCheckbox id="pieShowDataLabel" value="#{reportTemplate.showDataLabel}" />
+								<h:outputText value="Show Data Label" />
+							</h:panelGrid>
+						</h:panelGrid>
+					</p:panel>
+					<p:panel rendered="#{!reportTemplate.pieChart}" style="border:none;height:300px;">
+						<p:spacer width="100%" height="5px" />
+						<h:panelGrid columns="2" rowClasses="vertical-align-top" columnClasses="label,value">
+							<h:panelGrid columns="2" rowClasses="vertical-align-top" columnClasses="label, value" cellpadding="6" style="margin-left:65px;">
+								<h:outputText id="xAxisTitleText" value="x-Axis Title " />
+								<p:inputText id="xAxisTitle" value="#{reportTemplate.xAxisTitle}" style="width:250px;height:20px;margin-left:7px;" />
+
+								<h:outputText id="yAxisTitleText" value="y-Axis Title " />
+								<p:inputText id="yAxisTitle" value="#{reportTemplate.yAxisTitle}" style="width:250px;height:20px;margin-left:7px;" />
+							</h:panelGrid>
+							<h:outputText value="" />
+							<h:panelGrid columns="2" rowClasses="vertical-align-top" columnClasses="label, value" cellpadding="6">
+								<h:outputText id="modelDataLabelFieldText" value="Data Label Field * " style="width:200px;" />
+								<p:selectOneMenu id="modelDataLabelField" value="#{reportTemplate.modelDataLabelField}" style="width:259px;margin-left:7px;" required="true">
+									<f:selectItem itemLabel="Select Data Label Field" itemValue="#{null}" noSelectionOption="true" />
+									<f:selectItems value="#{reportTemplate.modelAttrs}" var="attribute" itemLabel="#{attribute.alias}" itemValue="#{attribute.alias}" />
+								</p:selectOneMenu>
+
+								<h:outputText id="modelDataValueFieldText" value="Data Value Field * " style="width:200px;" />
+								<p:selectOneMenu id="modelDataValueField" value="#{reportTemplate.modelDataValueField}" style="width:259px;height:28px;margin-left:7px;" required="true">
+									<f:selectItem itemLabel="Select Data Value Field" itemValue="#{null}" noSelectionOption="true" />
+									<f:selectItems value="#{reportTemplate.onlyIntegerModelAttrs}" var="attribute" itemLabel="#{attribute.alias}" itemValue="#{attribute.alias}" />
+								</p:selectOneMenu>
+								<h:outputText id="modelSeriesGroupFieldText" value="Series Group Field * " style="width:200px;" />
+								<p:selectOneMenu id="modelSeriesGroupField" value="#{reportTemplate.modelSeriesGroupField}" style="width:259px;height:28px;margin-left:7px;" required="true">
+									<f:selectItem itemLabel="Select Series Group Field" itemValue="#{null}" noSelectionOption="true" />
+									<f:selectItems value="#{reportTemplate.modelAttrs}" var="attribute" itemLabel="#{attribute.alias}" itemValue="#{attribute.alias}" />
+								</p:selectOneMenu>
+
+								<h:outputText value="" />
+								<h:panelGrid columns="4" columnClasses="value,label" style="margin-left:4px;">
+									<p:selectBooleanCheckbox id="showLegend" value="#{reportTemplate.showLegend}" />
+									<h:outputText value="Show Legend" />
+									<p:selectBooleanCheckbox id="showDataLabel" value="#{reportTemplate.showDataLabel}" />
+									<h:outputText value="Show Data Label" />
+								</h:panelGrid>
+							</h:panelGrid>
+							<h:panelGrid columns="2" rowClasses="vertical-align-top" columnClasses="label, value" cellpadding="4">
+								<p:dataTable id="tempSeriesValueTable" var="tempSeries" value="#{reportTemplate.templateSeriesValues}" editable="true" editMode="cell" style="width:400px;height:250px;overflow-y: auto;"
+									emptyMessage="Atleast one Series's Name and Value needed.">
+									<f:facet name="header">
+           								Template Series Values
+       							</f:facet>
+									<p:column headerText="Name">
+										<p:cellEditor>
+											<f:facet name="output">
+												<h:outputText value="#{tempSeries.name}" />
+											</f:facet>
+											<f:facet name="input">
+												<p:inputText value="#{tempSeries.name}" />
+											</f:facet>
+										</p:cellEditor>
+									</p:column>
+
+									<p:column headerText="Value">
+										<p:cellEditor>
+											<f:facet name="output">
+												<h:outputText value="#{tempSeries.modelSeriesValue}" />
+											</f:facet>
+											<f:facet name="input">
+												<p:inputText value="#{tempSeries.modelSeriesValue}" />
+											</f:facet>
+										</p:cellEditor>
+									</p:column>
+
+									<p:column width="18">
+										<p:commandLink title="Remove this Series Value" actionListener="#{reportTemplate.removeSeriesValue}" update=":createReportTemplate:tempSeriesValueTable" immediate="true">
+											<h:graphicImage library="default" name="images/remove-icon.png" height="15" />
+										</p:commandLink>
+									</p:column>
+								</p:dataTable>
+								<h:panelGrid columns="2" rowClasses="vertical-align-top" columnClasses="value value" cellpadding="1">
+									<p:commandLink id="addNewTimeSeries" title="Add New Series Value" actionListener="#{reportTemplate.addNewSeriesValue}" update=":createReportTemplate:tempSeriesValueTable" immediate="true">
+										<h:graphicImage library="default" name="images/addnew-icon.png" height="25" />
+									</p:commandLink>
+								</h:panelGrid>
+							</h:panelGrid>
+						</h:panelGrid>
+					</p:panel>
+				</p:panel>
+				<h:panelGrid columns="2" style="width:100%">
+					<h:panelGroup style="float:left">
+						<p:commandButton value="Back" icon="ui-icon-arrow-1-w" type="button" onclick="PF('myWizard').back();" global="false" />
+					</h:panelGroup>
+					<h:panelGroup style="float:right">
+						<p:commandButton value="Preview" icon="ui-icon-arrow-1-e" type="button" onclick="PF('myWizard').next();" global="false" />
+					</h:panelGroup>
+				</h:panelGrid>
+			</p:tab>
+			<p:tab id="preview" title="Preview">
+				<p:panel header="Setup" style="height:435px">
+					<p:chart type="#{reportTemplate.chartType}" model="#{reportTemplate.chartModel}" style="height:400px;" rendered="#{reportTemplate.chartModel!=null}" />
+				</p:panel>
+				<h:panelGrid columns="2" style="width:100%">
+					<h:panelGroup style="float:left">
+						<p:commandButton value="Back" icon="ui-icon-arrow-1-w" type="button" onclick="PF('myWizard').back();" global="false" />
+					</h:panelGroup>
+					<h:panelGroup style="float:right">
+						<p:commandButton value="Next" icon="ui-icon-arrow-1-e" type="button" onclick="PF('myWizard').next();" global="false" />
+					</h:panelGroup>
+				</h:panelGrid>
+			</p:tab>
+			<p:tab id="confirmation" title="Confirmation">
+				<p:panel header="Confirmation" style="height:435px;overflow:auto;">
+					<h:panelGrid style="width:100%">
+						<p:fieldset legend="Summary" style="background-color:#E8E8E8;height:300px;overflow:auto;">
+							<h:panelGrid columns="2" rowClasses="vertical-align-top" style="width:100%">
+								<h:panelGroup>
+									<h:panelGrid columns="2">
+										<h:outputText value="Chart Info" style="font-weight:bold" />
+										<h:panelGroup />
+										<reporte:output label="Template Name" bean="#{reportTemplate}" property="templateName" labelStyle="color:gray;margin-left:20px;" />
+										<reporte:output label="Chart Type" bean="#{reportTemplate}" property="selectedChartType" labelStyle="color:gray;margin-left:20px;" />
+										<reporte:output label="Chart Title" bean="#{reportTemplate}" property="chartTitle" labelStyle="color:gray;margin-left:20px;" />
+									</h:panelGrid>
+									<h:panelGrid columns="2">
+										<h:outputText value="Model" style="font-weight:bold" />
+										<h:panelGroup />
+										<reporte:output label="Name" bean="#{reportTemplate}" property="selectedModelName" labelStyle="color:gray;margin-left:20px;" />
+									</h:panelGrid>
+								</h:panelGroup>
+								<h:panelGrid columns="2">
+									<h:panelGrid columns="2" columnClasses="label,value">
+										<h:outputText value="Configuration Details" style="font-weight:bold" />
+										<h:panelGroup />
+										<reporte:output label="x-Axis Title" bean="#{reportTemplate}" property="xAxisTitle" labelStyle="color:gray;margin-left:20px;" />
+										<reporte:output label="y-Axis Title" bean="#{reportTemplate}" property="yAxisTitle" labelStyle="color:gray;margin-left:20px;" />
+										<reporte:output label="Data Label Field" bean="#{reportTemplate}" property="modelDataLabelField" labelStyle="color:gray;margin-left:20px;" />
+										<reporte:output label="Data Value Field" bean="#{reportTemplate}" property="modelDataValueField" labelStyle="color:gray;margin-left:20px;" />
+										<reporte:output label="Series Group Field" bean="#{reportTemplate}" property="modelSeriesGroupField" labelStyle="color:gray;margin-left:20px;" />
+									</h:panelGrid>
+									<h:panelGrid columns="2" columnClasses="label,value">
+										<h:outputText value="Series Values" style="font-weight:bold" />
+										<h:panelGroup />
+										<c:forEach var="templateSeries" items="#{reportTemplate.templateSeriesValues}">
+											<reporte:output label="#{templateSeries.name}" bean="#{templateSeries}" property="modelSeriesValue" labelStyle="color:gray;margin-left:30px;" />
+										</c:forEach>
+									</h:panelGrid>
+								</h:panelGrid>
+							</h:panelGrid>
+						</p:fieldset>
+						<h:panelGroup style="float:right">
+							<p:commandButton value="Cancel" onclick="PF('cancelTemplate').show();" />
+							<p:dialog id="confirmCancelDialog" header="Cancel Template" widgetVar="cancelTemplate" modal="true" height="70" width="280" resizable="false" appendTo="@(body)">
+								<h:panelGrid columns="1" columnClasses="value">
+									<h:panelGroup>
+										<h:outputText value="Are you sure you want to cancel template?" style="font-size:9pt;" />
+									</h:panelGroup>
+									<h:panelGroup style="float:right;margin-top:10px;">
+										<p:commandButton value="Yes" styleClass="ui-confirmdialog-no" icon="ui-icon-check" style="margin-right:10px;" immediate="true" action="#{reportTemplate.cancel}" />
+										<p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" onclick="PF('cancelTemplate').hide();" />
+									</h:panelGroup>
+								</h:panelGrid>
+							</p:dialog>
+							<p:spacer width="5px" />
+							<p:commandButton value="#{reportTemplate.saveOrUpdate}" immediate="true" action="#{reportTemplate.saveOrUpdateReportTemplate}" />
+						</h:panelGroup>
+					</h:panelGrid>
+				</p:panel>
+				<h:panelGrid style="width:100%">
+					<h:panelGroup style="float:left">
+						<p:commandButton value="Back" icon="ui-icon-arrow-1-w" type="button" onclick="PF('myWizard').back();" global="false" />
+					</h:panelGroup>
+				</h:panelGrid>
+			</p:tab>
+		</p:wizard>
+	</h:form>
+</h:body>
+</html>

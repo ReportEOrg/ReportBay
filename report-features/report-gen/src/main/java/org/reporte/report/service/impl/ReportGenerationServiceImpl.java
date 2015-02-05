@@ -205,8 +205,11 @@ public class ReportGenerationServiceImpl implements ReportGenerationService{
 		
 		Map<String, Number> categoryDataMap = report.getCategoryData();
 		
-		ReportQuery reportQuery = reportQueryDAO.find(chartTemplate.getId());
-		
+		ReportQuery reportQuery = chartTemplate.getReportQuery();
+
+		if (reportQuery == null) {
+			reportQuery = reportQueryDAO.find(chartTemplate.getId());
+		}		
 		List<Map<ColumnMetadata, String>> resultList = jdbcClient.execute(reportQuery.getDatasource(), reportQuery.getQuery());
 		
 		String modelCategoryField = chartTemplate.getModelCategoryField();
@@ -338,7 +341,11 @@ public class ReportGenerationServiceImpl implements ReportGenerationService{
 		
 		report.setChartDataSeries(new ArrayList<ChartSeries>());
 		
-		ReportQuery reportQuery = reportQueryDAO.find(chartTemplate.getId());
+		ReportQuery reportQuery = chartTemplate.getReportQuery();
+		
+		if(reportQuery==null){
+			reportQuery = reportQueryDAO.find(chartTemplate.getId());
+		}
 		
 		List<Map<ColumnMetadata, String>> resultList = jdbcClient.execute(reportQuery.getDatasource(), reportQuery.getQuery());
 		

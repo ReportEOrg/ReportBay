@@ -11,12 +11,12 @@ import org.reporte.reporttemplate.domain.PieChartTemplate;
 import org.reporte.reporttemplate.domain.ReportQuery;
 import org.reporte.reporttemplate.service.exception.ReportTemplateServiceException;
 
-public interface ReportTemplateService{
-	
+public interface ReportTemplateService {
+
 	/****************************
 	 * limit the save/update/delete type to specific child class
 	 ****************************/
-	
+
 	/**
 	 * 
 	 * @param reportTemplate
@@ -24,7 +24,7 @@ public interface ReportTemplateService{
 	 * @throws ReportTemplateServiceException
 	 */
 	AreaChartTemplate save(AreaChartTemplate reportTemplate) throws ReportTemplateServiceException;
-	
+
 	/**
 	 * 
 	 * @param reportTemplate
@@ -32,14 +32,14 @@ public interface ReportTemplateService{
 	 * @throws ReportTemplateServiceException
 	 */
 	AreaChartTemplate update(AreaChartTemplate reportTemplate) throws ReportTemplateServiceException;
-	
+
 	/**
 	 * 
 	 * @param reportTemplate
 	 * @throws ReportTemplateServiceException
 	 */
 	void delete(AreaChartTemplate reportTemplate) throws ReportTemplateServiceException;
-	
+
 	/**
 	 * 
 	 * @param reportTemplateId
@@ -47,7 +47,7 @@ public interface ReportTemplateService{
 	 * @throws ReportTemplateServiceException
 	 */
 	AreaChartTemplate findAreaChartTemplate(int reportTemplateId) throws ReportTemplateServiceException;
-	
+
 	/**
 	 * 
 	 * @param reportTemplate
@@ -55,7 +55,7 @@ public interface ReportTemplateService{
 	 * @throws ReportTemplateServiceException
 	 */
 	BarChartTemplate save(BarChartTemplate reportTemplate) throws ReportTemplateServiceException;
-	
+
 	/**
 	 * 
 	 * @param reportTemplate
@@ -63,7 +63,7 @@ public interface ReportTemplateService{
 	 * @throws ReportTemplateServiceException
 	 */
 	BarChartTemplate update(BarChartTemplate reportTemplate) throws ReportTemplateServiceException;
-	
+
 	/**
 	 * 
 	 * @param reportTemplate
@@ -78,7 +78,7 @@ public interface ReportTemplateService{
 	 * @throws ReportTemplateServiceException
 	 */
 	BarChartTemplate findBarChartTemplate(int reportTemplateId) throws ReportTemplateServiceException;
-	
+
 	/**
 	 * 
 	 * @param reportTemplate
@@ -86,7 +86,7 @@ public interface ReportTemplateService{
 	 * @throws ReportTemplateServiceException
 	 */
 	ColumnChartTemplate save(ColumnChartTemplate reportTemplate) throws ReportTemplateServiceException;
-	
+
 	/**
 	 * 
 	 * @param reportTemplate
@@ -94,7 +94,7 @@ public interface ReportTemplateService{
 	 * @throws ReportTemplateServiceException
 	 */
 	ColumnChartTemplate update(ColumnChartTemplate reportTemplate) throws ReportTemplateServiceException;
-	
+
 	/**
 	 * 
 	 * @param reportTemplate
@@ -109,7 +109,7 @@ public interface ReportTemplateService{
 	 * @throws ReportTemplateServiceException
 	 */
 	ColumnChartTemplate findColumnChartTemplate(int reportTemplateId) throws ReportTemplateServiceException;
-	
+
 	/**
 	 * 
 	 * @param reportTemplate
@@ -125,14 +125,14 @@ public interface ReportTemplateService{
 	 * @throws ReportTemplateServiceException
 	 */
 	LineChartTemplate update(LineChartTemplate reportTemplate) throws ReportTemplateServiceException;
-	
+
 	/**
 	 * 
 	 * @param reportTemplate
 	 * @throws ReportTemplateServiceException
 	 */
 	void delete(LineChartTemplate reportTemplate) throws ReportTemplateServiceException;
-	
+
 	/**
 	 * 
 	 * @param reportTemplateId
@@ -156,14 +156,14 @@ public interface ReportTemplateService{
 	 * @throws ReportTemplateServiceException
 	 */
 	PieChartTemplate update(PieChartTemplate reportTemplate) throws ReportTemplateServiceException;
-	
+
 	/**
 	 * 
 	 * @param reportTemplate
 	 * @throws ReportTemplateServiceException
 	 */
 	void delete(PieChartTemplate reportTemplate) throws ReportTemplateServiceException;
-	
+
 	/**
 	 * 
 	 * @param reportTemplateId
@@ -171,14 +171,14 @@ public interface ReportTemplateService{
 	 * @throws ReportTemplateServiceException
 	 */
 	PieChartTemplate findPieChartTemplate(int reportTemplateId) throws ReportTemplateServiceException;
-	
+
 	/**
 	 * 
 	 * @return
 	 * @throws ReportTemplateServiceException
 	 */
 	List<BaseReportTemplate> findAllReportTemplate() throws ReportTemplateServiceException;
-	
+
 	/**
 	 * 
 	 * @param template
@@ -186,7 +186,7 @@ public interface ReportTemplateService{
 	 * @throws ReportTemplateServiceException
 	 */
 	ReportQuery constructReportQuery(AreaChartTemplate template) throws ReportTemplateServiceException;
-	
+
 	/**
 	 * 
 	 * @param template
@@ -194,7 +194,7 @@ public interface ReportTemplateService{
 	 * @throws ReportTemplateServiceException
 	 */
 	ReportQuery constructReportQuery(BarChartTemplate template) throws ReportTemplateServiceException;
-	
+
 	/**
 	 * 
 	 * @param template
@@ -202,6 +202,7 @@ public interface ReportTemplateService{
 	 * @throws ReportTemplateServiceException
 	 */
 	ReportQuery constructReportQuery(ColumnChartTemplate template) throws ReportTemplateServiceException;
+
 	/**
 	 * 
 	 * @param template
@@ -209,7 +210,7 @@ public interface ReportTemplateService{
 	 * @throws ReportTemplateServiceException
 	 */
 	ReportQuery constructReportQuery(LineChartTemplate template) throws ReportTemplateServiceException;
-	
+
 	/**
 	 * 
 	 * @param template
@@ -217,4 +218,12 @@ public interface ReportTemplateService{
 	 * @throws ReportTemplateServiceException
 	 */
 	ReportQuery constructReportQuery(PieChartTemplate template) throws ReportTemplateServiceException;
+
+	/**
+	 * 
+	 * @param templateId
+	 * @return
+	 * @throws ReportTemplateServiceException
+	 */
+	ReportQuery findReportQuery(int templateId) throws ReportTemplateServiceException;
 }
