@@ -1,4 +1,4 @@
-package org.reporte.web.bean.dashboard;
+package org.reporte.web.bean.report;
 
 import java.io.Serializable;
 import java.util.ArrayList;

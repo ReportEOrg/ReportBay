@@ -1,4 +1,4 @@
-package org.reporte.web.bean.dashboard;
+package org.reporte.web.bean.report;
 
 import static org.reporte.web.common.ChartTypeEnum.AREA;
 import static org.reporte.web.common.ChartTypeEnum.BAR;

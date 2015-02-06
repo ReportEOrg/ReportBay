@@ -7,34 +7,6 @@
 	xmlns:reporte="http://java.sun.com/jsf/composite/components">
 
 	<ui:define name="content">
-		<p:layout>
-			<p:layoutUnit position="center">
-				<h:form id="centerForm">
-					<f:event type="preRenderView" listener="#{reportListBean.init}"/>
-					<p:dataList value="#{reportListBean.reportList}" var="report" paginator="true" itemType="decimal">
-						<f:facet name="header">
-							Available Report(s)
-						</f:facet>
-						<p:commandLink update=":centerForm:reportDetail" 
-									   title="Display Report Detail" actionListener="#{reportListBean.displayReportDetails}"
-									   style="float:left;margin-right:10px">
-	            			<h:outputText value="#{report.reportDisplayName}" />
-	            			<f:attribute name="viewReport" value="#{report}"/>
-	            		</p:commandLink>
-					</p:dataList>
-					
-					<!-- dialog window for viewing report detail -->
-					<p:dialog header="Report" widgetVar="reportDialog" showEffect="blind" hideEffect="blind" resizable="false">
-						<p:outputPanel id="reportDetail" style="text-align:center;">
-					aaaabbbbccc
-						</p:outputPanel>
-					</p:dialog>
-				</h:form>
-			</p:layoutUnit>
-		</p:layout>
-		
-		
 	</ui:define>
-	
 	
 </ui:composition>
