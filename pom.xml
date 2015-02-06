@@ -36,14 +36,12 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 			<version>3.3.2</version>
-			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>commons-collections</groupId>
 			<artifactId>commons-collections</artifactId>
 			<version>3.2.1</version>
-			<scope>provided</scope>
 		</dependency>
 
 		<!-- Slf4j Logger -->
@@ -105,7 +103,7 @@
 			</pluginRepositories>
 
 			<properties>
-				<jdk.version>1.6</jdk.version>
+				<jdk.version>1.7</jdk.version>
 				<nexus.url>http://code.it.savvis.net/nexus/content</nexus.url>
 				<owb.version>1.2.6</owb.version>
 			</properties>
@@ -162,6 +160,19 @@
 						</plugin>
 						<plugin>
 							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-ejb-plugin</artifactId>
+							<version>2.5</version>
+							<configuration>
+								<ejbVersion>3.2</ejbVersion>
+								<archive>
+									<manifest>
+										<addClasspath>true</addClasspath>
+									</manifest>
+								</archive>
+							</configuration>
+						</plugin>
+						<plugin>
+							<groupId>org.apache.maven.plugins</groupId>
 							<artifactId>maven-enforcer-plugin</artifactId>
 							<configuration>
 								<skip>true</skip>
@@ -172,7 +183,7 @@
 			</build>
 
 			<properties>
-				<jdk.version>1.6</jdk.version>
+				<jdk.version>1.7</jdk.version>
 				<owb.version>1.2.6</owb.version>
 			</properties>
 
