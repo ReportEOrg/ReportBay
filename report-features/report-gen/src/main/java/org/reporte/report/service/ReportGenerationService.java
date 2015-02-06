@@ -1,5 +1,9 @@
 package org.reporte.report.service;
 
+import java.util.List;
+
+import org.reporte.datasource.domain.Datasource;
+import org.reporte.model.domain.Model;
 import org.reporte.report.domain.AreaChartReport;
 import org.reporte.report.domain.BarChartReport;
 import org.reporte.report.domain.ColumnChartReport;
@@ -11,6 +15,8 @@ import org.reporte.reporttemplate.domain.BarChartTemplate;
 import org.reporte.reporttemplate.domain.ColumnChartTemplate;
 import org.reporte.reporttemplate.domain.LineChartTemplate;
 import org.reporte.reporttemplate.domain.PieChartTemplate;
+import org.reporte.reporttemplate.domain.ReportQuery;
+import org.reporte.reporttemplate.service.exception.ReportTemplateServiceException;
 
 /**
  * 
@@ -25,17 +31,15 @@ public interface ReportGenerationService {
 	 * @return
 	 * @throws ReportGenerationServiceException
 	 */
-	AreaChartReport generateAreaChartReport(int reportTemplateId)
-			throws ReportGenerationServiceException;
-	
+	AreaChartReport generateAreaChartReport(int reportTemplateId) throws ReportGenerationServiceException;
+
 	/**
 	 * 
 	 * @param reportTemplate
 	 * @return
 	 * @throws ReportGenerationServiceException
 	 */
-	AreaChartReport generateAreaChartReport(AreaChartTemplate reportTemplate)
-			throws ReportGenerationServiceException;
+	AreaChartReport generateAreaChartReport(AreaChartTemplate reportTemplate) throws ReportGenerationServiceException;
 
 	/**
 	 * 
@@ -43,17 +47,15 @@ public interface ReportGenerationService {
 	 * @return
 	 * @throws ReportGenerationServiceException
 	 */
-	BarChartReport generateBarChartReport(int reportTemplateId)
-			throws ReportGenerationServiceException;
-	
+	BarChartReport generateBarChartReport(int reportTemplateId) throws ReportGenerationServiceException;
+
 	/**
 	 * 
 	 * @param reportTemplate
 	 * @return
 	 * @throws ReportGenerationServiceException
 	 */
-	BarChartReport generateBarChartReport(BarChartTemplate reportTemplate)
-			throws ReportGenerationServiceException;
+	BarChartReport generateBarChartReport(BarChartTemplate reportTemplate) throws ReportGenerationServiceException;
 
 	/**
 	 * 
@@ -61,17 +63,15 @@ public interface ReportGenerationService {
 	 * @return
 	 * @throws ReportGenerationServiceException
 	 */
-	ColumnChartReport generateColumnChartReport(int reportTemplateId) 
-			throws ReportGenerationServiceException;
-	
+	ColumnChartReport generateColumnChartReport(int reportTemplateId) throws ReportGenerationServiceException;
+
 	/**
 	 * 
 	 * @param reportTemplate
 	 * @return
 	 * @throws ReportGenerationServiceException
 	 */
-	ColumnChartReport generateColumnChartReport(ColumnChartTemplate reportTemplate) 
-			throws ReportGenerationServiceException;
+	ColumnChartReport generateColumnChartReport(ColumnChartTemplate reportTemplate) throws ReportGenerationServiceException;
 
 	/**
 	 * 
@@ -79,17 +79,15 @@ public interface ReportGenerationService {
 	 * @return
 	 * @throws ReportGenerationServiceException
 	 */
-	LineChartReport generateLineChartReport(int reportTemplateId)
-			throws ReportGenerationServiceException;
-	
+	LineChartReport generateLineChartReport(int reportTemplateId) throws ReportGenerationServiceException;
+
 	/**
 	 * 
 	 * @param reportTemplate
 	 * @return
 	 * @throws ReportGenerationServiceException
 	 */
-	LineChartReport generateLineChartReport(LineChartTemplate reportTemplate)
-			throws ReportGenerationServiceException;
+	LineChartReport generateLineChartReport(LineChartTemplate reportTemplate) throws ReportGenerationServiceException;
 
 	/**
 	 * 
@@ -97,16 +95,23 @@ public interface ReportGenerationService {
 	 * @return
 	 * @throws ReportGenerationServiceException
 	 */
-	PieChartReport generatePieChartReport(int reportTemplateId)
-			throws ReportGenerationServiceException;
-	
+	PieChartReport generatePieChartReport(int reportTemplateId) throws ReportGenerationServiceException;
+
 	/**
 	 * 
 	 * @param reportTemplate
 	 * @return
 	 * @throws ReportGenerationServiceException
 	 */
-	PieChartReport generatePieChartReport(PieChartTemplate reportTemplate)
-			throws ReportGenerationServiceException;
+	PieChartReport generatePieChartReport(PieChartTemplate reportTemplate) throws ReportGenerationServiceException;
+
+	/**
+	 * 
+	 * @param dataSource
+	 * @param query
+	 * @return
+	 * @throws ReportGenerationServiceException
+	 */
+	List<String> getDataFieldValues(Datasource dataSource,String query) throws ReportGenerationServiceException;
 
 }

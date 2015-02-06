@@ -49,6 +49,7 @@ public class ReportTemplateServiceImpl implements ReportTemplateService {
 	private static final String QUERY_SEPERATOR = ",";
 	private static final String AS_KEY = " as ";
 	private static final String APOSTROPHE_KEY = "'";
+	private static final String DISTINCT="distinct ";
 
 	@Inject
 	private ReportTemplateDAO reportTemplateDAO;
@@ -59,6 +60,7 @@ public class ReportTemplateServiceImpl implements ReportTemplateService {
 	@Inject
 	private ModelDAO modelDAO;
 
+	
 	/**
 	 * 
 	 * @param reportTemplate
@@ -684,5 +686,48 @@ public class ReportTemplateServiceImpl implements ReportTemplateService {
 		} catch (ReportQueryDAOException e) {
 			throw new ReportTemplateServiceException("Can't find report query with template id : " + templateId, e);
 		}
+	}
+
+	@Override
+	public String constructDataFieldValueQuery(Model model, String requiredColumn) throws ReportTemplateServiceException {
+		String query = "";
+		if (Approach.SINGLE_TABLE.equals(model.getApproach())) {
+			query = constructSimpleModelDataFieldValueQuery((SimpleModel) model, requiredColumn);
+		} else if (Approach.JOIN_QUERY.equals(model.getApproach())) {
+			query = constructJoinedModelDataFieldValueQuery(model, requiredColumn);
+		}
+		return query;
+	}
+
+	private String constructSimpleModelDataFieldValueQuery(SimpleModel model, String requiredColumn) throws ReportTemplateServiceException {
+		String tableName = model.getTable();
+		if (StringUtils.isBlank(tableName)) {
+			throw new ReportTemplateServiceException("empty table name for model " + model.getName());
+		}
+		StringBuilder sb = new StringBuilder();
+		sb.append(SELECT_KEY);
+		sb.append(DISTINCT + requiredColumn);
+		sb.append(" FROM ").append(tableName);
+		return sb.toString();
+
+	}
+
+	private String constructJoinedModelDataFieldValueQuery(Model model, String requiredColumn) throws ReportTemplateServiceException {
+		ModelQuery modelQuery = model.getQuery();
+		if (modelQuery == null || StringUtils.isBlank(modelQuery.getValue())) {
+			throw new ReportTemplateServiceException("empty joined query for model " + model.getName());
+		}
+		String joinedQuery = modelQuery.getValue();
+		int fromIdx = joinedQuery.toLowerCase().indexOf("from ");
+		int selectIdx = joinedQuery.toLowerCase().indexOf(SELECT_KEY);
+		if (fromIdx < 0 || selectIdx < 0) {
+			throw new ReportTemplateServiceException("invalid joined query [" + joinedQuery + "] for model " + model.getName());
+		}
+
+		StringBuilder sb = new StringBuilder();
+		sb.append(SELECT_KEY);
+		sb.append(DISTINCT + requiredColumn);
+		sb.append(" ").append(joinedQuery.substring(fromIdx));
+		return sb.toString();
 	}
 }

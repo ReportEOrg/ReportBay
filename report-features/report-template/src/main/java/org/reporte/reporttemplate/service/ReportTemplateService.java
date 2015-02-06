@@ -2,6 +2,7 @@ package org.reporte.reporttemplate.service;
 
 import java.util.List;
 
+import org.reporte.model.domain.Model;
 import org.reporte.reporttemplate.domain.AreaChartTemplate;
 import org.reporte.reporttemplate.domain.BarChartTemplate;
 import org.reporte.reporttemplate.domain.BaseReportTemplate;
@@ -226,4 +227,13 @@ public interface ReportTemplateService {
 	 * @throws ReportTemplateServiceException
 	 */
 	ReportQuery findReportQuery(int templateId) throws ReportTemplateServiceException;
+	
+	/**
+	 * 
+	 * @param model
+	 * @param requiredColumn
+	 * @return
+	 * @throws ReportTemplateServiceException
+	 */
+	String constructDataFieldValueQuery(Model model, String requiredColumn) throws ReportTemplateServiceException;
 }

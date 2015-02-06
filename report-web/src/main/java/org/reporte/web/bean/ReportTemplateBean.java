@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.SessionScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.faces.component.html.HtmlCommandLink;
 import javax.faces.component.html.HtmlInputText;
 import javax.faces.component.html.HtmlSelectOneMenu;
@@ -20,6 +20,7 @@ import javax.inject.Named;
 
 import org.apache.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
+import org.primefaces.component.selectonemenu.SelectOneMenu;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.FlowEvent;
 import org.primefaces.event.SelectEvent;
@@ -56,7 +57,7 @@ import org.reporte.web.util.ReportUtil;
  *
  */
 @Named("reportTemplate")
-@SessionScoped
+@RequestScoped
 public class ReportTemplateBean implements Serializable {
 	private static final long serialVersionUID = 696889640817167123L;
 	private static final Logger LOG = Logger.getLogger(ReportTemplateBean.class);
@@ -113,6 +114,8 @@ public class ReportTemplateBean implements Serializable {
 	private ReportTemplateService reportTemplateService;
 
 	private int tabActiveIndex;
+
+	private List<String> dataFieldValues;
 
 	@PostConstruct
 	public void init() {
@@ -233,6 +236,11 @@ public class ReportTemplateBean implements Serializable {
 		openNewReportTemplateDialog(params);
 	}
 
+	public void refresh() {
+		resetTemplateData();
+		loadReportTemplateList();
+	}
+
 	private void openNewReportTemplateDialog(Map<String, String> params) {
 		Map<String, Object> options = new HashMap<String, Object>();
 		options.put("modal", true);
@@ -268,6 +276,36 @@ public class ReportTemplateBean implements Serializable {
 				pieChart = true;
 			} else {
 				chartTypeImgSrc = "";
+			}
+		}
+	}
+
+	public void modelSeriesGroupFieldChanged(AjaxBehaviorEvent event) {
+		templateSeriesValues = new ArrayList<TemplateSeries>();
+		if (modelSeriesGroupField == null || modelSeriesGroupField.trim().length() == 0) {
+			modelSeriesGroupField = ((SelectOneMenu) event.getSource()).getValue().toString();
+		}
+		loadDataFieldValues(selectedModel, getReferenceColumn(modelSeriesGroupField, modelAttrs));
+	}
+
+	private String getReferenceColumn(String alias, List<AttributeMapping> attrMappings) {
+		for (AttributeMapping attribute : attrMappings) {
+			if (attribute.getAlias().equals(alias)) {
+				return attribute.getReferencedColumn();
+			}
+		}
+		return "";
+	}
+
+	private void loadDataFieldValues(Model model, String columnName) {
+		if (selectedModel != null) {
+			try {
+				String dataFieldQuery = reportTemplateService.constructDataFieldValueQuery(selectedModel, columnName);
+				dataFieldValues = reportGenService.getDataFieldValues(selectedModel.getDatasource(), dataFieldQuery);
+			} catch (ReportTemplateServiceException e) {
+				e.printStackTrace();
+			} catch (ReportGenerationServiceException e) {
+				e.printStackTrace();
 			}
 		}
 	}
@@ -384,7 +422,7 @@ public class ReportTemplateBean implements Serializable {
 			String enteredValue = ((HtmlInputText) event.getSource()).getValue().toString();
 			extReportTemplateList.clear();
 			for (BaseReportTemplate baseReportTemplate : orgExtReportTemplateList) {
-				if (baseReportTemplate.getReportDisplayName().toUpperCase().contains(enteredValue.toUpperCase())) {
+				if (baseReportTemplate.getTemplateName().toUpperCase().contains(enteredValue.toUpperCase())) {
 					extReportTemplateList.add(baseReportTemplate);
 				}
 			}
@@ -459,8 +497,7 @@ public class ReportTemplateBean implements Serializable {
 
 		pieCatagoryField = pieChartTemplate.getModelCategoryField();
 		pieDataField = pieChartTemplate.getModelDataField();
-		chartTemplateId = pieChartTemplate.getId();
-
+		chartTemplateId = pieChartTemplate.getId();		
 		generatePieChartModel(pieChartTemplate);
 		selectedChartType = "Pie Chart";
 		chartTypeImgSrc = "/images/piechart_small.png";
@@ -494,6 +531,9 @@ public class ReportTemplateBean implements Serializable {
 		modelDataLabelField = cartesianChartTemplate.getModelDataLabelField();
 		modelDataValueField = cartesianChartTemplate.getModelDataValueField();
 		modelSeriesGroupField = cartesianChartTemplate.getModelSeriesGroupField();
+		
+		loadDataFieldValues(selectedModel, getReferenceColumn(modelSeriesGroupField, modelAttrs));
+		
 		Set<TemplateSeries> templateSeries = cartesianChartTemplate.getDataSeries();
 		templateSeriesValues = new ArrayList<TemplateSeries>();
 		for (TemplateSeries series : templateSeries) {
@@ -1004,6 +1044,14 @@ public class ReportTemplateBean implements Serializable {
 
 	public void setTabActiveIndex(int tabActiveIndex) {
 		this.tabActiveIndex = tabActiveIndex;
+	}
+
+	public List<String> getDataFieldValues() {
+		return dataFieldValues;
+	}
+
+	public void setDataFieldValues(List<String> dataFieldValues) {
+		this.dataFieldValues = dataFieldValues;
 	}
 
 }

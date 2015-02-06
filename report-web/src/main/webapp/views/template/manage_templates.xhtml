@@ -13,7 +13,8 @@
 					<p:outputLabel styleClass="fa fa-clipboard" />
 					<p:outputLabel value="&#160;&#160;" />
 					<p:outputLabel value="Report Templates" style="font-size:9pt;" />
-					<p:commandButton title="Refresh Templates" icon="ui-icon ui-icon-refresh" style="float:right;width:18px;height:18px;margin-top:-2px;" />
+					<p:commandButton title="Refresh Templates" icon="ui-icon ui-icon-refresh" action="#{reportTemplate.refresh}" style="float:right;width:18px;height:18px;margin-top:-2px;"
+						update=":westForm,:centerForm,:editDeletedCont" />
 				</f:facet>
 				<h:form id="westForm">
 					<h:panelGrid style="text-align:center;" columns="2" id="searchCont">
@@ -27,7 +28,7 @@
 					</h:panelGrid>
 					<p:accordionPanel activeIndex="#{reportTemplate.tabActiveIndex}" id="extReportTemps" style="width:300px;" value="#{reportTemplate.extReportTemplateList}" var="report">
 						<p:ajax event="tabChange" listener="#{reportTemplate.onReportTemplateChange}" update=":centerForm:viewTemplateDetailPanel" />
-						<p:tab title="#{report.reportDisplayName}" titleStyle="font-size:14px;" />
+						<p:tab title="#{report.templateName}" titleStyle="font-size:14px;" />
 					</p:accordionPanel>
 				</h:form>
 			</p:layoutUnit>
@@ -152,7 +153,7 @@
 				<p:panel id="editDeletedCont" style="width:150px;float:right;border:none;">
 					<h:panelGrid columns="2" columnClasses="value,value" cellpadding="1" rendered="#{not empty reportTemplate.extReportTemplateList}">
 						<p:commandButton value="Edit" icon="ui-icon-pencil" action="#{reportTemplate.editReportTemplate}">
-							<p:ajax event="dialogReturn" listener="#{reportTemplate.onDialogReturn}" />
+							<p:ajax event="dialogReturn" listener="#{reportTemplate.onDialogReturn}" update=":westForm,:centerForm,:editDeletedCont" />
 						</p:commandButton>
 						<p:commandButton value="Delete" icon="ui-icon-trash" onclick="PF('deleteTemplate').show();" />
 						<p:dialog id="confirmDeleteDialog" header="Delete Report Template" widgetVar="deleteTemplate" modal="true" height="70" width="280" resizable="false" appendTo="@(body)">

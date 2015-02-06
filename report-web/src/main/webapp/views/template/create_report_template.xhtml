@@ -43,7 +43,7 @@
 					<h:panelGrid columns="1" rowClasses="vertical-align-top">
 						<h:panelGrid columns="2" cellspacing="4" cellpadding="4" rowClasses="vertical-align-top">
 							<h:panelGrid columns="2" columnClasses="label, value" cellpadding="6">
-								<h:outputText value="Model Name  *  &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;"/>
+								<h:outputText value="Model Name  *  &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;" />
 								<p:selectOneMenu id="allExistingModels" value="#{reportTemplate.selectedModelName}" style="width:300px;height:28px;" required="true">
 									<f:selectItems value="#{reportTemplate.existingModelNames}" />
 									<p:ajax event="valueChange" listener="#{reportTemplate.modelChanged}" update=":createReportTemplate" />
@@ -123,6 +123,7 @@
 								<p:selectOneMenu id="modelSeriesGroupField" value="#{reportTemplate.modelSeriesGroupField}" style="width:259px;height:28px;margin-left:7px;" required="true">
 									<f:selectItem itemLabel="Select Series Group Field" itemValue="#{null}" noSelectionOption="true" />
 									<f:selectItems value="#{reportTemplate.modelAttrs}" var="attribute" itemLabel="#{attribute.alias}" itemValue="#{attribute.alias}" />
+									<p:ajax event="valueChange" listener="#{reportTemplate.modelSeriesGroupFieldChanged}" update=":createReportTemplate:tempSeriesValueTable"/>
 								</p:selectOneMenu>
 
 								<h:outputText value="" />
@@ -149,18 +150,12 @@
 											</f:facet>
 										</p:cellEditor>
 									</p:column>
-
-									<p:column headerText="Value">
-										<p:cellEditor>
-											<f:facet name="output">
-												<h:outputText value="#{tempSeries.modelSeriesValue}" />
-											</f:facet>
-											<f:facet name="input">
-												<p:inputText value="#{tempSeries.modelSeriesValue}" />
-											</f:facet>
-										</p:cellEditor>
+									<p:column headerText="Value">										
+										<p:selectOneMenu value="#{tempSeries.modelSeriesValue}" style="width:150px;height:28px;font-size:13px;" required="true">
+											<f:selectItem itemLabel="Select Data Field Value" itemValue="#{null}" noSelectionOption="true" />
+											<f:selectItems value="#{reportTemplate.dataFieldValues}"/>
+										</p:selectOneMenu>
 									</p:column>
-
 									<p:column width="18">
 										<p:commandLink title="Remove this Series Value" actionListener="#{reportTemplate.removeSeriesValue}" update=":createReportTemplate:tempSeriesValueTable" immediate="true">
 											<h:graphicImage library="default" name="images/remove-icon.png" height="15" />
@@ -217,7 +212,7 @@
 										<reporte:output label="Name" bean="#{reportTemplate}" property="selectedModelName" labelStyle="color:gray;margin-left:20px;" />
 									</h:panelGrid>
 								</h:panelGroup>
-								<h:panelGrid columns="2">
+								<h:panelGrid columns="2" rendered="#{!reportTemplate.pieChart}">
 									<h:panelGrid columns="2" columnClasses="label,value">
 										<h:outputText value="Configuration Details" style="font-weight:bold" />
 										<h:panelGroup />
@@ -226,13 +221,33 @@
 										<reporte:output label="Data Label Field" bean="#{reportTemplate}" property="modelDataLabelField" labelStyle="color:gray;margin-left:20px;" />
 										<reporte:output label="Data Value Field" bean="#{reportTemplate}" property="modelDataValueField" labelStyle="color:gray;margin-left:20px;" />
 										<reporte:output label="Series Group Field" bean="#{reportTemplate}" property="modelSeriesGroupField" labelStyle="color:gray;margin-left:20px;" />
+										<h:panelGrid columns="2" columnClasses="value,label" style="margin-left:4px;">
+											<p:selectBooleanCheckbox value="#{reportTemplate.showLegend}" disabled="true" rendered="#{reportTemplate.showLegend}" />
+											<h:outputText value="Show Legend&#160;&#160;&#160;" style="font-size: 13px;" rendered="#{reportTemplate.showLegend}" />
+											<p:selectBooleanCheckbox value="#{reportTemplate.showDataLabel}" disabled="true" rendered="#{reportTemplate.showDataLabel}" />
+											<h:outputText value="Show Data Label" style="font-size: 13px;" rendered="#{reportTemplate.showDataLabel}" />
+										</h:panelGrid>
 									</h:panelGrid>
-									<h:panelGrid columns="2" columnClasses="label,value">
+									<h:panelGrid columns="2" columnClasses="label,value" style="margin-left:20px;">
 										<h:outputText value="Series Values" style="font-weight:bold" />
 										<h:panelGroup />
 										<c:forEach var="templateSeries" items="#{reportTemplate.templateSeriesValues}">
 											<reporte:output label="#{templateSeries.name}" bean="#{templateSeries}" property="modelSeriesValue" labelStyle="color:gray;margin-left:30px;" />
 										</c:forEach>
+									</h:panelGrid>
+								</h:panelGrid>
+								<h:panelGrid columns="1" rendered="#{reportTemplate.pieChart}">
+									<h:panelGrid columns="2" columnClasses="label,value">
+										<h:outputText value="Configuration Details" style="font-weight:bold" />
+										<h:panelGroup />
+										<reporte:output label="x-Axis Title" bean="#{reportTemplate}" property="pieDataField" labelStyle="color:gray;margin-left:20px;" />
+										<reporte:output label="y-Axis Title" bean="#{reportTemplate}" property="pieCatagoryField" labelStyle="color:gray;margin-left:20px;" />
+										<h:panelGrid columns="2" columnClasses="value,label" style="margin-left:4px;">
+											<p:selectBooleanCheckbox value="#{reportTemplate.showLegend}" disabled="true" rendered="#{reportTemplate.showLegend}" />
+											<h:outputText value="Show Legend&#160;&#160;&#160;" style="font-size: 13px;" rendered="#{reportTemplate.showLegend}" />
+											<p:selectBooleanCheckbox value="#{reportTemplate.showDataLabel}" disabled="true" rendered="#{reportTemplate.showDataLabel}" />
+											<h:outputText value="Show Data Label" style="font-size: 13px;" rendered="#{reportTemplate.showDataLabel}" />
+										</h:panelGrid>
 									</h:panelGrid>
 								</h:panelGrid>
 							</h:panelGrid>
