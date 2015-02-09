@@ -75,12 +75,14 @@
 			<groupId>reporte</groupId>
 			<artifactId>report-model</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
+			<scope>provided</scope>
 		</dependency>
 		
 		<dependency>
 			<groupId>reporte</groupId>
 			<artifactId>report-template</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
+			<scope>provided</scope>
 		</dependency>
 		
 		<dependency>
@@ -89,72 +91,78 @@
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		
+		<dependency>
+			<groupId>reporte</groupId>
+			<artifactId>report-common</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
 		<!-- Start of pure web apps setting -->
 
 		<!--  Spring framework  -->
-		<dependency>
+		<!-- <dependency>
 	        <groupId>org.springframework</groupId>
 	        <artifactId>spring-context</artifactId>
 	        <version>4.1.3.RELEASE</version>
-	    </dependency>
+	    </dependency> -->
 	    <!-- JSR-330 Dependency injection support -->
-	    <dependency>
+	    <!-- <dependency>
 			<groupId>javax.inject</groupId>
 			<artifactId>javax.inject</artifactId>
 			<version>1</version>
-		</dependency>
+		</dependency> -->
 		
 		<!-- spring web  -->
-		<dependency>
+		<!-- <dependency>
 	        <groupId>org.springframework</groupId>
 	        <artifactId>spring-web</artifactId>
 	        <version>4.1.3.RELEASE</version>
-	    </dependency>
+	    </dependency> -->
 	    
 	    <!-- for override EJB JPA implementation with spring -->
-	    <dependency>
+	    <!-- <dependency>
 	        <groupId>org.springframework.data</groupId>
 	        <artifactId>spring-data-jpa</artifactId>
         	<version>1.7.1.RELEASE</version>
-	    </dependency>
+	    </dependency> -->
 	    
 	    <!-- ejb classes -->
-	    <dependency>
+	    <!-- <dependency>
 			<groupId>javax.ejb</groupId>
 			<artifactId>ejb-api</artifactId>
 			<version>3.0</version>
-		</dependency>
+		</dependency> -->
 		
 		<!-- cdi API -->
-		<dependency>
+		<!-- <dependency>
 			<groupId>javax.enterprise</groupId>
 			<artifactId>cdi-api</artifactId>
 			<version>1.2</version>
-		</dependency>
+		</dependency> -->
 	  
 		<!-- apache common collections -->
-	  	<dependency>
+	  	<!-- <dependency>
 			<groupId>commons-collections</groupId>
 			<artifactId>commons-collections</artifactId>
 			<version>3.2.1</version>
-		</dependency>
+		</dependency> -->
 		
 		<!-- apache common language -->
-		<dependency>
+		<!-- <dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 			<version>3.3.2</version>
-		</dependency>
+		</dependency> -->
 		
 		<!-- Basic Data Source -->
-		<dependency>
+		<!-- <dependency>
 			<groupId>commons-dbcp</groupId>
   			<artifactId>commons-dbcp</artifactId>
   			<version>1.4</version>
-		</dependency>
+		</dependency> -->
 	  <!-- End of pure web apps setting -->
 	  
-	  		<!-- Start of explicitly exclude as already present in the common jar -->
+	  	<!-- Start of explicitly exclude as already present in the common jar -->
 		<!-- Apache Commons -->
 		<dependency>
 			<groupId>org.apache.commons</groupId>
