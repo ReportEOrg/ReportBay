@@ -103,7 +103,7 @@
 			</pluginRepositories>
 
 			<properties>
-				<jdk.version>1.7</jdk.version>
+				<jdk.version>1.8</jdk.version>
 				<nexus.url>http://code.it.savvis.net/nexus/content</nexus.url>
 				<owb.version>1.2.6</owb.version>
 			</properties>
@@ -125,6 +125,9 @@
 		<!-- openshift jenkins build profile -->
 		<profile>
 			<id>openshift</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
 			<build>
 				<pluginManagement>
 					<plugins>
@@ -183,7 +186,7 @@
 			</build>
 
 			<properties>
-				<jdk.version>1.7</jdk.version>
+				<jdk.version>1.8</jdk.version>
 				<owb.version>1.2.6</owb.version>
 			</properties>
 

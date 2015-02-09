@@ -7,4 +7,5 @@
   </parent>
   <artifactId>report-datasource</artifactId>
   <name>Report Datasource Module</name>
+  <packaging>ejb</packaging>
 </project>

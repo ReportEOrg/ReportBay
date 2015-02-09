@@ -21,6 +21,18 @@
 		</dependency>
 		<dependency>
 			<groupId>reporte</groupId>
+			<artifactId>report-datasource</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<type>ejb</type>
+		</dependency>
+		<dependency>
+			<groupId>reporte</groupId>
+			<artifactId>report-template</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<type>ejb</type>
+		</dependency>
+		<dependency>
+			<groupId>reporte</groupId>
 			<artifactId>report-web</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 			<type>war</type>

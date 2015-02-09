@@ -153,6 +153,32 @@
   			<version>1.4</version>
 		</dependency>
 	  <!-- End of pure web apps setting -->
+	  
+	  		<!-- Start of explicitly exclude as already present in the common jar -->
+		<!-- Apache Commons -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.3.2</version>
+			<scope>provided</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>commons-collections</groupId>
+			<artifactId>commons-collections</artifactId>
+			<version>3.2.1</version>
+			<scope>provided</scope>
+		</dependency>
+	  
+	  	<!-- Slf4j Logger -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>1.7.7</version>
+			<scope>provided</scope>
+		</dependency>
+	  	<!-- End of explicitly exclude as already present in the common jar -->
+	  
 	  <dependency>
 	  	<groupId>org.omnifaces</groupId>
 	  	<artifactId>omnifaces</artifactId>
