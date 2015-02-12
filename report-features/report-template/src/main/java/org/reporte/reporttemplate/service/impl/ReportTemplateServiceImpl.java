@@ -678,7 +678,9 @@ public class ReportTemplateServiceImpl implements ReportTemplateService {
 
 		return aliasLookupMap;
 	}
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public ReportQuery findReportQuery(int templateId) throws ReportTemplateServiceException {
 		try {
@@ -687,47 +689,123 @@ public class ReportTemplateServiceImpl implements ReportTemplateService {
 			throw new ReportTemplateServiceException("Can't find report query with template id : " + templateId, e);
 		}
 	}
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public String constructDataFieldValueQuery(Model model, String requiredColumn) throws ReportTemplateServiceException {
+	public String constructDataFieldValueQuery(Model model, String requiredFieldAlias) throws ReportTemplateServiceException {
 		String query = "";
+		
+		List<String> requiredColumnList = new ArrayList<String>();
+		requiredColumnList.add(requiredFieldAlias);
+
+		Map<String, String> aliasLookUpMap = constructAliasLookupMap(model, requiredColumnList);
+		
 		if (Approach.SINGLE_TABLE.equals(model.getApproach())) {
-			query = constructSimpleModelDataFieldValueQuery((SimpleModel) model, requiredColumn);
-		} else if (Approach.JOIN_QUERY.equals(model.getApproach())) {
-			query = constructJoinedModelDataFieldValueQuery(model, requiredColumn);
+			query = constructSimpleModelDataFieldValueQuery((SimpleModel) model, aliasLookUpMap);
+		} 
+		else if (Approach.JOIN_QUERY.equals(model.getApproach())) {
+			query = constructJoinedModelDataFieldValueQuery(model, aliasLookUpMap);
 		}
 		return query;
 	}
-
-	private String constructSimpleModelDataFieldValueQuery(SimpleModel model, String requiredColumn) throws ReportTemplateServiceException {
+	/**
+	 * 
+	 * @param model
+	 * @param aliasLookUpMap
+	 * @return
+	 * @throws ReportTemplateServiceException
+	 */
+	private String constructSimpleModelDataFieldValueQuery(SimpleModel model, Map<String, String> aliasLookUpMap) throws ReportTemplateServiceException {
 		String tableName = model.getTable();
+
 		if (StringUtils.isBlank(tableName)) {
 			throw new ReportTemplateServiceException("empty table name for model " + model.getName());
 		}
+
 		StringBuilder sb = new StringBuilder();
-		sb.append(SELECT_KEY);
-		sb.append(DISTINCT + requiredColumn);
+
+		for (Map.Entry<String, String> entry : aliasLookUpMap.entrySet()) {
+			sb.append(" ").append(entry.getValue()).append(AS_KEY).append(APOSTROPHE_KEY).append(entry.getKey()).append(APOSTROPHE_KEY).append(QUERY_SEPERATOR);
+		}
+
+		// truncate the last ","
+		if (sb.length() > 0) {
+			sb.setLength(sb.length() - QUERY_SEPERATOR.length());
+		}
+
+		sb.insert(0, SELECT_KEY+DISTINCT);
 		sb.append(" FROM ").append(tableName);
+
 		return sb.toString();
-
 	}
+	/**
+	 * 
+	 * @param model
+	 * @param aliasLookUpMap
+	 * @return
+	 * @throws ReportTemplateServiceException
+	 */
+	private String constructJoinedModelDataFieldValueQuery(Model model, Map<String, String> aliasLookUpMap) throws ReportTemplateServiceException {
 
-	private String constructJoinedModelDataFieldValueQuery(Model model, String requiredColumn) throws ReportTemplateServiceException {
+		// obtained the joined query
 		ModelQuery modelQuery = model.getQuery();
+
 		if (modelQuery == null || StringUtils.isBlank(modelQuery.getValue())) {
 			throw new ReportTemplateServiceException("empty joined query for model " + model.getName());
 		}
+
 		String joinedQuery = modelQuery.getValue();
+
 		int fromIdx = joinedQuery.toLowerCase().indexOf("from ");
 		int selectIdx = joinedQuery.toLowerCase().indexOf(SELECT_KEY);
+
 		if (fromIdx < 0 || selectIdx < 0) {
 			throw new ReportTemplateServiceException("invalid joined query [" + joinedQuery + "] for model " + model.getName());
 		}
 
+		String selectExpression = joinedQuery.substring(selectIdx + SELECT_KEY.length(), fromIdx);
+
+		String[] expresses = selectExpression.split(QUERY_SEPERATOR);
+
 		StringBuilder sb = new StringBuilder();
-		sb.append(SELECT_KEY);
-		sb.append(DISTINCT + requiredColumn);
-		sb.append(" ").append(joinedQuery.substring(fromIdx));
+
+		int foundColumnCount = 0;
+
+		// for each required column, look through the available column of model query
+		for (Map.Entry<String, String> entry : aliasLookUpMap.entrySet()) {
+
+			for (int eIdx = 0; eIdx < expresses.length; eIdx++) {
+				// if expression belongs to the required column, retain for
+				// final query
+				if (expresses[eIdx] != null && expresses[eIdx].contains(entry.getValue())) {
+
+					// replace the expresses query alias with model alias
+					sb.append(buildSelectArg(expresses[eIdx], entry)).append(QUERY_SEPERATOR);
+					foundColumnCount++;
+
+					break;
+				}
+			}
+		}
+
+		// if not all required column resolved, treated as error
+		if (foundColumnCount != aliasLookUpMap.size()) {
+			sb.setLength(0);
+		}
+
+		if (sb.length() > 0) {
+			// truncate last ","
+			sb.setLength(sb.length() - QUERY_SEPERATOR.length());
+
+			// add prefix of "select distinct "
+			sb.insert(0, SELECT_KEY+DISTINCT);
+			// append the original from and where clause
+			sb.append(" ").append(joinedQuery.substring(fromIdx));
+		} else {
+			throw new ReportTemplateServiceException("No match expression from custom query [" + joinedQuery + "]");
+		}
+
 		return sb.toString();
 	}
 }

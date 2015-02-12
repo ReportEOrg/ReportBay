@@ -106,7 +106,8 @@ public class TemplateSeries extends BaseJPAEntity{
 		
 		HashCodeBuilder hcb = new HashCodeBuilder(INITIAL_HASH, PRIME_HASH_MULTIPLIER);
 		
-		hcb.append(id)
+		hcb.appendSuper(super.hashCode())
+		   .append(id)
 		   .append(modelSeriesValue)
 		   .append(name);
 		

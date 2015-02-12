@@ -39,11 +39,13 @@
         </c:when>
         <c:when test="#{type == 'select'}">
             <p:selectOneMenu id="#{id}" value="#{bean[property]}" label="#{label}" required="#{required}">
+            	<f:selectItem itemLabel="Please Select" itemValue="" noSelectionOption="true" /> 
                 <f:selectItems value="#{options.entrySet()}" var="entry" itemValue="#{entry.key}" itemLabel="#{entry.value}" />
                 <p:ajax event="change" update="#{p:component(id.concat('-message'))}" />
             </p:selectOneMenu>
             <p:message id="#{id}-message" for="#{id}" />
         </c:when>
+        
         <c:when test="#{type == 'submit'}">
             <p:commandButton id="#{id}" value="#{label}" action="#{bean[action]}" />
             <p:message id="#{id}-message" for="#{id}" />

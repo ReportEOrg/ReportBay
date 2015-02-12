@@ -1,4 +1,4 @@
-package org.reporte.web.bean;
+package org.reporte.web.bean.reporttemplate;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -166,7 +166,7 @@ public class ReportTemplateBean implements Serializable {
 	}
 
 	public void createNewReportTemplate() {
-		resetTemplateData();
+//		resetTemplateData();
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("title", "New Report Template");
 		openNewReportTemplateDialog(params);
@@ -254,7 +254,7 @@ public class ReportTemplateBean implements Serializable {
 			values.add(entry.getValue());
 			requestParams.put(entry.getKey(), values);
 		}
-		RequestContext.getCurrentInstance().openDialog("create_report_template", options, requestParams);
+		RequestContext.getCurrentInstance().openDialog("report_template_wizard", options, requestParams);
 	}
 
 	public void cancel() {
