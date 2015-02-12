@@ -148,11 +148,16 @@
 											</f:facet>
 										</p:cellEditor>
 									</p:column>
-									<p:column headerText="Value">	
-										<p:selectOneMenu id="seriesSelector" value="#{tempSeries.modelSeriesValue}" style="width:150px;height:28px;font-size:13px;" immediate="true" required="true">
-											<f:selectItem itemLabel="Please Select" itemValue="" />
-											<f:selectItems value="#{reportTemplateWizard.templateSeriesValueOptions.entrySet()}" var="entry" itemValue="#{entry.key}" itemLabel="#{entry.value}"/>
-										</p:selectOneMenu>
+									<p:column headerText="Value">
+										<p:cellEditor>
+											<f:facet name="output"><h:outputText value="#{tempSeries.modelSeriesValue}"/></f:facet>
+											<f:facet name="input">
+												<h:selectOneMenu id="seriesSelector" value="#{tempSeries.modelSeriesValue}" style="width:150px;height:28px;font-size:13px;" immediate="true" required="true">
+													<f:selectItem itemLabel="Please Select" itemValue="" />
+													<f:selectItems value="#{reportTemplateWizard.templateSeriesValueOptions.entrySet()}" var="entry" itemValue="#{entry.key}" itemLabel="#{entry.value}"/>
+												</h:selectOneMenu>
+											</f:facet>
+										</p:cellEditor>
 									</p:column>
 									<p:column width="18">
 										<p:commandLink title="Remove this Series Value" actionListener="#{reportTemplateWizard.handleRemoveSeries}" update=":form:tempSeriesGrid" immediate="true">
