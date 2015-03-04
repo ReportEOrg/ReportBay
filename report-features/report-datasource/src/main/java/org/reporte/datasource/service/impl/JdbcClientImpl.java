@@ -28,6 +28,8 @@ public class JdbcClientImpl implements JdbcClient {
 
 	// Note: Column index starts from 1
 	private static final int DB_COLUMN_START_IDX = 1;
+	
+	private static final int MIN_ROW = 1;
 
 	/**
 	 * Apache Commons DBCP API helps us in getting rid of tightly coupleness to
@@ -140,27 +142,48 @@ public class JdbcClientImpl implements JdbcClient {
 		Statement stmt = null;
 		ResultSet rs = null;
 		DataSource dbcpDs = null;
-		SqlTypeEnum sqlType;
 
 		try {
 			dbcpDs = getDatasource(ds);
 			LOG.trace("Getting connection from DataSource..");
 			conn = dbcpDs.getConnection();
 			stmt = conn.createStatement();
+			stmt.setMaxRows(MIN_ROW);
 			LOG.trace("Getting all column names from Table - {}..", tableName);
 			rs = stmt.executeQuery(String.format(SELECT_ALL, tableName));
-			ResultSetMetaData metadata = rs.getMetaData();
-			List<ColumnMetadata> columnNames = new ArrayList<ColumnMetadata>();
-			int noOfCols = metadata.getColumnCount();
+
+			List<ColumnMetadata> columnNames = getColumnMetadata(rs);
 			
-			for (int colIdx = DB_COLUMN_START_IDX; colIdx <= noOfCols; colIdx++) {
-				
-				sqlType = SqlTypeEnum.fromJavaSqlType(metadata.getColumnType(colIdx));
-				columnNames.add(new ColumnMetadata(metadata.getColumnName(colIdx), 
-												   sqlType==null? "": sqlType.name(), 
-												   metadata.getColumnClassName(colIdx), 
-												   colIdx));
-			}
+			LOG.trace("Column names returned: {}", columnNames);
+
+			return columnNames;
+		} catch (SQLException e) {
+			throw new JdbcClientException("Failed to get metadata table names for given schema.", e);
+		} finally {
+			release(dbcpDs, conn, stmt, rs);
+		}
+	}
+
+	
+	@Override
+	public List<ColumnMetadata> getColumnsFromQuery(Datasource ds, String query) throws JdbcClientException {
+		LOG.debug("Getting existing metadata column names of the given query[" + query + "]..");
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet rs = null;
+		DataSource dbcpDs = null;
+
+		try {
+			dbcpDs = getDatasource(ds);
+			LOG.trace("Getting connection from DataSource..");
+			conn = dbcpDs.getConnection();
+			stmt = conn.createStatement();
+			stmt.setMaxRows(MIN_ROW);
+			LOG.trace("Getting all column names from query - {}..", query);
+			rs = stmt.executeQuery(query);
+			
+			List<ColumnMetadata> columnNames = getColumnMetadata(rs);
+			
 			LOG.trace("Column names returned: {}", columnNames);
 
 			return columnNames;
@@ -179,22 +202,9 @@ public class JdbcClientImpl implements JdbcClient {
 	 */
 	private List<Map<ColumnMetadata, String>> process(ResultSet rs) throws SQLException {
 		List<Map<ColumnMetadata, String>> rows = new ArrayList<Map<ColumnMetadata, String>>();
-		SqlTypeEnum sqlType;
-
-		// Get the column names in result set first.
-		ResultSetMetaData metadata = rs.getMetaData();
-		int noOfCols = metadata.getColumnCount();
-
-		List<ColumnMetadata> columns = new ArrayList<ColumnMetadata>();
-		for (int colIdx = DB_COLUMN_START_IDX; colIdx <= noOfCols; colIdx++) {
-			ColumnMetadata column = new ColumnMetadata();
-			column.setLabel(metadata.getColumnLabel(colIdx));
-			
-			sqlType = SqlTypeEnum.fromJavaSqlType(metadata.getColumnType(colIdx));
-			column.setTypeName(sqlType==null?"":sqlType.name());
-			
-			columns.add(column);
-		}
+		
+		//get column name from result set
+		List<ColumnMetadata> columns = getColumnMetadata(rs);
 		
 		// Populate the map.
 		while (rs.next()) {
@@ -209,6 +219,31 @@ public class JdbcClientImpl implements JdbcClient {
 		return rows;
 	}
 
+	/**
+	 * 
+	 * @param rs
+	 * @return
+	 * @throws SQLException
+	 */
+	private List<ColumnMetadata> getColumnMetadata(ResultSet rs) throws SQLException{
+		List<ColumnMetadata> columns = new ArrayList<ColumnMetadata>();
+		SqlTypeEnum sqlType;
+
+		// Get the column names in result set first.
+		ResultSetMetaData metadata = rs.getMetaData();
+		int noOfCols = metadata.getColumnCount();
+		
+		for (int colIdx = DB_COLUMN_START_IDX; colIdx <= noOfCols; colIdx++) {
+			
+			sqlType = SqlTypeEnum.fromJavaSqlType(metadata.getColumnType(colIdx));
+			columns.add(new ColumnMetadata(metadata.getColumnLabel(colIdx), 
+											   sqlType==null? "": sqlType.name(), 
+											   metadata.getColumnClassName(colIdx), 
+											   colIdx));
+		}
+		
+		return columns;
+	}
 	
 	/**
 	 * {@inheritDoc}

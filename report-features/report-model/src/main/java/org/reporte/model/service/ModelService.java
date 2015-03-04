@@ -72,4 +72,11 @@ public interface ModelService {
 	 * @throws IllegalStateException if <code>DatabaseTypeHandler</code> object reference couldn't be resolved when requested.
 	 */
 	JdbcClient getJdbcClient();
+	
+	/**
+	 * 
+	 * @param model
+	 * @throws ModelServiceException
+	 */
+	void updateModelQueryFromJoinQuery(Model model) throws ModelServiceException;
 }

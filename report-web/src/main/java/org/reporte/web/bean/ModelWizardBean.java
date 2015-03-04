@@ -467,6 +467,8 @@ public class ModelWizardBean implements Serializable {
 		columns = new HashSet<ColumnMetadata>();
 
 		try {
+			
+			modelService.updateModelQueryFromJoinQuery(model);
 			columnNames = deriveColumnsFromQuery(model.getQuery().getValue());
 			model.getAttributeBindings().addAll(columnNames);
 			
@@ -482,7 +484,12 @@ public class ModelWizardBean implements Serializable {
 			activeIndex = 1;
 
 			WebUtils.addInfoMessage("Query verification was successful.");
-		} catch (JdbcClientException e) {
+		} 
+		catch(ModelServiceException mse){
+			LOG.error("Query verification failed. Parsed query = ["+ model.getQuery().getJoinQuery() + "].", mse);
+			WebUtils.addErrorMessage(mse.getCause().getMessage());
+		}
+		catch (JdbcClientException e) {
 			LOG.error("Query verification failed. Executed query = ["+ model.getQuery().getValue() + "].", e);
 			WebUtils.addErrorMessage(e.getCause().getMessage());
 		}

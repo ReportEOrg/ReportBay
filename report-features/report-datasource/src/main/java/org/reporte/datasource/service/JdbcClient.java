@@ -32,6 +32,14 @@ public interface JdbcClient {
 	 * @return
 	 * @throws JdbcClientException
 	 */
+	List<ColumnMetadata> getColumnsFromQuery(Datasource ds, String query) throws JdbcClientException;
+	/**
+	 * 
+	 * @param ds
+	 * @param query
+	 * @return
+	 * @throws JdbcClientException
+	 */
 	List<Map<ColumnMetadata, String>> execute(Datasource ds, String query) throws JdbcClientException;
 	/**
 	 * 

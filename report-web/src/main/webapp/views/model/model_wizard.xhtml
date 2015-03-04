@@ -106,7 +106,7 @@
 
 									<p:inputTextarea id="query"
 										placeholder="Use #{modelWizard.model.datasource.schema};"
-										value="#{modelWizard.model.query.value}" autoResize="false"
+										value="#{modelWizard.model.query.joinQuery}" autoResize="false"
 										style="width:100%;height:200px" required="true" label="Query">
 										<p:ajax event="change"
 											listener="#{modelWizard.onChangeTxtAreaQuery}"

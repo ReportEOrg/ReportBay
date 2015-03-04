@@ -2,6 +2,7 @@ package org.reporte.model.service.impl;
 
 import static org.reporte.common.util.CommonUtils.checkForNull;
 
+import java.io.StringReader;
 import java.util.List;
 
 import javax.ejb.Stateless;
@@ -11,6 +12,10 @@ import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 import javax.inject.Inject;
 
+import net.sf.jsqlparser.JSQLParserException;
+import net.sf.jsqlparser.parser.CCJSqlParserManager;
+import net.sf.jsqlparser.statement.select.Select;
+
 import org.reporte.datasource.service.DatabaseTypeHandler;
 import org.reporte.datasource.service.DatasourceHandler;
 import org.reporte.datasource.service.JdbcClient;
@@ -19,6 +24,7 @@ import org.reporte.model.dao.exception.ModelDAOException;
 import org.reporte.model.domain.Model;
 import org.reporte.model.service.ModelService;
 import org.reporte.model.service.exception.ModelServiceException;
+import org.reporte.model.service.util.JoinQueryConverter;
 
 @Stateless
 @TransactionManagement(TransactionManagementType.CONTAINER)
@@ -144,6 +150,27 @@ public class ModelServiceImpl implements ModelService {
 			throw new IllegalStateException("JdbcClient reference must not be null.");
 		}
 		return jdbcClient;
+	}
+
+	@Override
+	public void updateModelQueryFromJoinQuery(Model model) throws ModelServiceException {
+		JoinQueryConverter jqConverter = new JoinQueryConverter(model.getDatasource(), jdbcClient);
+		
+		CCJSqlParserManager pm = new CCJSqlParserManager();
+		
+		try {
+			net.sf.jsqlparser.statement.Statement statement = pm.parse(new StringReader(model.getQuery().getJoinQuery()));
+			
+			if (statement instanceof Select) {
+				Select selectStatement = (Select) statement;
+				selectStatement.getSelectBody().accept(jqConverter);
+				
+				model.getQuery().setValue(jqConverter.getConvertedQuery());
+			}
+		} catch (JSQLParserException e) {
+			throw new ModelServiceException("Failed parsing sql ",e);
+		}
+		
 	}
 
 }

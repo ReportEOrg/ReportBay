@@ -20,6 +20,8 @@ public class ModelQuery extends BaseJPAEntity{
 	@Column(name="model_id")
 	private int id;
 	private String value;
+	@Column(name="join_query")
+	private String joinQuery;
 
 	public int getId() {
 		return id;
@@ -37,6 +39,13 @@ public class ModelQuery extends BaseJPAEntity{
 		this.value = value;
 	}
 	
+	public String getJoinQuery() {
+		return joinQuery;
+	}
+
+	public void setJoinQuery(String joinQuery) {
+		this.joinQuery = joinQuery;
+	}
 	/**
 	 * {@inheritDoc}
 	 */
