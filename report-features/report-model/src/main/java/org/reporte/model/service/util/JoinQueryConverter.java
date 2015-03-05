@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import net.sf.jsqlparser.expression.Alias;
+import net.sf.jsqlparser.expression.Expression;
+import net.sf.jsqlparser.expression.Function;
 import net.sf.jsqlparser.schema.Column;
 import net.sf.jsqlparser.schema.Database;
 import net.sf.jsqlparser.schema.Table;
@@ -35,7 +37,9 @@ import org.reporte.datasource.service.exception.JdbcClientException;
 public class JoinQueryConverter implements SelectVisitor, SelectItemVisitor, FromItemVisitor{
 	
 	private Map<String, String> fromAliasLookupMap = new HashMap<String, String>();
-	private Map<String, String> processAliasMap = new HashMap<String, String>();
+	private List<SelectItem> newSelectItemList = new ArrayList<SelectItem>();
+	private List<String> processedColumnNameList = new ArrayList<String>();
+	private int position;
 	
 	private JdbcClient jdbcClient;
 	private Datasource datasource;
@@ -64,70 +68,112 @@ public class JoinQueryConverter implements SelectVisitor, SelectItemVisitor, Fro
 	@Override
 	public void visit(PlainSelect plainSelect) {
 		
-		FromItem fromItem = plainSelect.getFromItem();
-		
-		fromItem.accept(this);
-		
-		for(Join joinitem: plainSelect.getJoins()){
-			fromItem = joinitem.getRightItem();
-			fromItem.accept(this);
-		}
-
-		List<SelectItem> newSelectItemList = new ArrayList<SelectItem>();		
-		List<SelectItem> selectItemList = plainSelect.getSelectItems();
-		
-		for (SelectItem selectItem : selectItemList) {
-			selectItem.accept(this);
-			
-			if(selectItem instanceof SelectExpressionItem){
-				newSelectItemList.add(selectItem);
-			}
-		}
-
-		int idx=0;
-		for(Map.Entry<String, String> entry: processAliasMap.entrySet()){
-			try {
-				String aliasName = entry.getKey();
-				List<ColumnMetadata> results = jdbcClient.getColumnsFromQuery(datasource, entry.getValue());
-
-				for(ColumnMetadata columnMetadata: results){
-					SelectExpressionItem sei = new SelectExpressionItem();
-					
-					//1. construct expression part
-					Column expr = new Column();
-					expr.setColumnName(columnMetadata.getLabel());
-					
-					Table table = new Table(new Database(null,null),null, aliasName);
-					expr.setTable(table);
-
-					sei.setExpression(expr);
-					
-					//2. construct alias part
-					Alias alias = new Alias(aliasName.replace(".", "_")+"_"+idx+"_"+columnMetadata.getLabel(), true);
-					
-					sei.setAlias(alias);
-					
-					newSelectItemList.add(sei);
-					
-					idx++;
-				}
-				
-			} catch (JdbcClientException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		//replace the selectItemList
-		plainSelect.setSelectItems(newSelectItemList);
+		handlePlainSelectVisitor(plainSelect);
 		
 		//construct the query
 		convertedQuery = plainSelect.toString();
 	}
 	
+	/**
+	 * 
+	 * @param plainSelect
+	 */
+	private void handlePlainSelectVisitor(PlainSelect plainSelect){
+
+		fromAliasLookupMap.clear();
+		newSelectItemList.clear();
+		processedColumnNameList.clear();
+		position = 1;
+		
+		FromItem fromItem = plainSelect.getFromItem();
+		
+		fromItem.accept(this);
+		
+		if(plainSelect.getJoins()!=null){
+			for(Join joinitem: plainSelect.getJoins()){
+				fromItem = joinitem.getRightItem();
+				fromItem.accept(this);
+			}
+		}
+
+		List<SelectItem> selectItemList = plainSelect.getSelectItems();
+		
+		if(selectItemList!=null){
+			for (SelectItem selectItem : selectItemList) {
+				selectItem.accept(this);
+			}
+		}
+
+		//replace the selectItemList
+		plainSelect.setSelectItems(newSelectItemList);
+	}
+	
+	/**
+	 * 
+	 * @param aliasRef
+	 * @param query
+	 */
+	private void expandAllTableSelectItem(String aliasRef, String query){
+		String processColumnName;
+		try {
+			List<ColumnMetadata> results = jdbcClient.getColumnsFromQuery(datasource, query);
+			
+			//for each expanded column
+			for(ColumnMetadata columnMetadata: results){
+				
+				String columnName = columnMetadata.getLabel();
+				
+				//create a correspond select expression item
+				SelectExpressionItem sei = new SelectExpressionItem();
+				//add to new list
+				newSelectItemList.add(sei);
+
+				//setup expression column
+				Column expr = new Column();
+				expr.setColumnName(columnName);
+				
+				Table table = new Table(new Database(null,null),null, aliasRef);
+				expr.setTable(table);
+
+				sei.setExpression(expr);
+				
+				//if columnName exists in the past, need to create as alias
+				if(processedColumnNameList.contains(columnName)){
+					processColumnName = columnName+"_"+position;
+					//construct alias part
+					Alias exprAlias = new Alias(processColumnName, true);
+					
+					//converted expression to expression with alias
+					sei.setAlias(exprAlias);
+				}
+				else{
+					processColumnName = columnName;
+				}
+				
+				//added process column name to track list
+				processedColumnNameList.add(processColumnName);
+				
+				//increment processing field position
+				position++;
+			}
+		} catch (JdbcClientException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	/**
+	 * UNION is handled here 
+	 */
 	@Override
 	public void visit(SetOperationList setOperationList) {
-		//TODO: no javadoc info on this?
+		List<PlainSelect> plainSelectList = setOperationList.getPlainSelects();
 		
+		for(PlainSelect plainSelect: plainSelectList){
+			handlePlainSelectVisitor(plainSelect);
+		}
+		
+		//construct the query
+		convertedQuery = setOperationList.toString();
 	}
 
 	@Override
@@ -151,19 +197,73 @@ public class JoinQueryConverter implements SelectVisitor, SelectItemVisitor, Fro
 		
 		//check if name belongs to alias instead of actual table
 		String alias = fromAliasLookupMap.get(allTableAliasName);
+		
 		if(alias!=null){
-			processAliasMap.put(allTableAliasName,alias);
+			expandAllTableSelectItem(allTableAliasName,alias);
 		}
-		//belongs to actual table, use "select * from table" for obtain the column name
 		else{
 			String refAliasName = (StringUtils.isBlank(table.getSchemaName())?"":table.getSchemaName()+".")+allTableAliasName;
-			processAliasMap.put(refAliasName, "Select * from "+refAliasName);
+			expandAllTableSelectItem(refAliasName, "Select * from "+refAliasName);
 		}
 	}
 
 	@Override
 	public void visit(SelectExpressionItem selectExpressionItem) {
-		//do nothing for expression type select item
+Alias alias = selectExpressionItem.getAlias();
+		
+		String columnName;
+		
+		//have alias
+		if(alias !=null){
+			columnName = alias.getName();
+			
+			if(processedColumnNameList.contains(columnName)){
+				//replace by position alias
+				columnName = columnName+"_"+position;
+				alias.setName(columnName);
+			}
+
+			//include the new columnName 
+			processedColumnNameList.add(columnName);
+		}
+		//expression without alias
+		else{
+			Expression expr = selectExpressionItem.getExpression();
+			
+			//for function type expression, create a alias and assigned
+			if(expr instanceof Function){
+				columnName = ((Function) expr).getName()+"_"+position;
+				
+				//construct alias part
+				Alias exprAlias = new Alias(columnName, true);
+				
+				//converted expression to expression with alias
+				selectExpressionItem.setAlias(exprAlias);
+				
+				//include the new columnName 
+				processedColumnNameList.add(columnName);
+			}
+			else if(expr instanceof Column){
+				columnName = ((Column) expr).getColumnName();
+				
+				if(processedColumnNameList.contains(columnName)){
+					//replace by position alias
+					columnName = columnName+"_"+position;
+					
+					//construct alias part
+					Alias exprAlias = new Alias(columnName, true);
+					
+					//converted expression to expression with alias
+					selectExpressionItem.setAlias(exprAlias);
+				}
+				
+				//include the new columnName 
+				processedColumnNameList.add(columnName);
+			}
+		}
+		
+		newSelectItemList.add(selectExpressionItem);
+		position++;
 		
 	}
 	/*** fromItem visitor **/
