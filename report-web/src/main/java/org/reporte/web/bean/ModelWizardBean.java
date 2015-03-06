@@ -49,7 +49,6 @@ public class ModelWizardBean implements Serializable {
 
 	private static final String SINGLE_TABLE = "Single Table";
 	private static final String JOIN_QUERY = "Join Query";
-	private static final String SELECT_QUERY = "SELECT * FROM %s";
 	private static final int DEFAULT_QUERY_ROW_LIMIT = 5;
 	private static final int MAX_SAMPLE_ROW = 20;
 
@@ -104,7 +103,7 @@ public class ModelWizardBean implements Serializable {
 					columnNames = convertIntoAttributeMappings(modelService.getJdbcClient().getColumns(model.getDatasource(),
 																									   ((SimpleModel) model).getTable()));
 				} else {
-					columnNames = deriveColumnsFromQuery(model.getQuery().getValue());
+					columnNames = model.getAttributeBindings();
 				}
 
 				for (AttributeMapping attribute : model.getAttributeBindings()) {
@@ -371,18 +370,19 @@ public class ModelWizardBean implements Serializable {
 	}
 
 	public void onTableSltOneMenuChange() {
+		
 		String tableName = ((SimpleModel) model).getTable();
+
 		if (StringUtils.isNotEmpty(tableName)) {
+			
 			try {
-				List<ColumnMetadata> columns = modelService.getJdbcClient().getColumns(model.getDatasource(), tableName);
-				columnNames = convertIntoAttributeMappings(columns);
-			} catch (JdbcClientException e) {
+				modelService.updateModelQueryFromSimpleQuery(model);
+				columnNames = model.getAttributeBindings();
+			} catch (ModelServiceException e) {
 				LOG.error("Failed to load metadata columns for the table - "+ tableName + ".");
 				columnNames = new ArrayList<AttributeMapping>();
 			}
-			model.getQuery().setValue(String.format(SELECT_QUERY, tableName));
-			model.getAttributeBindings().clear();
-			model.getAttributeBindings().addAll(columnNames);
+
 			setRequiredTargetTbl(false);
 		} else {
 			columnNames = new ArrayList<AttributeMapping>();
@@ -428,9 +428,8 @@ public class ModelWizardBean implements Serializable {
 	// 				ACTION METHODS 					 //
 	// ////////////////////////////////////////////////
 
-	private List<AttributeMapping> deriveColumnsFromQuery(String query)
+	private void deriveColumnsFromQuery(String query)
 			throws JdbcClientException {
-		List<AttributeMapping> columnNames = new ArrayList<AttributeMapping>();
 
 		originalResultSet = modelService.getJdbcClient().execute(model.getDatasource(), query, MAX_SAMPLE_ROW);
 
@@ -438,18 +437,7 @@ public class ModelWizardBean implements Serializable {
 
 		if (CollectionUtils.isNotEmpty(resultSet)) {
 			columns = resultSet.get(0).keySet();
-			int order = 1;
-			for (ColumnMetadata column : columns) {
-				AttributeMapping mapping = new AttributeMapping();
-				mapping.setReferencedColumn(column.getLabel());
-				mapping.setTypeName(column.getTypeName());
-				mapping.setAlias(column.getLabel());
-				mapping.setOrder(order++);
-
-				columnNames.add(mapping);
-			}
 		}
-		return columnNames;
 	}
 	/**
 	 * 
@@ -469,8 +457,8 @@ public class ModelWizardBean implements Serializable {
 		try {
 			
 			modelService.updateModelQueryFromJoinQuery(model);
-			columnNames = deriveColumnsFromQuery(model.getQuery().getValue());
-			model.getAttributeBindings().addAll(columnNames);
+			columnNames = model.getAttributeBindings();
+			deriveColumnsFromQuery(model.getQuery().getValue());
 			
 			if(!columnNames.isEmpty()){
 				noOfRecordMatched = findResultMatchedCount(model);

@@ -3,6 +3,7 @@ package org.reporte.model.service.impl;
 import static org.reporte.common.util.CommonUtils.checkForNull;
 
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.Stateless;
@@ -16,12 +17,17 @@ import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.parser.CCJSqlParserManager;
 import net.sf.jsqlparser.statement.select.Select;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.reporte.datasource.domain.ColumnMetadata;
 import org.reporte.datasource.service.DatabaseTypeHandler;
 import org.reporte.datasource.service.DatasourceHandler;
 import org.reporte.datasource.service.JdbcClient;
+import org.reporte.datasource.service.exception.JdbcClientException;
 import org.reporte.model.dao.ModelDAO;
 import org.reporte.model.dao.exception.ModelDAOException;
+import org.reporte.model.domain.AttributeMapping;
 import org.reporte.model.domain.Model;
+import org.reporte.model.domain.SimpleModel;
 import org.reporte.model.service.ModelService;
 import org.reporte.model.service.exception.ModelServiceException;
 import org.reporte.model.service.util.JoinQueryConverter;
@@ -29,6 +35,9 @@ import org.reporte.model.service.util.JoinQueryConverter;
 @Stateless
 @TransactionManagement(TransactionManagementType.CONTAINER)
 public class ModelServiceImpl implements ModelService {
+
+	private static final String SELECT_QUERY = "SELECT * FROM %s";
+
 	@Inject
 	private ModelDAO modelDAO;
 	@Inject
@@ -159,6 +168,7 @@ public class ModelServiceImpl implements ModelService {
 		CCJSqlParserManager pm = new CCJSqlParserManager();
 		
 		try {
+			//1. expand all * to actual column
 			net.sf.jsqlparser.statement.Statement statement = pm.parse(new StringReader(model.getQuery().getJoinQuery()));
 			
 			if (statement instanceof Select) {
@@ -167,10 +177,79 @@ public class ModelServiceImpl implements ModelService {
 				
 				model.getQuery().setValue(jqConverter.getConvertedQuery());
 			}
+			
+			//3. construct the initial attribute mapping
+			updateModelAttributeMapping(model);
 		} catch (JSQLParserException e) {
 			throw new ModelServiceException("Failed parsing sql ",e);
 		}
-		
 	}
 
+	@Override
+	public void updateModelQueryFromSimpleQuery(Model model) throws ModelServiceException {
+		String tableName = ((SimpleModel) model).getTable();
+		JoinQueryConverter jqConverter = new JoinQueryConverter(model.getDatasource(), jdbcClient);
+		
+		CCJSqlParserManager pm = new CCJSqlParserManager();
+		//1. construct into select * from table query string
+		String query = String.format(SELECT_QUERY, tableName);
+		try {
+			
+			//2. expand the * to actual column
+			net.sf.jsqlparser.statement.Statement statement = pm.parse(new StringReader(query));
+			
+			if (statement instanceof Select) {
+				Select selectStatement = (Select) statement;
+				selectStatement.getSelectBody().accept(jqConverter);
+				
+				model.getQuery().setValue(jqConverter.getConvertedQuery());
+			}
+			
+			//3. construct the initial attribute mapping
+			updateModelAttributeMapping(model);
+
+		} catch (JSQLParserException e) {
+			throw new ModelServiceException("Failed parsing sql ",e);
+		}
+	}
+	
+	/**
+	 * 
+	 * @param model
+	 * @throws ModelServiceException
+	 */
+	private void updateModelAttributeMapping(Model model) throws ModelServiceException{
+		try {
+			List<ColumnMetadata> columns = jdbcClient.getColumnsFromQuery(model.getDatasource(), model.getQuery().getValue());
+
+			List<AttributeMapping> attributeMapingList = convertIntoAttributeMappings(columns);
+			
+			model.getAttributeBindings().clear();
+			model.getAttributeBindings().addAll(attributeMapingList);
+		} catch (JdbcClientException e) {
+			throw new ModelServiceException("Failed getting columns for query ",e);
+		}
+	}
+	/**
+	 * 
+	 * @param colList
+	 * @return
+	 */
+	private List<AttributeMapping> convertIntoAttributeMappings(List<ColumnMetadata> colList) {
+		List<AttributeMapping> list = new ArrayList<AttributeMapping>();
+
+		if (CollectionUtils.isNotEmpty(colList)) {
+			int i = 1;
+			for (ColumnMetadata column : colList) {
+				AttributeMapping mapping = new AttributeMapping();
+				mapping.setReferencedColumn(column.getLabel());
+				mapping.setAlias(column.getLabel());
+				mapping.setTypeName(column.getTypeName());
+				mapping.setOrder(i++);
+
+				list.add(mapping);
+			}
+		}
+		return list;
+	}
 }

@@ -36,6 +36,8 @@ import org.reporte.datasource.service.exception.JdbcClientException;
 
 public class JoinQueryConverter implements SelectVisitor, SelectItemVisitor, FromItemVisitor{
 	
+	private static final String ALL_TABLE = "ALL_TABLE";
+	
 	private Map<String, String> fromAliasLookupMap = new HashMap<String, String>();
 	private List<SelectItem> newSelectItemList = new ArrayList<SelectItem>();
 	private List<String> processedColumnNameList = new ArrayList<String>();
@@ -183,11 +185,21 @@ public class JoinQueryConverter implements SelectVisitor, SelectItemVisitor, Fro
 	}
 
 	/*** selectItem visitor **/
+	/**
+	 * handle select * from table
+	 */
 	@Override
 	public void visit(AllColumns allColumns) {
-		//do nothing, as "select *" can be handled properly without need to be converted 
+		String query = fromAliasLookupMap.get(ALL_TABLE);
+		
+		if(query!=null){
+			//expand * without alias
+			expandAllTableSelectItem(null, query);
+		}
 	}
-
+	/**
+	 * handle select t.* from table t
+	 */
 	@Override
 	public void visit(AllTableColumns allTableColumns) {
 		Table table = allTableColumns.getTable();
@@ -207,9 +219,12 @@ public class JoinQueryConverter implements SelectVisitor, SelectItemVisitor, Fro
 		}
 	}
 
+	/**
+	 * handle select t.id as t_id from table
+	 */
 	@Override
 	public void visit(SelectExpressionItem selectExpressionItem) {
-Alias alias = selectExpressionItem.getAlias();
+		Alias alias = selectExpressionItem.getAlias();
 		
 		String columnName;
 		
@@ -273,12 +288,16 @@ Alias alias = selectExpressionItem.getAlias();
 		//from item is a sub select
 		Alias fromAlias = tableName.getAlias();
 		
+		String aliasReference;
 		//put the alias as lookup for select query
 		if(fromAlias!=null){
-			String refAliasName = (StringUtils.isBlank(tableName.getSchemaName())?"":tableName.getSchemaName()+".")+tableName.getName();
-			fromAliasLookupMap.put(fromAlias.getName(), "select * from "+refAliasName);
+			aliasReference = fromAlias.getName();
+		}
+		else{
+			aliasReference = ALL_TABLE;
 		}
 		
+		fromAliasLookupMap.put(aliasReference, "select * from "+tableName.toString());
 	}
 
 	@Override

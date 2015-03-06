@@ -79,4 +79,10 @@ public interface ModelService {
 	 * @throws ModelServiceException
 	 */
 	void updateModelQueryFromJoinQuery(Model model) throws ModelServiceException;
+	/**
+	 * 
+	 * @param model
+	 * @throws ModelServiceException
+	 */
+	void updateModelQueryFromSimpleQuery(Model model) throws ModelServiceException;
 }
