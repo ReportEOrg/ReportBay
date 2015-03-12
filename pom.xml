@@ -12,6 +12,8 @@
 		<module>report-features</module>
 		<module>report-web</module>
 		<module>report-ear</module>
+		<module>report-rest</module>
+		<!-- <module>report-webdemo</module> -->
 	</modules>
 
 	<dependencies>
@@ -152,6 +154,11 @@
 										<artifactId>report-web</artifactId>
 										<contextRoot>reporte</contextRoot>
 									</webModule>
+									<!-- <webModule>
+										<groupId>reporte</groupId>
+										<artifactId>report-webdemo</artifactId>
+										<contextRoot>reportedemo</contextRoot>
+									</webModule> -->
 									<ejbModule>
 										<groupId>reporte</groupId>
 										<artifactId>report-model</artifactId>
