@@ -30,9 +30,9 @@ import org.slf4j.LoggerFactory;
 
 @ApplicationScoped
 @Path("datasources")
-public class ReportEDataSourcesResource{
+public class DataSourcesResource{
 	
-	private final Logger LOG = LoggerFactory.getLogger(ReportEDataSourcesResource.class);
+	private final Logger LOG = LoggerFactory.getLogger(DataSourcesResource.class);
 	
 	@Inject
 	private DatasourceHandler dataSourceService;
@@ -51,6 +51,8 @@ public class ReportEDataSourcesResource{
 			
 			if(datasourceList!=null){
 				datasources.getDatasources().addAll(datasourceList);
+				
+				//TODO: mask off user name and password for security concern
 			}
 		} catch (DatasourceHandlerException e) {
 			LOG.warn("Exception in finding all datasources", e);

@@ -22,7 +22,7 @@
 		<!-- InterModule dependencies -->
 		<dependency>
 			<groupId>reporte</groupId>
-			<artifactId>report-template</artifactId>
+			<artifactId>report-gen</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>

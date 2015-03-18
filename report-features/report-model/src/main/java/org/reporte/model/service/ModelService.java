@@ -85,4 +85,13 @@ public interface ModelService {
 	 * @throws ModelServiceException
 	 */
 	void updateModelQueryFromSimpleQuery(Model model) throws ModelServiceException;
+	
+	/**
+	 * 
+	 * @param model
+	 * @param fieldName
+	 * @return
+	 * @throws ModelServiceException
+	 */
+	List<String> getModelFieldUniqueValue(Model model, String fieldName) throws ModelServiceException;
 }

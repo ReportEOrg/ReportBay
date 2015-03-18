@@ -142,7 +142,7 @@ public class ReportTemplateServiceImpl implements ReportTemplateService {
 	 * @param reportTemplate
 	 * @throws ReportTemplateServiceException
 	 */
-	private void deleteReportTemplate(BaseReportTemplate reportTemplate) throws ReportTemplateServiceException {
+	public void deleteReportTemplate(BaseReportTemplate reportTemplate) throws ReportTemplateServiceException {
 		try {
 			reportTemplateDAO.delete(reportTemplate);
 		} catch (ReportTemplateDAOException rtde) {
@@ -156,7 +156,7 @@ public class ReportTemplateServiceImpl implements ReportTemplateService {
 	 * @return
 	 * @throws ReportTemplateServiceException
 	 */
-	private BaseReportTemplate findReportTemplate(int reportTemplateId) throws ReportTemplateServiceException {
+	public BaseReportTemplate findReportTemplate(int reportTemplateId) throws ReportTemplateServiceException {
 		try {
 			return reportTemplateDAO.find(reportTemplateId);
 		} catch (ReportTemplateDAOException rtde) {
@@ -394,7 +394,7 @@ public class ReportTemplateServiceImpl implements ReportTemplateService {
 	public ReportQuery constructReportQuery(PieChartTemplate template) throws ReportTemplateServiceException {
 		ReportQuery reportQuery = null;
 
-		if (template != null && template.getId() > 0 && template.getModelId() > 0) {
+		if (template != null && template.getModelId() > 0) {
 			try {
 				Model model = modelDAO.find(template.getModelId());
 

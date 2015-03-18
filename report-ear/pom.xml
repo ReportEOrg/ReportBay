@@ -31,6 +31,8 @@
 			<version>0.0.1-SNAPSHOT</version>
 			<type>ejb</type>
 		</dependency>
+
+		<!-- to be removed later -->		
 		<dependency>
 			<groupId>reporte</groupId>
 			<artifactId>report-web</artifactId>
@@ -38,21 +40,18 @@
 			<type>war</type>
 		</dependency>
 		
-		<!-- <dependency>
-			<groupId>reporte</groupId>
-			<artifactId>report-webdemo</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-			<type>war</type>
-		</dependency> -->
-
 		<dependency>
 			<groupId>reporte</groupId>
 			<artifactId>report-rest</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 			<type>war</type>
 		</dependency>
-		<!-- external libraries <dependency> <groupId>mysql</groupId> <artifactId>mysql-connector-java</artifactId> 
-			<version>5.1.6</version> </dependency> -->
+		<dependency>
+			<groupId>reporte</groupId>
+			<artifactId>report-gen</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<type>ejb</type>
+		</dependency>
 	</dependencies>
 
 	<build>

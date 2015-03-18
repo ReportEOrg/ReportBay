@@ -219,6 +219,14 @@ public interface ReportTemplateService {
 	 * @throws ReportTemplateServiceException
 	 */
 	ReportQuery constructReportQuery(PieChartTemplate template) throws ReportTemplateServiceException;
+	
+	/**
+	 * 
+	 * @param reportTemplateId
+	 * @return
+	 * @throws ReportTemplateServiceException
+	 */
+	BaseReportTemplate findReportTemplate(int reportTemplateId) throws ReportTemplateServiceException;
 
 	/**
 	 * 
@@ -236,4 +244,11 @@ public interface ReportTemplateService {
 	 * @throws ReportTemplateServiceException
 	 */
 	String constructDataFieldValueQuery(Model model, String requiredColumn) throws ReportTemplateServiceException;
+	
+	/**
+	 * 
+	 * @param reportTemplate
+	 * @throws ReportTemplateServiceException
+	 */
+	void deleteReportTemplate(BaseReportTemplate reportTemplate) throws ReportTemplateServiceException ;
 }

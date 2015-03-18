@@ -39,8 +39,8 @@ import org.slf4j.LoggerFactory;
 
 @ApplicationScoped
 @Path("models")
-public class ReportEModelsResource{
-	private final Logger LOG = LoggerFactory.getLogger(ReportEModelsResource.class);
+public class ModelsResource{
+	private final Logger LOG = LoggerFactory.getLogger(ModelsResource.class);
 
     @Context
     ResourceContext rc;
@@ -138,21 +138,12 @@ public class ReportEModelsResource{
     public RestModel getModel(@PathParam("modelId") int modelId){
     	RestModel restModel = null;
     	
-    	try {
-    		//1. retrieve domain model by id
-    		Model model = modelService.find(modelId);
-    		
-    		if(model==null){
-    			LOG.warn("unable to find model for id "+modelId);
-    			throw new CustomizedWebException(Response.Status.NOT_FOUND, "model not found");
-    		}
-    		//2. converted to REST domain model
-    		restModel = createRestModelFromModel(model);
-		} catch (Exception e) {
-			LOG.warn("Exception in finding model", e);
-			throw new CustomizedWebException(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage());
-		}
-    	
+    	//1. find model by id
+    	Model model = findModel(modelId);
+
+		//2. converted to REST domain model
+		restModel = createRestModelFromModel(model);
+
     	return restModel;
     }
     
@@ -265,8 +256,49 @@ public class ReportEModelsResource{
     	return result;
     }
     
+    @GET
+    @Path("/{modelId}/uniqueDataField")
+    @Produces("application/json")
+    public RestModelPreviewResult getUniqueDataFieldValue(@PathParam("modelId") int modelId,
+    													  @QueryParam("dataField") String aliasDataField){
+    	
+    	RestModelPreviewResult result = new RestModelPreviewResult();
+    	
+    	//1. retrive model
+    	Model model = findModel(modelId);
+    	
+    	try {
+    		//2. extract unique value for selected model field
+    		result.getColumnValueList().addAll(modelService.getModelFieldUniqueValue(model, aliasDataField));
+			
+		} catch (Exception e) {
+			LOG.warn("Exception in getDataFieldValue", e);
+			throw new CustomizedWebException(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage());
+		}
+    	
+    	return result;
+    }
     
     /*************** private methods ****************/
+    
+    private Model findModel(int modelId){
+    	Model model = null;
+    	
+    	try{
+    		model = modelService.find(modelId);
+    	}
+    	catch(Exception e){
+    		LOG.warn("Exception in finding model", e);
+			throw new CustomizedWebException(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage());
+    	}
+    	
+    	if(model==null){
+			LOG.warn("unable to find model for id "+modelId);
+			throw new CustomizedWebException(Response.Status.NOT_FOUND, "model not found");
+		}
+    	
+    	return model;
+    }
     
     /**
      * 

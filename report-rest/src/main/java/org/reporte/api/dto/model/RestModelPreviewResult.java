@@ -19,6 +19,8 @@ public class RestModelPreviewResult implements Serializable{
 	
 	private List<String> columnNameList = new ArrayList<String>();
 	
+	private List<String> columnValueList = new ArrayList<String>();
+	
 	private List<Map<String, String>> resultRowList = new ArrayList<Map<String, String>>();
 	/**
 	 * @return the matchRecordCount
@@ -60,6 +62,20 @@ public class RestModelPreviewResult implements Serializable{
 	 */
 	public void setColumnNameList(List<String> columnNameList) {
 		this.columnNameList = columnNameList;
+	}
+
+	/**
+	 * @return the columnValueList
+	 */
+	public List<String> getColumnValueList() {
+		return columnValueList;
+	}
+
+	/**
+	 * @param columnValueList the columnValueList to set
+	 */
+	public void setColumnValueList(List<String> columnValueList) {
+		this.columnValueList = columnValueList;
 	}
 	
 }
