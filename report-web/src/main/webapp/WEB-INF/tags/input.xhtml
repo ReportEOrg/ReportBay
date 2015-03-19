@@ -7,6 +7,7 @@
 
     <c:set var="id" value="#{not empty id ? id : (not empty property ? property : action)}" />
     <c:set var="required" value="#{not empty required and required}" />
+    <c:set var="maxLength" value="#{not empty maxLength? maxLength : 50}" />
 
     <c:choose>
         <c:when test="#{type != 'submit'}">
@@ -19,7 +20,7 @@
 
     <c:choose>
         <c:when test="#{type == 'text'}">
-            <p:inputText id="#{id}" value="#{bean[property]}" label="#{label}" required="#{required}">
+            <p:inputText id="#{id}" value="#{bean[property]}" label="#{label}" required="#{required}" maxlength="#{maxLength}">
                 <p:ajax event="blur" update="#{p:component(id.concat('-message'))}" />
             </p:inputText>
             <p:message id="#{id}-message" for="#{id}" />
