@@ -451,7 +451,7 @@ public class ReportTemplateServiceImpl implements ReportTemplateService {
 	public ReportQuery constructCartesianChartReportQuery(CartesianChartTemplate template) throws ReportTemplateServiceException {
 		ReportQuery reportQuery = null;
 
-		if (template != null && template.getId() > 0 && template.getModelId() > 0) {
+		if (template != null && template.getModelId() > 0) {
 			try {
 				Model model = modelDAO.find(template.getModelId());
 
