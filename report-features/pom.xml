@@ -8,7 +8,7 @@
 	</parent>
 	<artifactId>report-features</artifactId>
 	<packaging>pom</packaging>
-	
+
 	<name>Report Feature Modules</name>
 	<modules>
 		<module>report-datasource</module>
@@ -50,5 +50,12 @@
 			<version>1.4</version>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>antlr</groupId>
+			<artifactId>antlr</artifactId>
+			<version>2.7.7</version>
+			<scope>test</scope>
+		</dependency>
+
 	</dependencies>
 </project>

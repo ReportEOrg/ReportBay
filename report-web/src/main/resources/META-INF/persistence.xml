@@ -8,7 +8,7 @@
 	<persistence-unit name="reporte" transaction-type="JTA">
 	
 		<provider>org.hibernate.ejb.HibernatePersistence</provider>
-		<jta-data-source>java:jboss/datasources/MySQLDS</jta-data-source>
+		<jta-data-source>java:jboss/jdbc/reporte</jta-data-source>
 		
 		<class>org.reporte.datasource.domain.DatabaseType</class>
 		<class>org.reporte.datasource.domain.Datasource</class>
@@ -28,10 +28,12 @@
 		<class>org.reporte.reporttemplate.domain.LineChartTemplate</class>
 		<class>org.reporte.reporttemplate.domain.PieChartTemplate</class>
 		<class>org.reporte.reporttemplate.domain.ReportQuery</class>
+		<class>org.reporte.reporttemplate.domain.CrossTabTemplate</class>
 		
 		<properties>
 			<property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
 			<property name="hibernate.show_sql" value="true" />
+			<!-- <property name="hibernate.hbm2ddl.auto" value="update"/> -->
 		</properties>
 	</persistence-unit>
 </persistence>

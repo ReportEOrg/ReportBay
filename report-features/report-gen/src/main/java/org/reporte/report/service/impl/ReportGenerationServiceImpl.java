@@ -3,18 +3,23 @@ package org.reporte.report.service.impl;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.ejb.Stateless;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 import javax.inject.Inject;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.reporte.common.dao.exception.BaseDAOException;
 import org.reporte.common.domain.SqlTypeEnum;
+import org.reporte.common.util.CommonUtils;
 import org.reporte.datasource.domain.ColumnMetadata;
 import org.reporte.datasource.domain.Datasource;
 import org.reporte.datasource.service.JdbcClient;
@@ -24,6 +29,8 @@ import org.reporte.report.domain.BarChartReport;
 import org.reporte.report.domain.CartesianChartReport;
 import org.reporte.report.domain.ChartSeries;
 import org.reporte.report.domain.ColumnChartReport;
+import org.reporte.report.domain.CrossTabAttribute;
+import org.reporte.report.domain.CrossTabReport;
 import org.reporte.report.domain.LineChartReport;
 import org.reporte.report.domain.PieChartReport;
 import org.reporte.report.service.ReportGenerationService;
@@ -31,14 +38,20 @@ import org.reporte.report.service.exception.ReportGenerationServiceException;
 import org.reporte.reporttemplate.dao.ReportQueryDAO;
 import org.reporte.reporttemplate.dao.ReportTemplateDAO;
 import org.reporte.reporttemplate.dao.exception.ReportQueryDAOException;
+import org.reporte.reporttemplate.dao.exception.ReportTemplateDAOException;
 import org.reporte.reporttemplate.domain.AreaChartTemplate;
 import org.reporte.reporttemplate.domain.BarChartTemplate;
+import org.reporte.reporttemplate.domain.BaseReportTemplate;
 import org.reporte.reporttemplate.domain.CartesianChartTemplate;
 import org.reporte.reporttemplate.domain.ColumnChartTemplate;
+import org.reporte.reporttemplate.domain.CrossTabTemplate;
+import org.reporte.reporttemplate.domain.CrossTabTemplateDetail;
 import org.reporte.reporttemplate.domain.LineChartTemplate;
 import org.reporte.reporttemplate.domain.PieChartTemplate;
 import org.reporte.reporttemplate.domain.ReportQuery;
+import org.reporte.reporttemplate.domain.ReportTemplateTypeEnum;
 import org.reporte.reporttemplate.domain.TemplateSeries;
+import org.reporte.reporttemplate.service.impl.CrossTabDetailsComparator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -474,6 +487,106 @@ public class ReportGenerationServiceImpl implements ReportGenerationService {
 			throw new ReportGenerationServiceException("Exception while getting data field values ", e);
 		}
 		return dataFieldValues;
+	}
+
+	@Override
+	public Optional<CrossTabReport> generateCrossTabReport(int reportTemplateId) throws ReportGenerationServiceException {
+		LOG.info("Generating CrossTab Report for the Template Id "+reportTemplateId);
+		//Check the input for validity
+		if (reportTemplateId<=0) {
+			throw new IllegalArgumentException("Input ReportTemplate ID must be greater than 0");
+		}
+		try {
+			BaseReportTemplate reportTemplate = reportTemplateDAO.find(reportTemplateId);
+			if (reportTemplate instanceof CrossTabTemplate) {
+				//TODO: to implement the return type
+				Optional<CrossTabReport>  crossTabReport = generateCrossTabReport((CrossTabTemplate) reportTemplate);
+				if (crossTabReport.isPresent()) {
+					return crossTabReport;
+				}else{
+					//return empty object
+					return Optional.empty();
+				}
+			}else {
+				// throw the error when report template id fetch different template other then cross tab template
+				throw new ReportGenerationServiceException("ReportTemplate Id must of be CrossTab Template");
+			}
+		} catch (ReportTemplateDAOException e) {
+			throw new ReportGenerationServiceException("Error in generating CrossTab Report", e);
+		} catch (Exception e) {
+			throw new ReportGenerationServiceException("Error in generating CrossTab Report", e);
+		}
+	}
+
+	@Override
+	public Optional<CrossTabReport> generateCrossTabReport(CrossTabTemplate reportTemplate) throws ReportGenerationServiceException {
+		LOG.info("Generating CrossTab Report for the Template "+reportTemplate);
+		try {
+			CommonUtils.checkForNull(reportTemplate, CrossTabTemplate.class.getSimpleName());
+			CrossTabReport report = new CrossTabReport();
+			report.setReportName(reportTemplate.getReportDisplayName());
+			report.setReportType(ReportTemplateTypeEnum.SIMPLE);
+			ReportQuery reportQuery = reportTemplate.getReportQuery();
+			if (reportQuery==null) {
+				reportQuery = reportQueryDAO.find(reportTemplate.getId());
+			}
+			if (reportQuery==null) {
+				//Throw exception if report query is still null
+				throw new NullPointerException("ReportQuery Object is Null");
+			}
+			//sort the crosstab according to user
+			List<CrossTabTemplateDetail> templateDetails  = reportTemplate.getCrossTabDetail();
+			Collections.sort(templateDetails,new CrossTabDetailsComparator());
+			//Execute the query and get the result
+			LOG.info("Executing the query "+reportQuery.getQuery());
+			List<Map<ColumnMetadata, String>> resultList = jdbcClient.execute(reportQuery.getDatasource(), reportQuery.getQuery());
+			if (CollectionUtils.isNotEmpty(resultList)) {
+				//verify the column metadata with crosstab template name
+				Map<ColumnMetadata, String> row= resultList.get(0);
+				List<ColumnMetadata> metaDatas = new ArrayList<ColumnMetadata>();
+				for (CrossTabTemplateDetail detail : templateDetails) {
+					boolean matchFound = false;
+					//Add individual ColumnMetadata to the list
+					for(Map.Entry<ColumnMetadata, String> map : row.entrySet()){
+						ColumnMetadata metaData = map.getKey();
+						if (detail.getModelAttributeName().equalsIgnoreCase(metaData.getLabel())) {
+							matchFound=true;
+							LOG.info("Column Label Matched "+ metaData.getLabel());
+							CrossTabAttribute attribute = new CrossTabAttribute();
+							attribute.setAttributeDisplaySequence(detail.getAttributeDisplaySequence());
+							attribute.setFieldType(detail.getFieldType());
+							attribute.setGroupOrAggregate(detail.getGroupOrAggregate());
+							attribute.setMetaData(metaData);
+							attribute.setType(detail.getSqltype());
+							report.getAttributes().add(attribute);
+							//Break from the loop if match is found
+							break;
+						}
+					}
+					if (!matchFound) {
+						LOG.error("Unable to Find Column Label against Attribute Mapping");
+					}
+				}
+				for (Map<ColumnMetadata, String> list : resultList) {
+					//Store the resultset from query in the order which can be access. Linked HashMap maintain the insertion order
+					Map<String, String> rowSet = new LinkedHashMap<String, String>();
+					for (Map.Entry<ColumnMetadata, String> map: list.entrySet()) {
+						String columnName = map.getKey().getLabel();
+						rowSet.put(columnName, map.getValue());
+					}
+					//Add each row set value to the list and the map will maintain insertion order
+					report.getResultSet().add(rowSet);
+				}
+				return Optional.of(report);
+			}else{
+				LOG.warn("ResultSet is empty for the query "+reportQuery.getQuery());
+				return Optional.empty();
+			}
+		} catch (ReportQueryDAOException e) {
+			throw new ReportGenerationServiceException("Error in generating CrossTab Report",e);
+		} catch (JdbcClientException e) {
+			throw new ReportGenerationServiceException("Error in generating CrossTab Report",e);
+		}
 	}
 
 }

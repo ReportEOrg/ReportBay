@@ -1,12 +1,16 @@
 package org.reporte.reporttemplate.service;
 
 import java.util.List;
+import java.util.Optional;
+
+import net.sf.jsqlparser.statement.select.Select;
 
 import org.reporte.model.domain.Model;
 import org.reporte.reporttemplate.domain.AreaChartTemplate;
 import org.reporte.reporttemplate.domain.BarChartTemplate;
 import org.reporte.reporttemplate.domain.BaseReportTemplate;
 import org.reporte.reporttemplate.domain.ColumnChartTemplate;
+import org.reporte.reporttemplate.domain.CrossTabTemplate;
 import org.reporte.reporttemplate.domain.LineChartTemplate;
 import org.reporte.reporttemplate.domain.PieChartTemplate;
 import org.reporte.reporttemplate.domain.ReportQuery;
@@ -149,6 +153,16 @@ public interface ReportTemplateService {
 	 * @throws ReportTemplateServiceException
 	 */
 	PieChartTemplate save(PieChartTemplate reportTemplate) throws ReportTemplateServiceException;
+	
+	/**
+	 * Save newly created CrossTab template into database and return the saved template object back to the 
+	 * caller.
+	 * 
+	 * @param  crossTabTemplate pass {@link CrossTabTemplate} object to save into database 
+	 * @return {@link Optional}<{@link CrossTabTemplate}>
+	 * @throws ReportTemplateServiceException
+	 */
+	Optional<CrossTabTemplate> save(CrossTabTemplate crossTabTemplate) throws ReportTemplateServiceException;
 
 	/**
 	 * 
@@ -157,6 +171,14 @@ public interface ReportTemplateService {
 	 * @throws ReportTemplateServiceException
 	 */
 	PieChartTemplate update(PieChartTemplate reportTemplate) throws ReportTemplateServiceException;
+	
+	/**
+	 * update CrossTab Template
+	 * @param reportTemplate
+	 * @return {@link Optional}<{@link CrossTabTemplate}>
+	 * @throws ReportTemplateServiceException
+	 */
+	Optional<CrossTabTemplate> update(CrossTabTemplate reportTemplate) throws ReportTemplateServiceException;
 
 	/**
 	 * 
@@ -164,6 +186,13 @@ public interface ReportTemplateService {
 	 * @throws ReportTemplateServiceException
 	 */
 	void delete(PieChartTemplate reportTemplate) throws ReportTemplateServiceException;
+	
+	/**
+	 * Delete CrossTab Template
+	 * @param reportTemplate
+	 * @throws ReportTemplateServiceException
+	 */
+	void delete(CrossTabTemplate reportTemplate) throws ReportTemplateServiceException;
 
 	/**
 	 * 
@@ -172,6 +201,13 @@ public interface ReportTemplateService {
 	 * @throws ReportTemplateServiceException
 	 */
 	PieChartTemplate findPieChartTemplate(int reportTemplateId) throws ReportTemplateServiceException;
+	/**
+	 * Find CrossTab Template by passing template ID
+	 * @param reportTemplateId
+	 * @return {@link Optional}<{@link CrossTabTemplate}>
+	 * @throws ReportTemplateServiceException
+	 */
+	Optional<CrossTabTemplate> findCrossTabTemplate(int reportTemplateId) throws ReportTemplateServiceException;
 
 	/**
 	 * 
@@ -236,4 +272,19 @@ public interface ReportTemplateService {
 	 * @throws ReportTemplateServiceException
 	 */
 	String constructDataFieldValueQuery(Model model, String requiredColumn) throws ReportTemplateServiceException;
+	
+	/**
+	 * Generate ReportQuery for the given CrossTabTemplate designed by User
+	 * @param crossTabTemplate
+	 * @return {@link Optional}<{@link ReportQuery}>
+	 * @throws ReportTemplateServiceException
+	 */
+	Optional<ReportQuery> constructReportQuery(CrossTabTemplate crossTabTemplate) throws ReportTemplateServiceException;
+	/**
+	 * Parse the Select Query String and return {@link Select} object.
+	 * @param {@link String} String representation of Query String
+	 * @return {@link Optional}<{@link Select}> return a optional select object
+	 * @throws throws exception when the Query is not of type select or Invalid SQL query.
+	 */
+	Optional<Select> parseSelectQuery(String query) throws ReportTemplateServiceException;
 }

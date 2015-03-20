@@ -1,18 +1,21 @@
 package org.reporte.report.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.reporte.datasource.domain.Datasource;
 import org.reporte.model.domain.Model;
 import org.reporte.report.domain.AreaChartReport;
 import org.reporte.report.domain.BarChartReport;
 import org.reporte.report.domain.ColumnChartReport;
+import org.reporte.report.domain.CrossTabReport;
 import org.reporte.report.domain.LineChartReport;
 import org.reporte.report.domain.PieChartReport;
 import org.reporte.report.service.exception.ReportGenerationServiceException;
 import org.reporte.reporttemplate.domain.AreaChartTemplate;
 import org.reporte.reporttemplate.domain.BarChartTemplate;
 import org.reporte.reporttemplate.domain.ColumnChartTemplate;
+import org.reporte.reporttemplate.domain.CrossTabTemplate;
 import org.reporte.reporttemplate.domain.LineChartTemplate;
 import org.reporte.reporttemplate.domain.PieChartTemplate;
 import org.reporte.reporttemplate.domain.ReportQuery;
@@ -104,6 +107,22 @@ public interface ReportGenerationService {
 	 * @throws ReportGenerationServiceException
 	 */
 	PieChartReport generatePieChartReport(PieChartTemplate reportTemplate) throws ReportGenerationServiceException;
+	
+	/**
+	 * Return CrossTabReport object containing attributes value and its display details 
+	 * @param reportTemplateId
+	 * @return {@link Optional<{@link CrossTabReport}>
+	 * @throws ReportGenerationServiceException
+	 */
+	Optional<CrossTabReport> generateCrossTabReport(int reportTemplateId) throws ReportGenerationServiceException;
+	
+	/**
+	 * Return CrossTabReport object containing attributes value and its display details
+	 * @param reportTemplate
+	 * @return {@link Optional<{@link CrossTabReport}>
+	 * @throws ReportGenerationServiceException
+	 */
+	Optional<CrossTabReport> generateCrossTabReport(CrossTabTemplate reportTemplate) throws ReportGenerationServiceException;
 
 	/**
 	 * 
