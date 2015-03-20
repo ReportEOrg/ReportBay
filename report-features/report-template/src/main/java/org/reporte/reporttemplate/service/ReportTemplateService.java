@@ -287,4 +287,10 @@ public interface ReportTemplateService {
 	 * @throws throws exception when the Query is not of type select or Invalid SQL query.
 	 */
 	Optional<Select> parseSelectQuery(String query) throws ReportTemplateServiceException;
+	/**
+	 * 
+	 * @param reportTemplate
+	 * @throws ReportTemplateServiceException
+	 */
+	void deleteReportTemplate(BaseReportTemplate reportTemplate) throws ReportTemplateServiceException ;
 }

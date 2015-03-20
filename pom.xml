@@ -12,6 +12,7 @@
 		<module>report-features</module>
 		<module>report-web</module>
 		<module>report-ear</module>
+		<module>report-rest</module>
 	</modules>
 
 	<dependencies>
@@ -149,15 +150,14 @@
 								<modules>
 									<webModule>
 										<groupId>reporte</groupId>
+										<artifactId>report-rest</artifactId>
+										<contextRoot>reporte-rest</contextRoot>
+									</webModule> 
+									<webModule>
+										<groupId>reporte</groupId>
 										<artifactId>report-web</artifactId>
 										<contextRoot>reporte</contextRoot>
 									</webModule>
-									<ejbModule>
-										<groupId>reporte</groupId>
-										<artifactId>report-model</artifactId>
-									</ejbModule>
-									<!-- extra libraries into lib directory <jarModule> <groupId>mysql</groupId> 
-										<artifactId>mysql-connector-java</artifactId> </jarModule> -->
 								</modules>
 							</configuration>
 						</plugin>

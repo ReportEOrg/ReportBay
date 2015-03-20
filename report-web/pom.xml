@@ -71,32 +71,14 @@
 		</dependency>
 
 		<!-- InterModule dependencies -->
-		<dependency>
-			<groupId>reporte</groupId>
-			<artifactId>report-model</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-			<scope>provided</scope>
-		</dependency>
-		
-		<dependency>
-			<groupId>reporte</groupId>
-			<artifactId>report-template</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-			<scope>provided</scope>
-		</dependency>
 		
 		<dependency>
 			<groupId>reporte</groupId>
 			<artifactId>report-gen</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-		
-		<dependency>
-			<groupId>reporte</groupId>
-			<artifactId>report-common</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
+		
 		<!-- Start of pure web apps setting -->
 
 		<!--  Spring framework  -->

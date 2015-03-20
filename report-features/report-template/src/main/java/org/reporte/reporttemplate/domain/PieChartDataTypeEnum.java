@@ -13,4 +13,19 @@ public enum PieChartDataTypeEnum {
 	public String getCode(){
 		return code;
 	}
+	
+	public static PieChartDataTypeEnum fromName(String name){
+		PieChartDataTypeEnum enumValue = null;
+		
+		if(name!=null){
+			for(PieChartDataTypeEnum ref: PieChartDataTypeEnum.values()){
+				if(name.equals(ref.name())){
+					enumValue = ref;
+					break;
+				}
+			}
+		}
+				
+		return enumValue;
+	}
  }

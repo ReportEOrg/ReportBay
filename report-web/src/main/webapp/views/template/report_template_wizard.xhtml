@@ -21,7 +21,7 @@
 					<h:panelGrid columns="3" rowClasses="vertical-align-top" style="margin-left:100px;">
 						<h:panelGrid columns="3" columnClasses="label, value" cellpadding="6">
 
-							<reporte:input type="text" label="Template Name" bean="#{reportTemplateWizard.reportTemplate}" property="templateName" required="true" />
+							<reporte:input type="text" label="Template Name" bean="#{reportTemplateWizard.reportTemplate}" property="templateName" required="true" maxLength="35"/>
 
 							<h:outputLabel for="selectedChartType" value="Chart Type *"/>
 							<p:selectOneMenu id="selectedChartType" value="#{reportTemplateWizard.selectedChartType}" required="true" requiredMessage="Chart Type Mandatory">
