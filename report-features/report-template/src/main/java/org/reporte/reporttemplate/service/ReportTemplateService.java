@@ -37,7 +37,14 @@ public interface ReportTemplateService {
 	 * @throws ReportTemplateServiceException
 	 */
 	AreaChartTemplate update(AreaChartTemplate reportTemplate) throws ReportTemplateServiceException;
-
+	
+	/**
+	 * 
+	 * @param reportTemplateId
+	 * @return
+	 * @throws ReportTemplateServiceException
+	 */
+	BaseReportTemplate findReportTemplate(int reportTemplateId) throws ReportTemplateServiceException;
 	/**
 	 * 
 	 * @param reportTemplate
