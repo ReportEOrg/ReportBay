@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.reporte.api.dto.model.RestModel;
+import org.reporte.reporttemplate.domain.CrossTabTemplate;
 import org.reporte.reporttemplate.domain.TemplateSeries;
 
 public class RestReportConnector extends RestLiteReportConnector implements Serializable{
@@ -19,7 +20,7 @@ public class RestReportConnector extends RestLiteReportConnector implements Seri
 	private RestModel model;
 	
 	/*** chart attributes ***/
-	private String chartType;
+	private String templateType;
 	private String chartTitle;
 	private boolean showLegend;
 	
@@ -43,19 +44,21 @@ public class RestReportConnector extends RestLiteReportConnector implements Seri
 	private String modelDataField;
 	private String dataTypeFormat;
 
+	/** CrossTab Template ***/
+	private CrossTabTemplate crossTabTemplate;
 
 	/**
 	 * @return the chartType
 	 */
-	public String getChartType() {
-		return chartType;
+	public String getTemplateType() {
+		return templateType;
 	}
 
 	/**
 	 * @param chartType the chartType to set
 	 */
-	public void setChartType(String chartType) {
-		this.chartType = chartType;
+	public void setTemplateType(String chartType) {
+		this.templateType = chartType;
 	}
 
 	/**
@@ -294,5 +297,13 @@ public class RestReportConnector extends RestLiteReportConnector implements Seri
 	 */
 	public void setTemplateSeries(List<TemplateSeries> templateSeries) {
 		this.templateSeries = templateSeries;
+	}
+
+	public CrossTabTemplate getCrossTabTemplate() {
+		return crossTabTemplate;
+	}
+
+	public void setCrossTabTemplate(CrossTabTemplate crossTabTemplate) {
+		this.crossTabTemplate = crossTabTemplate;
 	}
 }

@@ -52,7 +52,7 @@ public class ModelsResource{
 	private JdbcClient jdbcClient;
     
     @GET
-    @Produces("application/json")
+    @Produces(MediaType.APPLICATION_JSON)
     public RestModels getAllModels(){
     	
     	RestModels models = new RestModels();
@@ -76,8 +76,8 @@ public class ModelsResource{
     
     //use POST as it is not idempotent, each call with same content may lead to creation of a new record
     @POST
-    @Produces("application/json")
-    @Consumes("application/json")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     public RestModel createModel(RestModel restModel){
     	
     	RestModel resultModel = null;
@@ -108,8 +108,8 @@ public class ModelsResource{
 
     //use PUT as update is idempotent, always update same resource for same content (identify by id) 
     @PUT
-    @Produces("application/json")
-    @Consumes("application/json")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     public RestModel updateModel(RestModel restModel){
     	
     	RestModel resultModel = null;
@@ -134,7 +134,7 @@ public class ModelsResource{
 
     @GET
     @Path("/{modelId}")
-    @Produces("application/json")
+    @Produces(MediaType.APPLICATION_JSON)
     public RestModel getModel(@PathParam("modelId") int modelId){
     	RestModel restModel = null;
     	
@@ -149,7 +149,7 @@ public class ModelsResource{
     
     @DELETE
     @Path("/{modelId}")
-    @Produces("application/json")
+    @Produces(MediaType.APPLICATION_JSON)
     public Response deleteModel(@PathParam("modelId") int modelId){
     	
     	Model model = null;
@@ -188,8 +188,8 @@ public class ModelsResource{
      */
     @PUT
     @Path("/deriveModelAttributes")
-    @Produces("application/json")
-    @Consumes("application/json")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     public RestModel deriveModelAttributes(RestModel restModel){
     	
     	RestModel resultModel = null;
@@ -216,8 +216,8 @@ public class ModelsResource{
     
     @POST
     @Path("/generatePreview")
-    @Produces("application/json")
-    @Consumes("application/json")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     public RestModelPreviewResult generateModelPreview(RestModel restModel,
     												   //default max 20 records if not specified
     												   @DefaultValue("20") @QueryParam("maxRow") int maxRow){
@@ -258,7 +258,7 @@ public class ModelsResource{
     
     @GET
     @Path("/{modelId}/uniqueDataField")
-    @Produces("application/json")
+    @Produces(MediaType.APPLICATION_JSON)
     public RestModelPreviewResult getUniqueDataFieldValue(@PathParam("modelId") int modelId,
     													  @QueryParam("dataField") String aliasDataField){
     	

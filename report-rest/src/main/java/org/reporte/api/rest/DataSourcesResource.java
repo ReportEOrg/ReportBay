@@ -41,7 +41,7 @@ public class DataSourcesResource{
 	private JdbcClient jdbcClient;
 	
 	@GET
-	@Produces("application/json")
+	@Produces(MediaType.APPLICATION_JSON)
 	 public RestDataSources getAllDataSources(){
 		
 		RestDataSources datasources = new RestDataSources();
@@ -68,8 +68,8 @@ public class DataSourcesResource{
 	 * @return
 	 */
 	@POST
-	@Consumes("application/json")
-	@Produces("application/json")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
 	public Datasource createDataSource(Datasource datasource){
 		Datasource createdDatasource = null;
 		
@@ -89,8 +89,8 @@ public class DataSourcesResource{
 	}
 	
 	@PUT
-	@Consumes("application/json")
-	@Produces("application/json")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
 	public Datasource updateDataSource(Datasource datasource){
 		
 		try {
@@ -112,7 +112,7 @@ public class DataSourcesResource{
 	
 	@GET
 	@Path("/{datasourceId}")
-	@Produces("application/json")
+	@Produces(MediaType.APPLICATION_JSON)
 	public Datasource getDataSource(@PathParam("datasourceId") int datasourceId){
 		Datasource datasource = null;
     	
@@ -134,7 +134,7 @@ public class DataSourcesResource{
 	
 	@DELETE
     @Path("/{datasourceId}")
-    @Produces("application/json")
+    @Produces(MediaType.APPLICATION_JSON)
     public Response deleteDataSource(@PathParam("datasourceId") int datasourceId){
     	
     	Datasource datasource = null;
@@ -167,7 +167,7 @@ public class DataSourcesResource{
 	
 	@GET
 	@Path("/{datasourceId}/tables")
-	@Produces("application/json")
+	@Produces(MediaType.APPLICATION_JSON)
 	public RestTables getDataSourceTable(@PathParam("datasourceId") int datasourceId){
 		//create an envelope
 		RestTables tables = new RestTables();

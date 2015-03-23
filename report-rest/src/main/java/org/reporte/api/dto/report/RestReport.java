@@ -3,6 +3,7 @@ package org.reporte.api.dto.report;
 import java.io.Serializable;
 
 import org.reporte.report.domain.CartesianChartReport;
+import org.reporte.report.domain.CrossTabReport;
 import org.reporte.report.domain.PieChartReport;
 
 
@@ -24,6 +25,7 @@ public class RestReport implements Serializable{
 	
 	private CartesianChartReport cartesianChartReport;
 	private PieChartReport pieChartReport;
+	private CrossTabReport crossTabReport;
 	
 	/**
 	 * @return the type
@@ -60,5 +62,11 @@ public class RestReport implements Serializable{
 	 */
 	public void setPieChartReport(PieChartReport pieChartReport) {
 		this.pieChartReport = pieChartReport;
+	}
+	public CrossTabReport getCrossTabReport() {
+		return crossTabReport;
+	}
+	public void setCrossTabReport(CrossTabReport crossTabReport) {
+		this.crossTabReport = crossTabReport;
 	}
 }

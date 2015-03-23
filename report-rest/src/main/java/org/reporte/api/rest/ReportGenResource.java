@@ -10,6 +10,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.container.ResourceContext;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.reporte.api.dto.report.RestReport;
@@ -38,7 +39,7 @@ public class ReportGenResource{
      */
     @GET
     @Path("/{reportConnectorId}")
-    @Produces("application/json")
+    @Produces(MediaType.APPLICATION_JSON)
     public RestReport genReportByID(@PathParam("reportConnectorId") int reportConnectorId){
     	
     	RestReport report = null;
@@ -61,8 +62,8 @@ public class ReportGenResource{
      */
     @POST
     @Path("/generateReportPreview")
-    @Produces("application/json")
-    @Consumes("application/json")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     public RestReport genReportPreview(RestReportConnector restReportConnector){
     	RestReport report = null;
 

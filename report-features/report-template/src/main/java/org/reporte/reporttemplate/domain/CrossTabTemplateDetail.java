@@ -13,7 +13,6 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.reporte.common.domain.BaseJPAEntity;
-import org.reporte.common.domain.OrderBy;
 import org.reporte.common.domain.SqlTypeEnum;
 
 /**
@@ -32,18 +31,11 @@ public class CrossTabTemplateDetail extends BaseJPAEntity{
 		
 	@Column(name="model_attribute_name",nullable=false)
 	private String modelAttributeName;
-	@Column(name="model_attribute_id")
-	private long modelAttributeId;
 	@Column(name="attribute_display_name")
 	private String attributeDisplayName;
 	@Column(name="field_type",nullable=false)
 	@Enumerated(EnumType.STRING)
 	private CrossTabFieldType fieldType;
-	@Column(name="`order`")
-	@Enumerated(EnumType.STRING)
-	private OrderBy order;
-	@Column(name="`precision`")
-	private int precision;
 	@Column(name="sql_type",nullable=false)
 	@Enumerated(EnumType.STRING)
 	private SqlTypeEnum sqltype;
@@ -62,17 +54,13 @@ public class CrossTabTemplateDetail extends BaseJPAEntity{
 	
 	
 	public CrossTabTemplateDetail(String modelAttributeName,
-			int modelAttributeId, String attributeDisplayName,
-			CrossTabFieldType fieldType, OrderBy order, int precision,
+			String attributeDisplayName, CrossTabFieldType fieldType,
 			SqlTypeEnum sqltype, SqlFunction sqlFunction,
 			int attributeDisplaySequence, GroupOrAggregate groupOrAggregate) {
 		super();
 		this.modelAttributeName = modelAttributeName;
-		this.modelAttributeId = modelAttributeId;
 		this.attributeDisplayName = attributeDisplayName;
 		this.fieldType = fieldType;
-		this.order = order;
-		this.precision = precision;
 		this.sqltype = sqltype;
 		this.sqlFunction = sqlFunction;
 		this.attributeDisplaySequence = attributeDisplaySequence;
@@ -80,18 +68,11 @@ public class CrossTabTemplateDetail extends BaseJPAEntity{
 	}
 
 
-
 	public String getModelAttributeName() {
 		return modelAttributeName;
 	}
 	public void setModelAttributeName(String modelAttributeName) {
 		this.modelAttributeName = modelAttributeName;
-	}
-	public long getModelAttributeId() {
-		return modelAttributeId;
-	}
-	public void setModelAttributeId(long modelAttributeId) {
-		this.modelAttributeId = modelAttributeId;
 	}
 	public String getAttributeDisplayName() {
 		return attributeDisplayName;
@@ -104,18 +85,6 @@ public class CrossTabTemplateDetail extends BaseJPAEntity{
 	}
 	public void setFieldType(CrossTabFieldType fieldType) {
 		this.fieldType = fieldType;
-	}
-	public OrderBy getOrder() {
-		return order;
-	}
-	public void setOrder(OrderBy order) {
-		this.order = order;
-	}
-	public int getPrecision() {
-		return precision;
-	}
-	public void setPrecision(int precision) {
-		this.precision = precision;
 	}
 	public SqlTypeEnum getSqltype() {
 		return sqltype;
@@ -156,11 +125,8 @@ public class CrossTabTemplateDetail extends BaseJPAEntity{
 	public int hashCode() {
 		return new HashCodeBuilder(INITIAL_HASH, PRIME_HASH_MULTIPLIER)
 		.append(modelAttributeName)
-		.append(modelAttributeId)
 		.append(attributeDisplayName)
 		.append(fieldType)
-		.append(order)
-		.append(precision)
 		.append(sqltype)
 		.append(sqlFunction)
 		.append(attributeDisplaySequence)
@@ -178,11 +144,8 @@ public class CrossTabTemplateDetail extends BaseJPAEntity{
 		final CrossTabTemplateDetail other = (CrossTabTemplateDetail) obj;
 		return new EqualsBuilder()
 		.append(modelAttributeName,other.modelAttributeName)
-		.append(modelAttributeId,other.modelAttributeId)
 		.append(attributeDisplayName,other.attributeDisplayName)
 		.append(fieldType,other.fieldType)
-		.append(order,other.order)
-		.append(precision,other.precision)
 		.append(sqltype,other.sqltype)
 		.append(sqlFunction,other.sqlFunction)
 		.append(attributeDisplaySequence,other.attributeDisplaySequence)
@@ -194,11 +157,8 @@ public class CrossTabTemplateDetail extends BaseJPAEntity{
 	public String toString() {
 		return new ToStringBuilder(this)
 		.append("modelAttributeName",modelAttributeName)
-		.append("modelAttributeId",modelAttributeId)
 		.append("attributeDisplayName",attributeDisplayName)
 		.append("fieldType",fieldType)
-		.append("order",order)
-		.append("precision",precision)
 		.append("sqltype",sqltype)
 		.append("sqlFunction",sqlFunction)
 		.append("attributeDisplaySequence",attributeDisplaySequence)

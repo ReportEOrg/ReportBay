@@ -40,7 +40,7 @@ public class ReportConnectorsResource{
 	 * @return
 	 */
     @GET
-    @Produces("application/json")
+    @Produces(MediaType.APPLICATION_JSON)
     public RestReportConnectors getAllReportConnectors(){
     	
     	RestReportConnectors connectors = new RestReportConnectors();
@@ -63,8 +63,8 @@ public class ReportConnectorsResource{
      */
     //use POST as it is not idempotent, each call with same content may lead to creation of a new record
     @POST
-    @Produces("application/json")
-    @Consumes("application/json")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     public RestReportConnector createReportConnector(RestReportConnector connector){
     	
     	RestReportConnector resultConnector = null;
@@ -87,8 +87,8 @@ public class ReportConnectorsResource{
      */
     //use PUT as update is idempotent, always update same resource for same content (identify by id) 
     @PUT
-    @Produces("application/json")
-    @Consumes("application/json")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     public RestReportConnector updateReportConnector(RestReportConnector connector){
     	
     	RestReportConnector resultConnector = null;
@@ -111,7 +111,7 @@ public class ReportConnectorsResource{
      */
     @GET
     @Path("/{reportConnectorId}")
-    @Produces("application/json")
+    @Produces(MediaType.APPLICATION_JSON)
     public RestReportConnector getReportConnector(@PathParam("reportConnectorId") int reportConnectorId){
     	RestReportConnector restConnector = null;
     	
@@ -133,7 +133,7 @@ public class ReportConnectorsResource{
      */
     @DELETE
     @Path("/{reportConnectorId}")
-    @Produces("application/json")
+    @Produces(MediaType.APPLICATION_JSON)
     public Response deleteReportConnector(@PathParam("reportConnectorId") int reportConnectorId){
     	
     	Response.ResponseBuilder builder = null;

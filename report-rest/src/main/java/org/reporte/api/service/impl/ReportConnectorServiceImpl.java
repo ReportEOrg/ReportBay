@@ -2,6 +2,7 @@ package org.reporte.api.service.impl;
 
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Optional;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -9,7 +10,7 @@ import javax.ws.rs.core.Response;
 
 import org.reporte.api.dto.model.RestModel;
 import org.reporte.api.dto.report.RestReport;
-import org.reporte.api.dto.reportconnector.RestChartTypeEnum;
+import org.reporte.api.dto.reportconnector.TemplateType;
 import org.reporte.api.dto.reportconnector.RestLiteReportConnector;
 import org.reporte.api.dto.reportconnector.RestReportConnector;
 import org.reporte.api.dto.reportconnector.RestReportConnectors;
@@ -20,6 +21,7 @@ import org.reporte.model.domain.Model;
 import org.reporte.model.domain.SimpleModel;
 import org.reporte.model.service.ModelService;
 import org.reporte.model.service.exception.ModelServiceException;
+import org.reporte.report.domain.CrossTabReport;
 import org.reporte.report.service.ReportGenerationService;
 import org.reporte.report.service.exception.ReportGenerationServiceException;
 import org.reporte.reporttemplate.domain.AreaChartTemplate;
@@ -28,6 +30,7 @@ import org.reporte.reporttemplate.domain.BaseReportTemplate;
 import org.reporte.reporttemplate.domain.CartesianChartTemplate;
 import org.reporte.reporttemplate.domain.ChartTemplate;
 import org.reporte.reporttemplate.domain.ColumnChartTemplate;
+import org.reporte.reporttemplate.domain.CrossTabTemplate;
 import org.reporte.reporttemplate.domain.LineChartTemplate;
 import org.reporte.reporttemplate.domain.PieChartDataTypeEnum;
 import org.reporte.reporttemplate.domain.PieChartTemplate;
@@ -126,10 +129,6 @@ public class ReportConnectorServiceImpl implements ReportConnectorService{
 		catch(ReportTemplateServiceException rtse){
 			throw new ReportConnectorServiceException("exception in finding report template for  "+reportConnectorId,rtse);
 		}
-		catch(ReportGenerationServiceException rgse){
-			throw new ReportConnectorServiceException("exception in generating report preview ",rgse);
-		}
-		
 		return report;
 	}
 	/**
@@ -147,9 +146,6 @@ public class ReportConnectorServiceImpl implements ReportConnectorService{
 		} 
 		catch(ReportTemplateServiceException rtse){
 			throw new ReportConnectorServiceException("exception in create report template from rest ",rtse);
-		}
-		catch(ReportGenerationServiceException rgse){
-			throw new ReportConnectorServiceException("exception in generating report preview ",rgse);
 		}
 		return report;
 	}
@@ -260,24 +256,28 @@ public class ReportConnectorServiceImpl implements ReportConnectorService{
     	RestReportConnector connector = new RestReportConnector();
     	
     	if(template instanceof AreaChartTemplate){
-    		connector.setChartType(RestChartTypeEnum.AREA.name());
+    		connector.setTemplateType(TemplateType.AREA.name());
     		mapCartesianChartTemplateToReportConnector((CartesianChartTemplate)template, connector);
     	}
     	else if (template instanceof BarChartTemplate){
-    		connector.setChartType(RestChartTypeEnum.BAR.name());
+    		connector.setTemplateType(TemplateType.BAR.name());
     		mapCartesianChartTemplateToReportConnector((CartesianChartTemplate)template, connector);
     	}
     	else if (template instanceof ColumnChartTemplate){
-    		connector.setChartType(RestChartTypeEnum.COLUMN.name());
+    		connector.setTemplateType(TemplateType.COLUMN.name());
     		mapCartesianChartTemplateToReportConnector((CartesianChartTemplate)template, connector);
     	}
     	else if (template instanceof LineChartTemplate){
-    		connector.setChartType(RestChartTypeEnum.LINE.name());
+    		connector.setTemplateType(TemplateType.LINE.name());
     		mapCartesianChartTemplateToReportConnector((CartesianChartTemplate)template, connector);
     	}
     	else if (template instanceof PieChartTemplate){
-    		connector.setChartType(RestChartTypeEnum.PIE.name());
+    		connector.setTemplateType(TemplateType.PIE.name());
     		mapPieChartTemplateToReportConnector((PieChartTemplate)template, connector);
+    	}else if(template instanceof CrossTabTemplate){
+    		connector.setTemplateType(TemplateType.CROSSTAB.name());
+    		mapBaseReportTemplateToReportConnector(template, connector);
+    		connector.setCrossTabTemplate((CrossTabTemplate) template);
     	}
     	
     	return connector;
@@ -390,12 +390,24 @@ public class ReportConnectorServiceImpl implements ReportConnectorService{
     	BaseReportTemplate reportTemplate = null;
     	
     	//1. create chart type template if chart type 
-    	if(connector.getChartType()!=null){
-    		reportTemplate = createChartTemplateFromRestReportConnector(connector);
+    	if(connector.getTemplateType()!=null){
+    		TemplateType type = TemplateType.fromName(connector.getTemplateType());
+    		if (type ==TemplateType.AREA || type ==TemplateType.BAR ||type ==TemplateType.COLUMN ||type ==TemplateType.LINE ||type ==TemplateType.PIE) {
+    			reportTemplate = createChartTemplateFromRestReportConnector(connector);
+			}else if(type==TemplateType.CROSSTAB){
+				LOG.info("Creating CrossTabTemplate from ReportConnector");
+				reportTemplate = createCrossTabFromReportConnector(connector);
+			}
+        	//reserved for other type of template   		
     	}
-    	//reserved for other type of template
-    	
     	return reportTemplate;
+    }
+    
+    private CrossTabTemplate createCrossTabFromReportConnector(RestReportConnector connector){
+    	CrossTabTemplate template = new CrossTabTemplate();
+    	mapReportConnectorToBaseReportTemplate(connector, template);
+    	template = connector.getCrossTabTemplate();
+    	return template;
     }
     
     /**
@@ -409,7 +421,7 @@ public class ReportConnectorServiceImpl implements ReportConnectorService{
     		throws ReportTemplateServiceException{
     	ChartTemplate template = null;
     	
-    	RestChartTypeEnum chartType = RestChartTypeEnum.fromName(connector.getChartType());
+    	TemplateType chartType = TemplateType.fromName(connector.getTemplateType());
     	
     	if(chartType!=null){
     		ReportQuery refinedReportQuery = null;
@@ -528,32 +540,58 @@ public class ReportConnectorServiceImpl implements ReportConnectorService{
     	}
     }
 
-    private RestReport generateReport(BaseReportTemplate reportTemplate) throws ReportGenerationServiceException{
+    private RestReport generateReport(BaseReportTemplate reportTemplate) throws ReportConnectorServiceException{
     	RestReport restReport = new RestReport();
     	
-    	if(reportTemplate instanceof AreaChartTemplate){
-    		restReport.setType(RestChartTypeEnum.AREA.name());
-			restReport.setCartesianChartReport(reportGenerationService.generateAreaChartReport((AreaChartTemplate)reportTemplate));
-    	}
-    	else if (reportTemplate instanceof BarChartTemplate){
-    		restReport.setType(RestChartTypeEnum.BAR.name());
-    		restReport.setCartesianChartReport(reportGenerationService.generateBarChartReport((BarChartTemplate)reportTemplate));
-    	}
-    	else if (reportTemplate instanceof ColumnChartTemplate){
-    		restReport.setType(RestChartTypeEnum.COLUMN.name());
-    		restReport.setCartesianChartReport(reportGenerationService.generateColumnChartReport((ColumnChartTemplate)reportTemplate));
-    	}
-    	else if (reportTemplate instanceof LineChartTemplate){
-    		restReport.setType(RestChartTypeEnum.LINE.name());
-    		restReport.setCartesianChartReport(reportGenerationService.generateLineChartReport((LineChartTemplate)reportTemplate));
-    	}
-    	else if (reportTemplate instanceof PieChartTemplate){
-    		restReport.setType(RestChartTypeEnum.PIE.name());
-    		restReport.setPieChartReport(reportGenerationService.generatePieChartReport((PieChartTemplate)reportTemplate));
-    	}
-    	else{
-    		throw new ReportGenerationServiceException("Unregconized type template");
-    	}
+    	try {
+			if(reportTemplate instanceof AreaChartTemplate){
+				restReport.setType(TemplateType.AREA.name());
+				restReport.setCartesianChartReport(reportGenerationService.generateAreaChartReport((AreaChartTemplate)reportTemplate));
+			}
+			else if (reportTemplate instanceof BarChartTemplate){
+				restReport.setType(TemplateType.BAR.name());
+				restReport.setCartesianChartReport(reportGenerationService.generateBarChartReport((BarChartTemplate)reportTemplate));
+			}
+			else if (reportTemplate instanceof ColumnChartTemplate){
+				restReport.setType(TemplateType.COLUMN.name());
+				restReport.setCartesianChartReport(reportGenerationService.generateColumnChartReport((ColumnChartTemplate)reportTemplate));
+			}
+			else if (reportTemplate instanceof LineChartTemplate){
+				restReport.setType(TemplateType.LINE.name());
+				restReport.setCartesianChartReport(reportGenerationService.generateLineChartReport((LineChartTemplate)reportTemplate));
+			}
+			else if (reportTemplate instanceof PieChartTemplate){
+				restReport.setType(TemplateType.PIE.name());
+				restReport.setPieChartReport(reportGenerationService.generatePieChartReport((PieChartTemplate)reportTemplate));
+			}
+			else if(reportTemplate instanceof CrossTabTemplate){
+				LOG.info("Generate Report for CrossTabTemplate...");
+				CrossTabTemplate crossTabTemplate = (CrossTabTemplate) reportTemplate;
+				restReport.setType(TemplateType.CROSSTAB.name());
+				Optional<ReportQuery> reportQuery = reportTemplateService.constructReportQuery(crossTabTemplate);
+				if (reportQuery.isPresent()) {
+					LOG.info("Generated Query "+reportQuery.get().getQuery());
+					//Set the Report Query to crosstabtemplate
+					crossTabTemplate.setReportQuery(reportQuery.get());
+					Optional<CrossTabReport> crossTabReport = reportGenerationService.generateCrossTabReport(crossTabTemplate);
+					if (crossTabReport.isPresent()) {
+						LOG.info("CrossTabReport is Not Null");
+						restReport.setCrossTabReport(crossTabReport.get());
+					}else{
+						LOG.error("CrossTabReport Object is Empty");
+						restReport.setCrossTabReport(null);
+					}
+				}else{
+					LOG.error("CrossTabReport object is Null for ----------> generateReport");
+					restReport.setCrossTabReport(null);
+				}
+			}
+			else{
+				throw new ReportConnectorServiceException("Unregconized type template");
+			}
+		} catch (ReportGenerationServiceException | ReportTemplateServiceException e) {
+			throw new ReportConnectorServiceException("Error Generating Report...", e);
+		}
     	return restReport;
     }
 
