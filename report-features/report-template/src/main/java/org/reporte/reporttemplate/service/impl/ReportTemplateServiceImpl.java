@@ -550,7 +550,7 @@ public class ReportTemplateServiceImpl implements ReportTemplateService {
 		String joinedQuery = modelQuery.getValue();
 
 		int fromIdx = joinedQuery.toLowerCase().indexOf("from ");
-		int selectIdx = joinedQuery.toLowerCase().indexOf(SqlConstants.SELECT);
+		int selectIdx = joinedQuery.toLowerCase().indexOf(SqlConstants.SELECT.toLowerCase());
 
 		if (fromIdx < 0 || selectIdx < 0) {
 			throw new ReportTemplateServiceException("invalid joined query [" + joinedQuery + "] for model " + model.getName());
@@ -612,7 +612,7 @@ public class ReportTemplateServiceImpl implements ReportTemplateService {
 
 		String lowerCaseStr = orginalStr.toLowerCase();
 
-		int idx = lowerCaseStr.indexOf(SqlConstants.AS);
+		int idx = lowerCaseStr.indexOf(SqlConstants.AS.toLowerCase());
 
 		// if no " as "
 		if (idx < 0) {
@@ -810,7 +810,7 @@ public class ReportTemplateServiceImpl implements ReportTemplateService {
 		String joinedQuery = modelQuery.getValue();
 
 		int fromIdx = joinedQuery.toLowerCase().indexOf("from ");
-		int selectIdx = joinedQuery.toLowerCase().indexOf(SqlConstants.SELECT);
+		int selectIdx = joinedQuery.toLowerCase().indexOf(SqlConstants.SELECT.toLowerCase());
 
 		if (fromIdx < 0 || selectIdx < 0) {
 			throw new ReportTemplateServiceException("invalid joined query [" + joinedQuery + "] for model " + model.getName());

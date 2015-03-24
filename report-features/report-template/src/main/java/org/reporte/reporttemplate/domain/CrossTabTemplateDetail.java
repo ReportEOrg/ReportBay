@@ -8,7 +8,6 @@ import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -92,12 +91,7 @@ public class CrossTabTemplateDetail extends BaseJPAEntity{
 	public void setSqltype(SqlTypeEnum sqltype) {
 		this.sqltype = sqltype;
 	}
-	public void setSqltype(String sqltype) {
-		if (StringUtils.isBlank(sqltype)) {
-			throw new IllegalArgumentException("Input cannot be Null/Empty/Blank");
-		}
-		this.sqltype =  SqlTypeEnum.fromString(sqltype);
-	}
+
 	public SqlFunction getSqlFunction() {
 		return sqlFunction;
 	}

@@ -17,6 +17,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.reporte.common.domain.SqlTypeEnum;
 import org.reporte.reporttemplate.dao.ReportTemplateDAO;
 import org.reporte.reporttemplate.domain.CrossTabFieldType;
 import org.reporte.reporttemplate.domain.CrossTabTemplate;
@@ -104,7 +105,7 @@ public class ReportTemplateServiceTest{
 		templateDetail.setFieldType(CrossTabFieldType.COLUMN);
 		templateDetail.setGroupOrAggregate(GroupOrAggregate.GROUPING);
 		templateDetail.setSqlFunction(SqlFunction.GROUPBY);
-		templateDetail.setSqltype("VARCHAR");
+		templateDetail.setSqltype(SqlTypeEnum.VARCHAR);
 		templateDetail.setModelAttributeName("country");
 		CrossTabTemplateDetail templateDetail1 = new CrossTabTemplateDetail();
 		templateDetail1.setAttributeDisplayName("location");
@@ -112,7 +113,7 @@ public class ReportTemplateServiceTest{
 		templateDetail1.setFieldType(CrossTabFieldType.COLUMN);
 		templateDetail1.setGroupOrAggregate(GroupOrAggregate.GROUPING);
 		templateDetail1.setSqlFunction(SqlFunction.GROUPBY);
-		templateDetail1.setSqltype("VARCHAR");
+		templateDetail1.setSqltype(SqlTypeEnum.VARCHAR);
 		templateDetail1.setModelAttributeName("location");
 		CrossTabTemplateDetail templateDetail2 = new CrossTabTemplateDetail();
 		templateDetail2.setAttributeDisplayName("Number of Track");
@@ -120,7 +121,7 @@ public class ReportTemplateServiceTest{
 		templateDetail2.setFieldType(CrossTabFieldType.COLUMN);
 		templateDetail2.setGroupOrAggregate(GroupOrAggregate.AGGREGATE);
 		templateDetail2.setSqlFunction(SqlFunction.COUNT);
-		templateDetail2.setSqltype("INTEGER");
+		templateDetail2.setSqltype(SqlTypeEnum.VARCHAR);
 		templateDetail2.setModelAttributeName("name");
 		list.add(templateDetail2);
 		list.add(templateDetail1);
