@@ -35,7 +35,7 @@ import org.reporte.common.domain.BaseJPAEntity;
 @Entity
 @Table(name="report_template")
 @Inheritance(strategy = InheritanceType.JOINED)
-@DiscriminatorColumn(name = "template_type", discriminatorType = DiscriminatorType.STRING)
+@DiscriminatorColumn(name = "template_type", discriminatorType = DiscriminatorType.STRING, length=1)
 
 @NamedQueries({ @NamedQuery(name = "ReportTemplate.findAll", query = "SELECT e FROM BaseReportTemplate e") })
 //defined field access due to use of transient

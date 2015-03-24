@@ -1,5 +1,7 @@
 package org.reporte.reporttemplate.domain;
 
+import static org.reporte.reporttemplate.domain.TemplateDiscriminatorConstants.CROSSTAB;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -19,7 +21,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
  */
 @Entity
 @Table(name="crosstab_report_template")
-@DiscriminatorValue("CrossTab")
+@DiscriminatorValue(CROSSTAB)
 public class CrossTabTemplate extends BaseReportTemplate implements Serializable {
 	/**
 	 * 

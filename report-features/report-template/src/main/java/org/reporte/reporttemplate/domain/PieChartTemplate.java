@@ -1,5 +1,7 @@
 package org.reporte.reporttemplate.domain;
 
+import static org.reporte.reporttemplate.domain.TemplateDiscriminatorConstants.PIE;
+
 import javax.persistence.Access;
 import javax.persistence.AccessType;
 import javax.persistence.Column;
@@ -13,7 +15,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 @Entity
 @Table(name="pie_chart_template")
-@DiscriminatorValue("P")
+@DiscriminatorValue(PIE)
 //defined field access due to use of transient
 @Access(AccessType.FIELD)
 public class PieChartTemplate extends ChartTemplate {
