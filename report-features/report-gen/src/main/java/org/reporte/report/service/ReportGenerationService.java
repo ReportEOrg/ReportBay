@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.reporte.datasource.domain.Datasource;
-import org.reporte.model.domain.Model;
 import org.reporte.report.domain.AreaChartReport;
 import org.reporte.report.domain.BarChartReport;
 import org.reporte.report.domain.ColumnChartReport;
@@ -18,8 +17,6 @@ import org.reporte.reporttemplate.domain.ColumnChartTemplate;
 import org.reporte.reporttemplate.domain.CrossTabTemplate;
 import org.reporte.reporttemplate.domain.LineChartTemplate;
 import org.reporte.reporttemplate.domain.PieChartTemplate;
-import org.reporte.reporttemplate.domain.ReportQuery;
-import org.reporte.reporttemplate.service.exception.ReportTemplateServiceException;
 
 /**
  * 

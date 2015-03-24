@@ -543,7 +543,7 @@ public class ReportGenerationServiceImpl implements ReportGenerationService {
 			if (CollectionUtils.isNotEmpty(resultList)) {
 				//verify the column metadata with crosstab template name
 				Map<ColumnMetadata, String> row= resultList.get(0);
-				List<ColumnMetadata> metaDatas = new ArrayList<ColumnMetadata>();
+//				List<ColumnMetadata> metaDatas = new ArrayList<ColumnMetadata>();
 				for (CrossTabTemplateDetail detail : templateDetails) {
 					boolean matchFound = false;
 					//Add individual ColumnMetadata to the list

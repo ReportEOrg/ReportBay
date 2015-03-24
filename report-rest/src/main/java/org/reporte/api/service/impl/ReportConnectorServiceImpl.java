@@ -8,6 +8,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.reporte.api.dto.model.RestModel;
 import org.reporte.api.dto.report.RestReport;
 import org.reporte.api.dto.reportconnector.TemplateType;
@@ -256,112 +257,112 @@ public class ReportConnectorServiceImpl implements ReportConnectorService{
     	RestReportConnector connector = new RestReportConnector();
     	
     	if(template instanceof AreaChartTemplate){
-    		connector.setTemplateType(TemplateType.AREA.name());
-    		mapCartesianChartTemplateToReportConnector((CartesianChartTemplate)template, connector);
+    		connector.setType(TemplateType.AREA);
+    		connector.setCartesianChartTemplate((CartesianChartTemplate)template);
     	}
     	else if (template instanceof BarChartTemplate){
-    		connector.setTemplateType(TemplateType.BAR.name());
-    		mapCartesianChartTemplateToReportConnector((CartesianChartTemplate)template, connector);
+    		connector.setType(TemplateType.BAR);
+    		connector.setCartesianChartTemplate((CartesianChartTemplate)template);
     	}
     	else if (template instanceof ColumnChartTemplate){
-    		connector.setTemplateType(TemplateType.COLUMN.name());
-    		mapCartesianChartTemplateToReportConnector((CartesianChartTemplate)template, connector);
+    		connector.setType(TemplateType.COLUMN);
+    		connector.setCartesianChartTemplate((CartesianChartTemplate)template);
     	}
     	else if (template instanceof LineChartTemplate){
-    		connector.setTemplateType(TemplateType.LINE.name());
-    		mapCartesianChartTemplateToReportConnector((CartesianChartTemplate)template, connector);
+    		connector.setType(TemplateType.LINE);
+    		connector.setCartesianChartTemplate((CartesianChartTemplate)template);
     	}
     	else if (template instanceof PieChartTemplate){
-    		connector.setTemplateType(TemplateType.PIE.name());
-    		mapPieChartTemplateToReportConnector((PieChartTemplate)template, connector);
+    		connector.setType(TemplateType.PIE);
+    		connector.setPieChartTemplate((PieChartTemplate)template);
     	}else if(template instanceof CrossTabTemplate){
-    		connector.setTemplateType(TemplateType.CROSSTAB.name());
-    		mapBaseReportTemplateToReportConnector(template, connector);
+    		connector.setType(TemplateType.CROSSTAB);
+//    		mapBaseReportTemplateToReportConnector(template, connector);
     		connector.setCrossTabTemplate((CrossTabTemplate) template);
     	}
     	
     	return connector;
     }
 
-    /**
-     * 
-     * @param template
-     * @param connector
-     */
-    private void mapPieChartTemplateToReportConnector(PieChartTemplate template, RestReportConnector connector){
-    	//1. map chart attributes
-    	mapChartTemplateToReportConnector(template, connector);
-    	
-    	//2. map pie chart attributes
-    	connector.setCategoryName(template.getCategoryName());
-    	connector.setModelCategoryField(template.getModelCategoryField());
-    	connector.setModelDataField(template.getModelDataField());
-    	connector.setDataTypeFormat(template.getDataTypeFormat()==null?null:template.getDataTypeFormat().name());
-    	connector.setShowDataLabel(template.isShowDataLabel());
-    }
+//    /**
+//     * 
+//     * @param template
+//     * @param connector
+//     */
+//    private void mapPieChartTemplateToReportConnector(PieChartTemplate template, RestReportConnector connector){
+//    	//1. map chart attributes
+//    	mapChartTemplateToReportConnector(template, connector);
+//    	
+//    	//2. map pie chart attributes
+//    	connector.setCategoryName(template.getCategoryName());
+//    	connector.setModelCategoryField(template.getModelCategoryField());
+//    	connector.setModelDataField(template.getModelDataField());
+//    	connector.setDataTypeFormat(template.getDataTypeFormat()==null?null:template.getDataTypeFormat().name());
+//    	connector.setShowDataLabel(template.isShowDataLabel());
+//    }
     
     
-    /**
-     * 
-     * @param template
-     * @param connector
-     */
-    private void mapCartesianChartTemplateToReportConnector(CartesianChartTemplate template, RestReportConnector connector){
-    	//1. map chart attributes
-    	mapChartTemplateToReportConnector(template, connector);
-
-    	//2. map cartesian chart attributes
-    	connector.setxAxisTitle(template.getXAxisTitle());
-    	connector.setyAxisTitle(template.getYAxisTitle());
-    	connector.setShowXAxis(template.isShowXAxis());
-    	connector.setShowYAxis(template.isShowXAxis());
-    	connector.setShowDataLabel(template.isShowDataLabel());
-    	connector.setModelDataLabelField(template.getModelDataLabelField());
-    	connector.setModelDataValueField(template.getModelDataValueField());
-    	connector.setModelSeriesGroupField(template.getModelSeriesGroupField());
-    	
-    	connector.getTemplateSeries().addAll(template.getDataSeries());
-    }
+//    /**
+//     * 
+//     * @param template
+//     * @param connector
+//     */
+//    private void mapCartesianChartTemplateToReportConnector(CartesianChartTemplate template, RestReportConnector connector){
+//    	//1. map chart attributes
+//    	mapChartTemplateToReportConnector(template, connector);
+//
+//    	//2. map cartesian chart attributes
+//    	connector.setxAxisTitle(template.getXAxisTitle());
+//    	connector.setyAxisTitle(template.getYAxisTitle());
+//    	connector.setShowXAxis(template.isShowXAxis());
+//    	connector.setShowYAxis(template.isShowXAxis());
+//    	connector.setShowDataLabel(template.isShowDataLabel());
+//    	connector.setModelDataLabelField(template.getModelDataLabelField());
+//    	connector.setModelDataValueField(template.getModelDataValueField());
+//    	connector.setModelSeriesGroupField(template.getModelSeriesGroupField());
+//    	
+//    	connector.getTemplateSeries().addAll(template.getDataSeries());
+//    }
 	
-    /**
-     * 
-     * @param template
-     * @param connector
-     */
-    private void mapChartTemplateToReportConnector(ChartTemplate template, RestReportConnector connector){
-    	//1. map common base attributes
-    	mapBaseReportTemplateToReportConnector(template, connector);
-    	
-    	//2. map chart attributes
-    	connector.setChartTitle(template.getTitle());
-    	connector.setShowLegend(template.getShowLegend());
-    }
-    /**
-     * 
-     * @param template
-     * @param connector
-     */
-    private void mapBaseReportTemplateToReportConnector(BaseReportTemplate template, RestReportConnector connector){
-    	
-    	connector.setId(template.getId());
-    	connector.setName(template.getTemplateName());
-    	connector.setReportDisplayName(template.getReportDisplayName());
-    	
-    	try{
-    		Model model = modelService.find(template.getModelId());
-    		
-    		if(model==null){
-    			throw new ModelServiceException("model not found for id = "+template.getModelId());
-    		}
-    		
-    		connector.setModel(createRestModelFromModel(model));
-    	}
-    	catch(ModelServiceException mse){
-    		String errMsg = "Exception in finding report model "+template.getModelId();
-    		LOG.error(errMsg, mse);
-			throw new CustomizedWebException(Response.Status.INTERNAL_SERVER_ERROR, errMsg);
-    	}
-    }
+//    /**
+//     * 
+//     * @param template
+//     * @param connector
+//     */
+//    private void mapChartTemplateToReportConnector(ChartTemplate template, RestReportConnector connector){
+//    	//1. map common base attributes
+//    	mapBaseReportTemplateToReportConnector(template, connector);
+//    	
+//    	//2. map chart attributes
+//    	connector.setChartTitle(template.getTitle());
+//    	connector.setShowLegend(template.getShowLegend());
+//    }
+//    /**
+//     * 
+//     * @param template
+//     * @param connector
+//     */
+//    private void mapBaseReportTemplateToReportConnector(BaseReportTemplate template, RestReportConnector connector){
+//    	
+//    	connector.setId(template.getId());
+//    	connector.setName(template.getTemplateName());
+//    	connector.setReportDisplayName(template.getReportDisplayName());
+//    	
+//    	try{
+//    		Model model = modelService.find(template.getModelId());
+//    		
+//    		if(model==null){
+//    			throw new ModelServiceException("model not found for id = "+template.getModelId());
+//    		}
+//    		
+//    		connector.setModel(createRestModelFromModel(model));
+//    	}
+//    	catch(ModelServiceException mse){
+//    		String errMsg = "Exception in finding report model "+template.getModelId();
+//    		LOG.error(errMsg, mse);
+//			throw new CustomizedWebException(Response.Status.INTERNAL_SERVER_ERROR, errMsg);
+//    	}
+//    }
     
     /**
      * 
@@ -390,23 +391,35 @@ public class ReportConnectorServiceImpl implements ReportConnectorService{
     	BaseReportTemplate reportTemplate = null;
     	
     	//1. create chart type template if chart type 
-    	if(connector.getTemplateType()!=null){
-    		TemplateType type = TemplateType.fromName(connector.getTemplateType());
-    		if (type ==TemplateType.AREA || type ==TemplateType.BAR ||type ==TemplateType.COLUMN ||type ==TemplateType.LINE ||type ==TemplateType.PIE) {
-    			reportTemplate = createChartTemplateFromRestReportConnector(connector);
-			}else if(type==TemplateType.CROSSTAB){
-				LOG.info("Creating CrossTabTemplate from ReportConnector");
-				reportTemplate = createCrossTabFromReportConnector(connector);
-			}
-        	//reserved for other type of template   		
+    	if(connector.getType()!=null){
+    		TemplateType type = connector.getType();
+    		
+    		switch(type){
+    			case AREA:
+    			case BAR:
+    			case COLUMN:
+    			case LINE:
+    			case PIE:
+    				reportTemplate = createChartTemplateFromRestReportConnector(connector);
+    				break;
+    			case CROSSTAB:
+    				LOG.info("Creating CrossTabTemplate from ReportConnector");
+    				reportTemplate = createCrossTabFromReportConnector(connector);
+    				break;
+    				
+   	        	/*** reserved for other type of template **/
+    				
+    			default:
+    				//TODO: unrecognized type error
+    				break;
+    		}
+   		
     	}
     	return reportTemplate;
     }
     
     private CrossTabTemplate createCrossTabFromReportConnector(RestReportConnector connector){
-    	CrossTabTemplate template = new CrossTabTemplate();
-    	mapReportConnectorToBaseReportTemplate(connector, template);
-    	template = connector.getCrossTabTemplate();
+    	CrossTabTemplate template = connector.getCrossTabTemplate();
     	return template;
     }
     
@@ -421,7 +434,7 @@ public class ReportConnectorServiceImpl implements ReportConnectorService{
     		throws ReportTemplateServiceException{
     	ChartTemplate template = null;
     	
-    	TemplateType chartType = TemplateType.fromName(connector.getTemplateType());
+    	TemplateType chartType = connector.getType();
     	
     	if(chartType!=null){
     		ReportQuery refinedReportQuery = null;
@@ -429,27 +442,26 @@ public class ReportConnectorServiceImpl implements ReportConnectorService{
 	    	switch(chartType){
 	    		case AREA:
 	    			template = new AreaChartTemplate();
-	    			mapReportConnectorToCartesianChartTemplate(connector, (CartesianChartTemplate)template);
+	    			mapReportConnectorToCartesianChartTemplate(connector.getCartesianChartTemplate(), (CartesianChartTemplate)template);
 	    			refinedReportQuery = reportTemplateService.constructReportQuery((AreaChartTemplate)template);
 	    			break;
 	    		case BAR:
 	    			template = new BarChartTemplate();
-	    			mapReportConnectorToCartesianChartTemplate(connector, (CartesianChartTemplate)template);
+	    			mapReportConnectorToCartesianChartTemplate(connector.getCartesianChartTemplate(), (CartesianChartTemplate)template);
 	    			refinedReportQuery = reportTemplateService.constructReportQuery((BarChartTemplate)template);
 	    			break;
 	    		case COLUMN:
 	    			template = new ColumnChartTemplate();
-	    			mapReportConnectorToCartesianChartTemplate(connector, (CartesianChartTemplate)template);
+	    			mapReportConnectorToCartesianChartTemplate(connector.getCartesianChartTemplate(), (CartesianChartTemplate)template);
 	    			refinedReportQuery = reportTemplateService.constructReportQuery((ColumnChartTemplate)template);
 	    			break;
 	    		case LINE:
 	    			template = new LineChartTemplate();
-	    			mapReportConnectorToCartesianChartTemplate(connector, (CartesianChartTemplate)template);
+	    			mapReportConnectorToCartesianChartTemplate(connector.getCartesianChartTemplate(), (CartesianChartTemplate)template);
 	    			refinedReportQuery = reportTemplateService.constructReportQuery((LineChartTemplate)template);
 	    			break;
 	    		case PIE:
-	    			template = new PieChartTemplate();
-	    			mapReportConnectorToPieChartTemplate(connector, (PieChartTemplate)template);
+	    			template = connector.getPieChartTemplate();
 	    			refinedReportQuery = reportTemplateService.constructReportQuery((PieChartTemplate)template);
 	    			break;
 	    		default:
@@ -466,63 +478,123 @@ public class ReportConnectorServiceImpl implements ReportConnectorService{
     }
     
     
+//    /**
+//     * 
+//     * @param connector
+//     * @param template
+//     */
+//    private void mapReportConnectorToCartesianChartTemplate(RestReportConnector connector, CartesianChartTemplate template){
+//    	//1. map chart attribute
+//    	mapReportConnectorToChartTemplate(connector, template);
+//    	
+//    	//2. map cartesian chart attributes
+//    	template.setReportTemplateType(ReportTemplateTypeEnum.SIMPLE);
+//    	template.setShowDataLabel(connector.isShowDataLabel());
+//
+//    	template.setShowXAxis(connector.isShowXAxis());
+//    	template.setShowXAxis(connector.isShowYAxis());
+//
+//    	template.setXAxisTitle(connector.getxAxisTitle());
+//    	template.setYAxisTitle(connector.getyAxisTitle());
+//    	
+//    	template.setModelDataLabelField(connector.getModelDataLabelField());
+//    	template.setModelDataValueField(connector.getModelDataValueField());
+//
+//    	template.setModelSeriesGroupField(connector.getModelSeriesGroupField());
+//    	
+//    	template.setDataSeries(new LinkedHashSet<TemplateSeries>());
+//    	template.getDataSeries().addAll(connector.getTemplateSeries());
+//    }
+//    /**
+//     * 
+//     * @param connector
+//     * @param template
+//     */
+//    private void mapReportConnectorToPieChartTemplate(RestReportConnector connector, PieChartTemplate template){
+//    	//1. map chart attribute
+//    	mapReportConnectorToChartTemplate(connector, template);
+//    	
+//    	//2. map pie chart attributes
+//    	template.setReportTemplateType(ReportTemplateTypeEnum.SIMPLE);
+//    	template.setShowDataLabel(connector.isShowDataLabel());
+//    	
+//    	template.setCategoryName(connector.getCategoryName());
+//    	template.setModelCategoryField(connector.getModelCategoryField());
+//    	template.setModelDataField(connector.getModelDataField());
+//    	template.setDataTypeFormat(PieChartDataTypeEnum.fromName(connector.getDataTypeFormat()));
+//    }
+//    /**
+//     * 
+//     * @param connector
+//     * @param template
+//     */
+//    private void mapReportConnectorToChartTemplate(RestReportConnector connector, ChartTemplate template){
+//    	//1. base attribute mapping
+//    	mapReportConnectorToBaseReportTemplate(connector, template);
+//    	
+//    	//2. map chart attributes
+//    	template.setTitle(connector.getChartTitle());
+//    	template.setShowLegend(connector.isShowLegend());
+//    }
+    
+//    /**
+//     * 
+//     * @param connector
+//     * @param template
+//     */
+//    private void mapReportConnectorToBaseReportTemplate(RestReportConnector connector, BaseReportTemplate template){
+//    	template.setId(connector.getId());
+//    	template.setTemplateName(connector.getName());
+//    	template.setReportDisplayName(connector.getReportDisplayName());
+//    	
+//    	if(connector.getModel()!=null){
+//    		template.setModelId(connector.getModel().getId());
+//    	}
+//    }
+    
     /**
      * 
      * @param connector
      * @param template
      */
-    private void mapReportConnectorToCartesianChartTemplate(RestReportConnector connector, CartesianChartTemplate template){
+    private void mapReportConnectorToCartesianChartTemplate(CartesianChartTemplate source, CartesianChartTemplate target){
     	//1. map chart attribute
-    	mapReportConnectorToChartTemplate(connector, template);
+    	mapReportConnectorToChartTemplate(source, target);
     	
     	//2. map cartesian chart attributes
-    	template.setReportTemplateType(ReportTemplateTypeEnum.SIMPLE);
-    	template.setShowDataLabel(connector.isShowDataLabel());
+    	target.setReportTemplateType(ReportTemplateTypeEnum.SIMPLE);
+    	target.setShowDataLabel(source.isShowDataLabel());
 
-    	template.setShowXAxis(connector.isShowXAxis());
-    	template.setShowXAxis(connector.isShowYAxis());
+    	target.setShowXAxis(source.isShowXAxis());
+    	target.setShowXAxis(source.isShowYAxis());
 
-    	template.setXAxisTitle(connector.getxAxisTitle());
-    	template.setYAxisTitle(connector.getyAxisTitle());
+    	target.setXAxisTitle(source.getXAxisTitle());
+    	target.setYAxisTitle(source.getYAxisTitle());
     	
-    	template.setModelDataLabelField(connector.getModelDataLabelField());
-    	template.setModelDataValueField(connector.getModelDataValueField());
+    	target.setModelDataLabelField(source.getModelDataLabelField());
+    	target.setModelDataValueField(source.getModelDataValueField());
 
-    	template.setModelSeriesGroupField(connector.getModelSeriesGroupField());
+    	target.setModelSeriesGroupField(source.getModelSeriesGroupField());
     	
-    	template.setDataSeries(new LinkedHashSet<TemplateSeries>());
-    	template.getDataSeries().addAll(connector.getTemplateSeries());
+    	target.setDataSeries(new LinkedHashSet<TemplateSeries>());
+    	
+    	if(CollectionUtils.isNotEmpty(source.getDataSeries())){
+    		target.getDataSeries().addAll(source.getDataSeries());
+    	}
     }
+
     /**
      * 
      * @param connector
      * @param template
      */
-    private void mapReportConnectorToPieChartTemplate(RestReportConnector connector, PieChartTemplate template){
-    	//1. map chart attribute
-    	mapReportConnectorToChartTemplate(connector, template);
-    	
-    	//2. map pie chart attributes
-    	template.setReportTemplateType(ReportTemplateTypeEnum.SIMPLE);
-    	template.setShowDataLabel(connector.isShowDataLabel());
-    	
-    	template.setCategoryName(connector.getCategoryName());
-    	template.setModelCategoryField(connector.getModelCategoryField());
-    	template.setModelDataField(connector.getModelDataField());
-    	template.setDataTypeFormat(PieChartDataTypeEnum.fromName(connector.getDataTypeFormat()));
-    }
-    /**
-     * 
-     * @param connector
-     * @param template
-     */
-    private void mapReportConnectorToChartTemplate(RestReportConnector connector, ChartTemplate template){
+    private void mapReportConnectorToChartTemplate(ChartTemplate source, ChartTemplate target){
     	//1. base attribute mapping
-    	mapReportConnectorToBaseReportTemplate(connector, template);
+    	mapReportConnectorToBaseReportTemplate(source, target);
     	
     	//2. map chart attributes
-    	template.setTitle(connector.getChartTitle());
-    	template.setShowLegend(connector.isShowLegend());
+    	target.setTitle(source.getTitle());
+    	target.setShowLegend(source.isShowLegend());
     }
     
     /**
@@ -530,14 +602,12 @@ public class ReportConnectorServiceImpl implements ReportConnectorService{
      * @param connector
      * @param template
      */
-    private void mapReportConnectorToBaseReportTemplate(RestReportConnector connector, BaseReportTemplate template){
-    	template.setId(connector.getId());
-    	template.setTemplateName(connector.getName());
-    	template.setReportDisplayName(connector.getReportDisplayName());
+    private void mapReportConnectorToBaseReportTemplate(BaseReportTemplate source, BaseReportTemplate target){
     	
-    	if(connector.getModel()!=null){
-    		template.setModelId(connector.getModel().getId());
-    	}
+    	target.setId(source.getId());
+    	target.setTemplateName(source.getTemplateName());
+    	target.setReportDisplayName(source.getReportDisplayName());
+    	target.setModelId(source.getModelId());
     }
 
     private RestReport generateReport(BaseReportTemplate reportTemplate) throws ReportConnectorServiceException{
