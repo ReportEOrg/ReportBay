@@ -13,9 +13,11 @@ public class SelectFieldMatcher implements SelectItemVisitor{
 
 	private SelectItem matchedSelectItem = null;
 	private String aliasName = null;
+	private String quotedIdentifier = null;
 	
-	public SelectFieldMatcher(String aliasName){
+	public SelectFieldMatcher(String aliasName, String quotedIdentifier){
 		this.aliasName = aliasName;
+		this.quotedIdentifier = quotedIdentifier;
 	}
 	
 	@Override
@@ -51,7 +53,7 @@ public class SelectFieldMatcher implements SelectItemVisitor{
 		if(columnName!=null){
 
 			//remove ` character
-			columnName = columnName.replace("`", "");
+			columnName = columnName.replace(quotedIdentifier, "");
 
 			if(aliasName.equals(columnName)){
 				matchedSelectItem = selectExpressionItem;

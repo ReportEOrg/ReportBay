@@ -273,21 +273,23 @@ public class ModelServiceImpl implements ModelService {
 		if(refFieldName==null){
 			throw new ModelServiceException("alias field name ["+aliasFieldName+"] not exist in model");
 		}
-		
-		//2. create selectItemVisitor for reference field name
-		SelectFieldMatcher matcher = new SelectFieldMatcher(refFieldName);
 
-		CCJSqlParserManager pm = new CCJSqlParserManager();
-		try {
-			
-			//3. parse model's query string
-			net.sf.jsqlparser.statement.Statement statement = pm.parse(new StringReader(model.getQuery().getValue()));
+		//autoclose string reader
+		try(StringReader queryStringReader = new StringReader(model.getQuery().getValue())) {
+
+			CCJSqlParserManager pm = new CCJSqlParserManager();
+			//2. parse model's query string
+			net.sf.jsqlparser.statement.Statement statement = pm.parse(queryStringReader);
 			
 			if (statement instanceof Select) {
 				SelectBody selectBody = ((Select)statement).getSelectBody();
 				
 				if(selectBody instanceof PlainSelect){
 					PlainSelect ps = (PlainSelect)selectBody;
+
+					//3. create selectItemVisitor for reference field name
+					String quotedIdentifier = jdbcClient.getQuotedIdentifier(model.getDatasource());
+					SelectFieldMatcher matcher = new SelectFieldMatcher(refFieldName,quotedIdentifier);
 					
 					//4. for each selet item
 					for(SelectItem si : ps.getSelectItems()){

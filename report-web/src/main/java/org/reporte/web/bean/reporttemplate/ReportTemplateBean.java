@@ -9,18 +9,17 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.RequestScoped;
 import javax.faces.component.html.HtmlCommandLink;
 import javax.faces.component.html.HtmlInputText;
 import javax.faces.component.html.HtmlSelectOneMenu;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.AjaxBehaviorEvent;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
-import org.primefaces.component.selectonemenu.SelectOneMenu;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.FlowEvent;
 import org.primefaces.event.SelectEvent;
@@ -57,7 +56,7 @@ import org.reporte.web.util.ReportUtil;
  *
  */
 @Named("reportTemplate")
-@RequestScoped
+@ViewScoped
 public class ReportTemplateBean implements Serializable {
 	private static final long serialVersionUID = 696889640817167123L;
 	private static final Logger LOG = Logger.getLogger(ReportTemplateBean.class);
@@ -280,14 +279,6 @@ public class ReportTemplateBean implements Serializable {
 		}
 	}
 
-	public void modelSeriesGroupFieldChanged(AjaxBehaviorEvent event) {
-		templateSeriesValues = new ArrayList<TemplateSeries>();
-		if (modelSeriesGroupField == null || modelSeriesGroupField.trim().length() == 0) {
-			modelSeriesGroupField = ((SelectOneMenu) event.getSource()).getValue().toString();
-		}
-		loadDataFieldValues(selectedModel, getReferenceColumn(modelSeriesGroupField, modelAttrs));
-	}
-
 	private String getReferenceColumn(String alias, List<AttributeMapping> attrMappings) {
 		for (AttributeMapping attribute : attrMappings) {
 			if (attribute.getAlias().equals(alias)) {
@@ -300,12 +291,10 @@ public class ReportTemplateBean implements Serializable {
 	private void loadDataFieldValues(Model model, String columnName) {
 		if (selectedModel != null) {
 			try {
-				String dataFieldQuery = reportTemplateService.constructDataFieldValueQuery(selectedModel, columnName);
-				dataFieldValues = reportGenService.getDataFieldValues(selectedModel.getDatasource(), dataFieldQuery);
-			} catch (ReportTemplateServiceException e) {
-				e.printStackTrace();
-			} catch (ReportGenerationServiceException e) {
-				e.printStackTrace();
+				dataFieldValues = modelService.getModelFieldUniqueValue(model, columnName);
+			} 
+			catch (ModelServiceException e) {
+				LOG.error("Failed load data field value",e);
 			}
 		}
 	}
@@ -398,21 +387,23 @@ public class ReportTemplateBean implements Serializable {
 	}
 
 	public void deleteReportTemplate() {
-		try {
-			if (currentDisplayTemplate instanceof BarChartTemplate) {
-				reportTemplateService.delete((BarChartTemplate) currentDisplayTemplate);
-			} else if (currentDisplayTemplate instanceof LineChartTemplate) {
-				reportTemplateService.delete((LineChartTemplate) currentDisplayTemplate);
-			} else if (currentDisplayTemplate instanceof AreaChartTemplate) {
-				reportTemplateService.delete((AreaChartTemplate) currentDisplayTemplate);
-			} else if (currentDisplayTemplate instanceof ColumnChartTemplate) {
-				reportTemplateService.delete((ColumnChartTemplate) currentDisplayTemplate);
-			} else if (currentDisplayTemplate instanceof PieChartTemplate) {
-				reportTemplateService.delete((PieChartTemplate) currentDisplayTemplate);
-			}
-		} catch (ReportTemplateServiceException e) {
-			e.printStackTrace();
-		}
+		
+		//disable the delete code to prevent it from corrupt data since this JSF bean logic is buggy
+//		try {
+//			if (currentDisplayTemplate instanceof BarChartTemplate) {
+//				reportTemplateService.delete((BarChartTemplate) currentDisplayTemplate);
+//			} else if (currentDisplayTemplate instanceof LineChartTemplate) {
+//				reportTemplateService.delete((LineChartTemplate) currentDisplayTemplate);
+//			} else if (currentDisplayTemplate instanceof AreaChartTemplate) {
+//				reportTemplateService.delete((AreaChartTemplate) currentDisplayTemplate);
+//			} else if (currentDisplayTemplate instanceof ColumnChartTemplate) {
+//				reportTemplateService.delete((ColumnChartTemplate) currentDisplayTemplate);
+//			} else if (currentDisplayTemplate instanceof PieChartTemplate) {
+//				reportTemplateService.delete((PieChartTemplate) currentDisplayTemplate);
+//			}
+//		} catch (ReportTemplateServiceException e) {
+//			e.printStackTrace();
+//		}
 		resetTemplateData();
 		loadReportTemplateList();
 	}

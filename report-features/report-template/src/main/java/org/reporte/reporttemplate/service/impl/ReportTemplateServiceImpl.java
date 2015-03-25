@@ -2,6 +2,7 @@ package org.reporte.reporttemplate.service.impl;
 
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -38,14 +39,14 @@ import net.sf.jsqlparser.util.deparser.SelectDeParser;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.reporte.common.util.CommonUtils;
-import org.reporte.common.util.SqlConstants;
+import org.reporte.datasource.service.JdbcClient;
+import org.reporte.datasource.service.exception.JdbcClientException;
 import org.reporte.model.dao.ModelDAO;
 import org.reporte.model.dao.exception.ModelDAOException;
 import org.reporte.model.domain.AttributeMapping;
 import org.reporte.model.domain.Model;
-import org.reporte.model.domain.Model.Approach;
 import org.reporte.model.domain.ModelQuery;
-import org.reporte.model.domain.SimpleModel;
+import org.reporte.model.service.util.SelectFieldMatcher;
 import org.reporte.reporttemplate.dao.ReportQueryDAO;
 import org.reporte.reporttemplate.dao.ReportTemplateDAO;
 import org.reporte.reporttemplate.dao.exception.ReportQueryDAOException;
@@ -74,8 +75,7 @@ import org.slf4j.LoggerFactory;
 public class ReportTemplateServiceImpl implements ReportTemplateService {
 
 	private final Logger LOG = LoggerFactory.getLogger(ReportTemplateServiceImpl.class);
-
-
+	
 	@Inject
 	private ReportTemplateDAO reportTemplateDAO;
 
@@ -84,6 +84,9 @@ public class ReportTemplateServiceImpl implements ReportTemplateService {
 
 	@Inject
 	private ModelDAO modelDAO;
+	
+	@Inject
+	private JdbcClient jdbcClient;
 
 	
 	/**
@@ -455,15 +458,8 @@ public class ReportTemplateServiceImpl implements ReportTemplateService {
 
 				Map<String, String> aliasLookUpMap = constructAliasLookupMap(model, requiredColumnList);
 
-				// for single table model
-				if (Approach.SINGLE_TABLE.equals(model.getApproach())) {
-					reportQuery = constructSimpleModelReportQuery((SimpleModel) model, aliasLookUpMap);
-					reportQuery.setId(template.getId());
-				} else if (Approach.JOIN_QUERY.equals(model.getApproach())) {
-					reportQuery = constructJoinModelReportQuery(model, aliasLookUpMap);
-					reportQuery.setId(template.getId());
-				}
-
+				reportQuery = constructReportQueryFromModel( model, aliasLookUpMap);
+				reportQuery.setId(template.getId());
 			} catch (ModelDAOException mde) {
 				throw new ReportTemplateServiceException("Error finding model [" + template.getModelId() + "]", mde);
 			}
@@ -512,165 +508,14 @@ public class ReportTemplateServiceImpl implements ReportTemplateService {
 
 				Map<String, String> aliasLookUpMap = constructAliasLookupMap(model, requiredColumnList);
 
-				// for single table model
-				if (Approach.SINGLE_TABLE.equals(model.getApproach())) {
-					reportQuery = constructSimpleModelReportQuery((SimpleModel) model, aliasLookUpMap);
-					reportQuery.setId(template.getId());
-				} else if (Approach.JOIN_QUERY.equals(model.getApproach())) {
-					reportQuery = constructJoinModelReportQuery(model, aliasLookUpMap);
-					reportQuery.setId(template.getId());
-				}
-
+				reportQuery = constructReportQueryFromModel(model, aliasLookUpMap);
+				reportQuery.setId(template.getId());
 			} catch (ModelDAOException mde) {
 				throw new ReportTemplateServiceException("Error finding model [" + template.getModelId() + "]", mde);
 			}
 		}
 
 		return reportQuery;
-	}
-
-	/**
-	 * 
-	 * @param model
-	 * @param aliasLookUpMap
-	 * @return
-	 * @throws ReportTemplateServiceException
-	 */
-	private ReportQuery constructJoinModelReportQuery(Model model, Map<String, String> aliasLookUpMap) throws ReportTemplateServiceException {
-
-		ReportQuery rq = null;
-
-		// obtained the joined query
-		ModelQuery modelQuery = model.getQuery();
-
-		if (modelQuery == null || StringUtils.isBlank(modelQuery.getValue())) {
-			throw new ReportTemplateServiceException("empty joined query for model " + model.getName());
-		}
-
-		String joinedQuery = modelQuery.getValue();
-
-		int fromIdx = joinedQuery.toLowerCase().indexOf("from ");
-		int selectIdx = joinedQuery.toLowerCase().indexOf(SqlConstants.SELECT.toLowerCase());
-
-		if (fromIdx < 0 || selectIdx < 0) {
-			throw new ReportTemplateServiceException("invalid joined query [" + joinedQuery + "] for model " + model.getName());
-		}
-
-		String selectExpression = joinedQuery.substring(selectIdx + SqlConstants.SELECT.length(), fromIdx);
-
-		String[] expresses = selectExpression.split(SqlConstants.QUERY_SEPERATOR);
-
-		StringBuilder sb = new StringBuilder();
-
-		int foundColumnCount = 0;
-
-		// for each required column, look through the available column of model
-		// query
-		for (Map.Entry<String, String> entry : aliasLookUpMap.entrySet()) {
-
-			for (int eIdx = 0; eIdx < expresses.length; eIdx++) {
-				// if expression belongs to the required column, retain for
-				// final query
-				if (expresses[eIdx] != null && expresses[eIdx].contains(entry.getValue())) {
-
-					// replace the expresses query alias with model alias
-					sb.append(buildSelectArg(expresses[eIdx], entry)).append(SqlConstants.QUERY_SEPERATOR);
-					foundColumnCount++;
-
-					break;
-				}
-			}
-		}
-
-		// if not all required column resolved, treated as error
-		if (foundColumnCount != aliasLookUpMap.size()) {
-			sb.setLength(0);
-		}
-
-		if (sb.length() > 0) {
-			// truncate last ","
-			sb.setLength(sb.length() - SqlConstants.QUERY_SEPERATOR.length());
-
-			// add prefix of "select "
-			sb.insert(0, SqlConstants.SELECT);
-			// append the original from and where clause
-			sb.append(" ").append(joinedQuery.substring(fromIdx));
-
-			rq = new ReportQuery();
-			rq.setQuery(sb.toString());
-			rq.setDatasource(model.getDatasource());
-		} else {
-			throw new ReportTemplateServiceException("No match expression from custom query [" + joinedQuery + "]");
-		}
-
-		return rq;
-	}
-
-	private String buildSelectArg(String orginalStr, Map.Entry<String, String> entry) {
-
-		StringBuilder sb = new StringBuilder();
-
-		String lowerCaseStr = orginalStr.toLowerCase();
-
-		int idx = lowerCaseStr.indexOf(SqlConstants.AS.toLowerCase());
-
-		// if no " as "
-		if (idx < 0) {
-
-			if (StringUtils.isBlank(entry.getValue())) {
-				LOG.info(entry.getValue() + " is invalid. Can't be replaced. use original value ");
-				sb.append(orginalStr);
-			} else {
-				// take original value
-				sb.append(orginalStr);
-				// append with " as " followed by replacement of field with
-				// alias name
-				sb.append(SqlConstants.AS).append(SqlConstants.APOSTROPHE).append(entry.getKey()).append(SqlConstants.APOSTROPHE);
-			}
-		} else {
-			// take until end of " as "
-			sb.append(orginalStr.substring(0, idx + SqlConstants.AS.length()));
-			// append with replacement of field with alias name
-			sb.append(SqlConstants.APOSTROPHE).append(entry.getKey()).append(SqlConstants.APOSTROPHE);
-		}
-
-		return sb.toString();
-	}
-
-	/**
-	 * 
-	 * @param model
-	 * @param aliasLookUpMap
-	 * @return
-	 * @throws ReportTemplateServiceException
-	 */
-	private ReportQuery constructSimpleModelReportQuery(SimpleModel model, Map<String, String> aliasLookUpMap) throws ReportTemplateServiceException {
-		String tableName = model.getTable();
-
-		if (StringUtils.isBlank(tableName)) {
-			throw new ReportTemplateServiceException("empty table name for model " + model.getName());
-		}
-
-		StringBuilder sb = new StringBuilder();
-
-		for (Map.Entry<String, String> entry : aliasLookUpMap.entrySet()) {
-			sb.append(" ").append(entry.getValue()).append(SqlConstants.AS).append(SqlConstants.APOSTROPHE).append(entry.getKey()).append(SqlConstants.APOSTROPHE).append(SqlConstants.QUERY_SEPERATOR);
-		}
-
-		// truncate the last ","
-		if (sb.length() > 0) {
-			sb.setLength(sb.length() - SqlConstants.QUERY_SEPERATOR.length());
-		}
-
-		sb.insert(0, SqlConstants.SELECT);
-		sb.append(" FROM ").append(tableName);
-
-		ReportQuery rq = new ReportQuery();
-
-		rq.setQuery(sb.toString());
-		rq.setDatasource(model.getDatasource());
-
-		return rq;
 	}
 
 	/**
@@ -742,123 +587,200 @@ public class ReportTemplateServiceImpl implements ReportTemplateService {
 		}
 	}
 	/**
-	 * {@inheritDoc}
+	 * 
+	 * @param model
+	 * @param aliasLookUpMap
+	 * @return
+	 * @throws ReportTemplateServiceException
 	 */
-	@Override
-	public String constructDataFieldValueQuery(Model model, String requiredFieldAlias) throws ReportTemplateServiceException {
-		String query = "";
-		
-		List<String> requiredColumnList = new ArrayList<String>();
-		requiredColumnList.add(requiredFieldAlias);
+	private ReportQuery constructReportQueryFromModel(Model model, Map<String, String> aliasLookUpMap) throws ReportTemplateServiceException {
 
-		Map<String, String> aliasLookUpMap = constructAliasLookupMap(model, requiredColumnList);
-		
-		if (Approach.SINGLE_TABLE.equals(model.getApproach())) {
-			query = constructSimpleModelDataFieldValueQuery((SimpleModel) model, aliasLookUpMap);
+		//autoclose StringReader wrapping the model query
+		try(StringReader queryStringReader = new StringReader(model.getQuery().getValue())){
+
+			CCJSqlParserManager pm = new CCJSqlParserManager();
+			
+			//1. parse query into Statement object
+			net.sf.jsqlparser.statement.Statement statement =  pm.parse(queryStringReader);
+			
+			if (statement instanceof Select) {
+				//2. obtain the select body
+				SelectBody selectBody = ((Select)statement).getSelectBody();
+				
+				if(selectBody instanceof PlainSelect){
+					PlainSelect ps = (PlainSelect)selectBody;
+					
+					//3. obtaint the JDBC driver specific quoted identifier character
+					String quotedIdentifier = jdbcClient.getQuotedIdentifier(model.getDatasource());
+					
+					//3. process and derive the to be retained select item based on required referenced field name
+					List<SelectItem> finalSelectItemList = deriveFinalSelectItems(ps, aliasLookUpMap.values(),quotedIdentifier);
+					
+					if(finalSelectItemList.isEmpty()){
+						throw new ReportTemplateServiceException("Failed to derived the to be retained select item(s) ");
+					}
+					else{
+						//4. replace / add alias for report query
+						updateSelectItemAlias(finalSelectItemList, aliasLookUpMap,quotedIdentifier);
+					}
+					
+					//5. replace the select item(s) with the final select item(s)
+					ps.getSelectItems().clear();
+					ps.getSelectItems().addAll(finalSelectItemList);
+					
+					ReportQuery reportQuery = new ReportQuery();
+
+					reportQuery.setQuery(ps.toString());
+					reportQuery.setDatasource(model.getDatasource());
+					
+					return reportQuery;
+				}
+				else{
+					throw new ReportTemplateServiceException("Unable to handle non plain select query");
+				}
+			}
+			else{
+				throw new ReportTemplateServiceException("Unable to process non select nature query "+model.getQuery().getValue());
+			}
 		} 
-		else if (Approach.JOIN_QUERY.equals(model.getApproach())) {
-			query = constructJoinedModelDataFieldValueQuery(model, aliasLookUpMap);
+		catch (JdbcClientException e){
+			throw new ReportTemplateServiceException("error finding quoted identifier from jdbc driver",e);
 		}
-		return query;
+		catch (JSQLParserException e) {
+			throw new ReportTemplateServiceException("Query parsing error",e);
+		}
 	}
+	
 	/**
 	 * 
-	 * @param model
+	 * @param finalSelectItemList
 	 * @param aliasLookUpMap
-	 * @return
-	 * @throws ReportTemplateServiceException
+	 * @param quotedIdentifier JDBC driver specific quoted identifier character
+	 * @throws ReportTemplateServiceException 
 	 */
-	private String constructSimpleModelDataFieldValueQuery(SimpleModel model, Map<String, String> aliasLookUpMap) throws ReportTemplateServiceException {
-		String tableName = model.getTable();
-
-		if (StringUtils.isBlank(tableName)) {
-			throw new ReportTemplateServiceException("empty table name for model " + model.getName());
-		}
-
-		StringBuilder sb = new StringBuilder();
-
-		for (Map.Entry<String, String> entry : aliasLookUpMap.entrySet()) {
-			sb.append(" ").append(entry.getValue()).append(SqlConstants.AS).append(SqlConstants.APOSTROPHE).append(entry.getKey()).append(SqlConstants.APOSTROPHE).append(SqlConstants.QUERY_SEPERATOR);
-		}
-
-		// truncate the last ","
-		if (sb.length() > 0) {
-			sb.setLength(sb.length() - SqlConstants.QUERY_SEPERATOR.length());
-		}
-
-		sb.insert(0, SqlConstants.SELECT+SqlConstants.DISTINCT);
-		sb.append(" FROM ").append(tableName);
-
-		return sb.toString();
-	}
-	/**
-	 * 
-	 * @param model
-	 * @param aliasLookUpMap
-	 * @return
-	 * @throws ReportTemplateServiceException
-	 */
-	private String constructJoinedModelDataFieldValueQuery(Model model, Map<String, String> aliasLookUpMap) throws ReportTemplateServiceException {
-
-		// obtained the joined query
-		ModelQuery modelQuery = model.getQuery();
-
-		if (modelQuery == null || StringUtils.isBlank(modelQuery.getValue())) {
-			throw new ReportTemplateServiceException("empty joined query for model " + model.getName());
-		}
-
-		String joinedQuery = modelQuery.getValue();
-
-		int fromIdx = joinedQuery.toLowerCase().indexOf("from ");
-		int selectIdx = joinedQuery.toLowerCase().indexOf(SqlConstants.SELECT.toLowerCase());
-
-		if (fromIdx < 0 || selectIdx < 0) {
-			throw new ReportTemplateServiceException("invalid joined query [" + joinedQuery + "] for model " + model.getName());
-		}
-
-		String selectExpression = joinedQuery.substring(selectIdx + SqlConstants.SELECT.length(), fromIdx);
-
-		String[] expresses = selectExpression.split(SqlConstants.QUERY_SEPERATOR);
-
-		StringBuilder sb = new StringBuilder();
-
-		int foundColumnCount = 0;
-
-		// for each required column, look through the available column of model query
-		for (Map.Entry<String, String> entry : aliasLookUpMap.entrySet()) {
-
-			for (int eIdx = 0; eIdx < expresses.length; eIdx++) {
-				// if expression belongs to the required column, retain for
-				// final query
-				if (expresses[eIdx] != null && expresses[eIdx].contains(entry.getValue())) {
-
-					// replace the expresses query alias with model alias
-					sb.append(buildSelectArg(expresses[eIdx], entry)).append(SqlConstants.QUERY_SEPERATOR);
-					foundColumnCount++;
-
-					break;
+	private void updateSelectItemAlias(List<SelectItem> finalSelectItemList, 
+									   Map<String, String> aliasLookUpMap,
+									   String quotedIdentifier) 
+			throws ReportTemplateServiceException{
+		
+		for(SelectItem si: finalSelectItemList){
+			
+			//should be SelectExpressionItem, otherwise should be treated as error
+			SelectExpressionItem sei = (SelectExpressionItem)si;
+			
+			Alias itemAlias = sei.getAlias();
+			
+			//if contain alias
+			if(itemAlias!=null){
+				String modelQueryAlias = itemAlias.getName();
+				
+				//lookup attribute mapping alias
+				for(Map.Entry<String, String> entry: aliasLookUpMap.entrySet()){
+					
+					//match attribute's reference column
+					if(modelQueryAlias.equals(entry.getValue())){
+						//replace the query alias with attribute mapping alias
+						sei.getAlias().setName(quotedIdentifier+entry.getKey()+quotedIdentifier);
+						break;
+					}
+				}
+			}
+			//select item not alias
+			else{
+				
+				Expression expr = sei.getExpression();
+				
+				//expression must be column
+				if(expr instanceof Column){
+					//get column name of query
+					String columnName = ((Column)expr).getColumnName();
+					
+					//lookup attribute mapping alias
+					for(Map.Entry<String, String> entry: aliasLookUpMap.entrySet()){
+						//match attribute's reference column
+						if(columnName.equals(entry.getValue())){
+							//create an alias with attribute alias for query
+							Alias exprAlias = new Alias(quotedIdentifier+entry.getKey()+quotedIdentifier, true);
+							sei.setAlias(exprAlias);
+							break;
+						}
+					}
+				}
+				else{
+					throw new ReportTemplateServiceException("unable to process non column type expression");
 				}
 			}
 		}
+	}
+	/**
+	 * 
+	 * @param ps
+	 * @param referenceFieldCollection
+	 * @param quotedIdentifier
+	 * @return
+	 * @throws ReportTemplateServiceException
+	 */
+	private List<SelectItem> deriveFinalSelectItems(PlainSelect ps, 
+													Collection<String> referenceFieldCollection,
+													String quotedIdentifier) 
+			throws ReportTemplateServiceException{
+		
+		List<SelectItem> finalSelectItemList = new ArrayList<SelectItem>();
+		
+		//1. prepare field matcher selectItem visitor for given reference column(s) name
+		List<SelectFieldMatcher> fieldMatcherList = prepareFieldMatchers(referenceFieldCollection,quotedIdentifier);
+		
+		//2. loop through each select item
+		for(SelectItem si : ps.getSelectItems()){
+			
+			if(si!=null){
+				
+				//3. loop through each field match for matching
+				for(int idx = 0; idx < fieldMatcherList.size(); idx++){
 
-		// if not all required column resolved, treated as error
-		if (foundColumnCount != aliasLookUpMap.size()) {
-			sb.setLength(0);
+					SelectFieldMatcher matcher = fieldMatcherList.get(idx);
+					si.accept(matcher);
+					
+					//4. get if matched selected item exist
+					SelectItem matchedSelectItem = matcher.getMatchedSelectItem();
+					
+					//5. if match found 
+					if(matchedSelectItem != null){
+						//collect the match item to retain as final select item(s)
+						finalSelectItemList.add(matchedSelectItem);
+						//remove the matcher from next iteration processing
+						fieldMatcherList.remove(idx);
+						
+						break;
+					}
+				}
+			}
 		}
-
-		if (sb.length() > 0) {
-			// truncate last ","
-			sb.setLength(sb.length() - SqlConstants.QUERY_SEPERATOR.length());
-
-			// add prefix of "select SqlConstants.DISTINCT "
-			sb.insert(0, SqlConstants.SELECT+SqlConstants.DISTINCT);
-			// append the original from and where clause
-			sb.append(" ").append(joinedQuery.substring(fromIdx));
-		} else {
-			throw new ReportTemplateServiceException("No match expression from custom query [" + joinedQuery + "]");
+		
+		if(!fieldMatcherList.isEmpty()){
+			throw new ReportTemplateServiceException(fieldMatcherList.size()+" references not able to be processed");
 		}
-
-		return sb.toString();
+		
+		return finalSelectItemList;
+	}
+	/**
+	 * prepare FiledMatcher selectItemVisitor for reference field name
+	 * @param referenceFieldCollection
+	 * @param quotedIdentifier
+	 * @return
+	 */
+	private List<SelectFieldMatcher> prepareFieldMatchers(Collection<String> referenceFieldCollection,
+														  String quotedIdentifier){
+		List<SelectFieldMatcher> fieldMatcherList = new ArrayList<SelectFieldMatcher>();
+		
+		for(String referenceFieldName : referenceFieldCollection){
+			
+			if(StringUtils.isNotBlank(referenceFieldName)){
+				fieldMatcherList.add(new SelectFieldMatcher(referenceFieldName,quotedIdentifier));
+			}
+		}
+		
+		return fieldMatcherList;
 	}
 
 	/**

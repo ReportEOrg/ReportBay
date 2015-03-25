@@ -16,12 +16,4 @@
 		<resource-handler>org.omnifaces.resourcehandler.UnmappedResourceHandler</resource-handler>
 	</application>
 
-	<navigation-rule>
-		<from-view-id>*</from-view-id>
-		<navigation-case>
-			<from-outcome>create_report_template</from-outcome>
-			<to-view-id>/views/template/create_report_template.xhtml</to-view-id>
-			<redirect />
-		</navigation-case>
-	</navigation-rule>
 </faces-config>

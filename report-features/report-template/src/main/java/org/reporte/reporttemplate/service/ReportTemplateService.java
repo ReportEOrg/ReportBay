@@ -5,7 +5,6 @@ import java.util.Optional;
 
 import net.sf.jsqlparser.statement.select.Select;
 
-import org.reporte.model.domain.Model;
 import org.reporte.reporttemplate.domain.AreaChartTemplate;
 import org.reporte.reporttemplate.domain.BarChartTemplate;
 import org.reporte.reporttemplate.domain.BaseReportTemplate;
@@ -270,15 +269,6 @@ public interface ReportTemplateService {
 	 * @throws ReportTemplateServiceException
 	 */
 	ReportQuery findReportQuery(int templateId) throws ReportTemplateServiceException;
-	
-	/**
-	 * 
-	 * @param model
-	 * @param requiredColumn
-	 * @return
-	 * @throws ReportTemplateServiceException
-	 */
-	String constructDataFieldValueQuery(Model model, String requiredColumn) throws ReportTemplateServiceException;
 	
 	/**
 	 * Generate ReportQuery for the given CrossTabTemplate designed by User

@@ -66,4 +66,12 @@ public interface JdbcClient {
 	 * @throws JdbcClientException
 	 */
 	int findQueryCount(Datasource ds, String query) throws JdbcClientException;
+	
+	/**
+	 * 
+	 * @param ds
+	 * @return
+	 * @throws JdbcClientException
+	 */
+	String getQuotedIdentifier(Datasource ds) throws JdbcClientException;
 }

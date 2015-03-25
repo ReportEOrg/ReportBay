@@ -287,24 +287,15 @@ public class ReportTemplateWizardBean implements Serializable{
 		String modelSeriesGroupField = ((SelectOneMenu) event.getSource()).getValue().toString();
 		
 		try {
-			String dataFieldQuery = reportTemplateService.constructDataFieldValueQuery(model, modelSeriesGroupField);
-			
-			if(StringUtils.isNotBlank(dataFieldQuery)){
-				List<String> resultList = reportGenService.getDataFieldValues(model.getDatasource(), dataFieldQuery);
-				
-				templateSeriesValueOptions.clear();
+			List<String> resultList = modelService.getModelFieldUniqueValue(model, modelSeriesGroupField);
+			templateSeriesValueOptions.clear();
 
-				for (String result : resultList) {
-					templateSeriesValueOptions.put(result, result);
-				}
-				
+			for (String result : resultList) {
+				templateSeriesValueOptions.put(result, result);
 			}
-		} 
-		catch (ReportTemplateServiceException e) {
-			LOG.warn("Failed to construct query string based on model series group ", e);
-		} 
-		catch (ReportGenerationServiceException e) {
-			LOG.warn("failed to perform query ", e);
+		}
+		catch(ModelServiceException e){
+			LOG.warn("Failed to cobtain the unique value for series group selected ", e);
 		}
 	}
 	/**

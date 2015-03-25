@@ -1,6 +1,7 @@
 package org.reporte.datasource.service.impl;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -13,6 +14,7 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.commons.lang3.StringUtils;
 import org.reporte.common.domain.SqlTypeEnum;
 import org.reporte.datasource.domain.ColumnMetadata;
 import org.reporte.datasource.domain.Datasource;
@@ -349,5 +351,34 @@ public class JdbcClientImpl implements JdbcClient {
 		return result;
 	}
 	
-	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String getQuotedIdentifier(Datasource ds) throws JdbcClientException{
+		String quotedIdentifier = null;
+		
+		Connection conn = null;
+		DataSource dataSource = null;
+		
+		try{
+			dataSource = getDatasource(ds);
+			conn = dataSource.getConnection();
+			DatabaseMetaData dbMetaData = conn.getMetaData();
+			
+			quotedIdentifier = dbMetaData.getIdentifierQuoteString();
+			
+			if(StringUtils.isBlank(quotedIdentifier)){
+				throw new JdbcClientException("Invalid quoted identifier "+quotedIdentifier);
+			}
+		} 
+		catch (SQLException e) {
+			throw new JdbcClientException(e);
+		}
+		finally {
+			release(dataSource, conn, null, null);
+		}
+		
+		return quotedIdentifier;
+	}
 }
