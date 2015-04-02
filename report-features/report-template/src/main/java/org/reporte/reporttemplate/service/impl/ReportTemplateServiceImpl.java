@@ -254,7 +254,7 @@ public class ReportTemplateServiceImpl implements ReportTemplateService {
 			}else {
 				//Do not throw any error as reportQuery is constructed by application based on user selection.
 				//End user should not be notified of such exception which will outline internal logic
-				LOG.error("Unable to save CrossTabTemplate as ReportQuery is Null "+crossTabTemplate);
+				LOG.error("Unable to save CrossTabTemplate as ReportQuery is Null {}",crossTabTemplate);
 				return Optional.empty();
 			}
 		} catch(ReportTemplateServiceException e){
@@ -800,10 +800,10 @@ public class ReportTemplateServiceImpl implements ReportTemplateService {
 	
 
 	private Optional<ReportQuery> constructCrossTabReportQuery(CrossTabTemplate crossTabTemplate)throws ReportTemplateServiceException{
-		LOG.info("Construct Cross Tab Report Query "+crossTabTemplate);
+		LOG.info("Construct Cross Tab Report Query {}",crossTabTemplate);
 		CommonUtils.checkForNull(crossTabTemplate, "CrossTabTemplate");
 		if (crossTabTemplate.getModelId()>0) {
-			LOG.info("Construct CrossTab Query from the model ["+crossTabTemplate.getModelId()+"]");
+			LOG.info("Construct CrossTab Query from the model [{}]",crossTabTemplate.getModelId());
 			Model model = null;
 			try {
 				// Get the model for the given Id
@@ -822,7 +822,7 @@ public class ReportTemplateServiceImpl implements ReportTemplateService {
 					//Return the not null ReportQuery object. If the object is null, Null pointerException will be thrown here
 					return Optional.of(reportQuery);
 				}else{
-					LOG.error("Unable to Construct Query String for CrossTab Template "+crossTabTemplate);
+					LOG.error("Unable to Construct Query String for CrossTab Template {}",crossTabTemplate);
 					return Optional.empty();
 				}
 			} catch (ModelDAOException e) {
@@ -880,7 +880,7 @@ public class ReportTemplateServiceImpl implements ReportTemplateService {
 		}
 		LOG.info(String.valueOf(crossTabDetails));
 		Collections.sort(crossTabDetails, new CrossTabDetailsComparator());
-		LOG.info("CrossTabTemplateDetail after sorting "+crossTabDetails);
+		LOG.info("CrossTabTemplateDetail after sorting {}",crossTabDetails);
 		List<AttributeMapping> attributeMappings = model.getAttributeBindings();
 		if (CollectionUtils.isEmpty(attributeMappings)) {
 			throw new ReportTemplateServiceException("Attribute Mappings object is Empty for the Model Id "+model.getId());
@@ -893,7 +893,7 @@ public class ReportTemplateServiceImpl implements ReportTemplateService {
 		if (StringUtils.isBlank(modelQuery.getValue())) {
 			throw new ReportTemplateServiceException("Query String on ModelQuery Object cannot be Empty/Null/Blank");
 		}
-		LOG.info("Model Query "+ modelQuery.getValue());
+		LOG.info("Model Query {}", modelQuery.getValue());
 		Optional<Select> select = parseSelectQuery(modelQuery.getValue());
 		if (!select.isPresent()) {
 			throw new ReportTemplateServiceException("Unable to parse Query "+ modelQuery.getValue());
@@ -905,7 +905,7 @@ public class ReportTemplateServiceImpl implements ReportTemplateService {
 		if (selectBody instanceof PlainSelect) {
 			List<SelectItem> selects = new ArrayList<SelectItem>();
 			List<Expression> groupByColumns = new ArrayList<Expression>();
-			LOG.info("SelectBody of Type PlainSelect ["+selectBody+"]");
+			LOG.info("SelectBody of Type PlainSelect [{}]",selectBody);
 			PlainSelect plainSelect = (PlainSelect) selectBody;
 			for (CrossTabTemplateDetail crossTabDetail : crossTabDetails) {
 				Distinct distinct = plainSelect.getDistinct();
@@ -914,10 +914,10 @@ public class ReportTemplateServiceImpl implements ReportTemplateService {
 					LOG.info("Parsing SqlConstants.DISTINCT Value from the Query");
 					List<SelectItem> distinctSelectItems = distinct.getOnSelectItems();
 					if (CollectionUtils.isNotEmpty(distinctSelectItems)) {
-						LOG.info("SqlConstants.DISTINCT Items "+distinctSelectItems);
-						LOG.info("Number of Distinct items "+distinctSelectItems.size());
+						LOG.info("SqlConstants.DISTINCT Items {}",distinctSelectItems);
+						LOG.info("Number of Distinct items {}",distinctSelectItems.size());
 						for (SelectItem selectItem : distinctSelectItems) {
-							LOG.info("Select Item on SqlConstants.DISTINCT ["+selectItem+"]");
+							LOG.info("Select Item on SqlConstants.DISTINCT [{}]",selectItem);
 							// TODO: Need to implement logic for SqlConstants.DISTINCT items
 							throw new UnsupportedOperationException("DISTINCT operation is not supported now");
 						}
@@ -928,7 +928,7 @@ public class ReportTemplateServiceImpl implements ReportTemplateService {
 					LOG.info("Iterating Select Items");
 					//Loop through each Select Item to construct the list of Select fields
 					/*for (SelectItem selectItem : selectItems) {
-						LOG.info("Select Field ["+selectItem+"]");
+						LOG.info("Select Field [{}]",selectItem);
 						if (selectItem instanceof AllColumns) {
 							//TODO: temporarily commented out AllColumns. The query will always be expanded and this scenario will never occure
 							LOG.info("SelectItem instance of AllColumns");
@@ -984,7 +984,7 @@ public class ReportTemplateServiceImpl implements ReportTemplateService {
 		List<Expression> expressions = new ArrayList<Expression>();
 		expressions.add(expression);
 		expressionList.setExpressions(expressions);
-		LOG.info("Constructed Aggregate Function "+selectExpressionItem);
+		LOG.info("Constructed Aggregate Function {}",selectExpressionItem);
 		return selectExpressionItem;
 		
 	}
@@ -1001,10 +1001,10 @@ public class ReportTemplateServiceImpl implements ReportTemplateService {
 			//If the fiedl canno tbe found in the list of attribute Mappings.Then throw error.
 			boolean fieldMatched = false;
 			for (AttributeMapping attributeMapping : attributeMappings) {
-				LOG.info("AttributeMapping "+ attributeMapping.getReferencedColumn());
+				LOG.info("AttributeMapping {}",attributeMapping.getReferencedColumn());
 				if (crossTabDetail.getModelAttributeName().equalsIgnoreCase(attributeMapping.getReferencedColumn())) {
 					fieldMatched=true;
-					LOG.info("Attribute Name ["+crossTabDetail.getModelAttributeName()+"] Matched");
+					LOG.info("Attribute Name [{}] Matched",crossTabDetail.getModelAttributeName());
 					//Construct the select clause with simple column name
 					SelectExpressionItem selectExpressionItem = new SelectExpressionItem();
 					//Create a column object and set it to selectexpression
@@ -1012,7 +1012,7 @@ public class ReportTemplateServiceImpl implements ReportTemplateService {
 					column.setColumnName(crossTabDetail.getModelAttributeName());
 					//check if the column is of type grouping or aggregate
 					if (crossTabDetail.getGroupOrAggregate().equals(GroupOrAggregate.GROUPING)) {
-						LOG.info("Constructing Grouping for field "+crossTabDetail.getModelAttributeName());
+						LOG.info("Constructing Grouping for field {}",crossTabDetail.getModelAttributeName());
 						selectExpressionItem.setExpression(column);
 						//For groupby, no need to create an new object. add the same column object to groupbyreference list in plain select.
 						//Add the expressionItem to list of selected items
@@ -1020,7 +1020,7 @@ public class ReportTemplateServiceImpl implements ReportTemplateService {
 						//Add the column to groupby list
 						groupByColumns.add(column);
 					}else if(crossTabDetail.getGroupOrAggregate().equals(GroupOrAggregate.AGGREGATE)){
-						LOG.info("Constructing Aggregate Function for field "+crossTabDetail.getModelAttributeName());
+						LOG.info("Constructing Aggregate Function for field {}",crossTabDetail.getModelAttributeName());
 						Function function = new Function();
 						selectExpressionItem.setExpression(function);
 						//Set the Aggregate Function Name
@@ -1042,7 +1042,7 @@ public class ReportTemplateServiceImpl implements ReportTemplateService {
 		//Append select and group by item on the plainSelect object
 		plainSelect.setSelectItems(selectItems);
 		plainSelect.setGroupByColumnReferences(groupByColumns);
-		LOG.info("PlainSelect after constructing Select and GroupBy clause ["+plainSelect+"]");
+		LOG.info("PlainSelect after constructing Select and GroupBy clause [{}]",plainSelect);
 	}
 	/**
 	 * <p>
@@ -1061,7 +1061,7 @@ public class ReportTemplateServiceImpl implements ReportTemplateService {
 		//If the fiedl canno tbe found in the list of attribute Mappings.Then throw error.
 		boolean fieldMatched = false;
 		for (SelectItem selectItem : selectItems) {
-			LOG.info("SelectItem "+ selectItem);
+			LOG.info("SelectItem {}", selectItem);
 			if (selectItem instanceof AllColumns) {
 				//We assume there will be no instance of AllColumns as the query will be expanded during model creation itself for complex select
 				throw new UnsupportedOperationException("Query should expand AllColumns during Model Creation ");
@@ -1078,7 +1078,7 @@ public class ReportTemplateServiceImpl implements ReportTemplateService {
 					//compare alias name with CrossTabTemplateDetail column name
 					if(crossTabDetail.getModelAttributeName().equalsIgnoreCase(alias.getName())){
 						fieldMatched = true;
-						LOG.info("Attribute Name matched with Alias "+alias.getName());
+						LOG.info("Attribute Name matched with Alias {}",alias.getName());
 						return Optional.of(expressionItem);
 					}
 				}
@@ -1086,41 +1086,41 @@ public class ReportTemplateServiceImpl implements ReportTemplateService {
 				if (expression!=null) {
 					//check Expression object for instance of
 					if (expression instanceof Column) {
-						LOG.info("Expression is of type Column "+expression);
+						LOG.info("Expression is of type Column {}",expression);
 						//Check the column name against attribute name for match
 						if (((Column) expression).getColumnName().equalsIgnoreCase(crossTabDetail.getModelAttributeName())) {
-							LOG.info("Attribute Name is matched against Column "+expression);
+							LOG.info("Attribute Name is matched against Column {}",expression);
 							fieldMatched= true;
 							return Optional.of(expressionItem);
 						}
 						
 					}else if (expression instanceof Function){
-						LOG.info("Expression is of type Function "+expression);
+						LOG.info("Expression is of type Function {}",expression);
 						//Check the attribute name against whole field name
 						//construct field name
 						StringBuilder builder = new StringBuilder();
 						ExpressionDeParser deParser = new ExpressionDeParser();
 						deParser.setBuffer(builder);
 						expression.accept(deParser);
-						LOG.info("Deparsed Expression object "+deParser.getBuffer());
+						LOG.info("Deparsed Expression object {}",deParser.getBuffer());
 						//check the full name against the constructed deparser builder
 						if (crossTabDetail.getModelAttributeName().equalsIgnoreCase(String.valueOf(deParser.getBuffer()))) {
-							LOG.info("Attribute Name is matched against Function "+expression);
+							LOG.info("Attribute Name is matched against Function {}",expression);
 							fieldMatched = true;
 							return Optional.of(expressionItem);
 						}
 					}else if (expression instanceof SubSelect){
-						LOG.info("Expression is of type SubSelect "+expression);
+						LOG.info("Expression is of type SubSelect {}",expression);
 						//Check the attribute name against whole field name
 						//construct field name
 						StringBuilder builder = new StringBuilder();
 						ExpressionDeParser deParser = new ExpressionDeParser();
 						deParser.setBuffer(builder);
 						expression.accept(deParser);
-						LOG.info("Deparsed Expression object "+deParser.getBuffer());
+						LOG.info("Deparsed Expression object {}",deParser.getBuffer());
 						//check the full name against the constructed deparser builder
 						if (crossTabDetail.getModelAttributeName().equalsIgnoreCase(String.valueOf(deParser.getBuffer()))) {
-							LOG.info("Attribute Name is matched against SubSelect "+expression);
+							LOG.info("Attribute Name is matched against SubSelect {}",expression);
 							fieldMatched = true;
 							return Optional.of(expressionItem);
 						}
@@ -1139,7 +1139,7 @@ public class ReportTemplateServiceImpl implements ReportTemplateService {
 	 */
 	@Override
 	public Optional<CrossTabTemplate> update(CrossTabTemplate reportTemplate) throws ReportTemplateServiceException {
-		LOG.info("Updating CrossTab Template "+reportTemplate);
+		LOG.info("Updating CrossTab Template {}",reportTemplate);
 		try {
 			// Reconstruct the ReportQuery if the template have been modified
 			Optional<ReportQuery> reportQuery = constructReportQuery(reportTemplate);
@@ -1161,7 +1161,7 @@ public class ReportTemplateServiceImpl implements ReportTemplateService {
 	 */
 	@Override
 	public void delete(CrossTabTemplate reportTemplate) throws ReportTemplateServiceException {
-		LOG.info("Deleting CrossTab Template "+reportTemplate);
+		LOG.info("Deleting CrossTab Template {}",reportTemplate);
 		try {
 			deleteReportTemplate(reportTemplate);
 		} catch (ReportTemplateServiceException e) {
@@ -1177,7 +1177,7 @@ public class ReportTemplateServiceImpl implements ReportTemplateService {
 	 */
 	@Override
 	public Optional<CrossTabTemplate> findCrossTabTemplate(int reportTemplateId) throws ReportTemplateServiceException {
-		LOG.info("Finding CrossTab Template for the ID "+reportTemplateId);
+		LOG.info("Finding CrossTab Template for the ID {}",reportTemplateId);
 		try {
 			BaseReportTemplate reportTemplate = findReportTemplate(reportTemplateId);
 			if (reportTemplate ==null) {

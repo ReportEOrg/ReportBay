@@ -74,7 +74,7 @@ public class DataSourcesResource{
 		Datasource createdDatasource = null;
 		
 		if(datasource!=null && datasource.getId() == 0){
-			LOG.warn("datasource id ["+datasource.getId()+"] not 0 during creation ");
+			LOG.warn("datasource id [{}] not 0 during creation ",datasource.getId());
 			throw new CustomizedWebException(Response.Status.BAD_REQUEST,"datasource id ["+datasource.getId()+"] not 0 during creation ");
 		}
 		try {
@@ -120,7 +120,7 @@ public class DataSourcesResource{
     		datasource = dataSourceService.find(datasourceId);
     		
     		if(datasource==null){
-    			LOG.warn("unable to find datasource for id "+datasourceId);
+    			LOG.warn("unable to find datasource for id {}",datasourceId);
     			throw new CustomizedWebException(Response.Status.NOT_FOUND, "datasource not found");
     		}
 		} catch (Exception e) {
@@ -144,7 +144,7 @@ public class DataSourcesResource{
 			datasource = dataSourceService.find(datasourceId);
 		} catch (Exception e) {
 			builder = Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).type(MediaType.TEXT_PLAIN);
-			LOG.warn("unable to find datasource for id "+datasourceId);
+			LOG.warn("unable to find datasource for id {}",datasourceId);
 		}
 		
 		if(datasource!=null){
@@ -159,7 +159,7 @@ public class DataSourcesResource{
 		}
 		else{
 			builder = Response.status(Status.NOT_FOUND);
-			LOG.warn("unable to find datasource for id "+datasourceId);
+			LOG.warn("unable to find datasource for id {}",datasourceId);
 		}
 		
 		return builder.build();
@@ -176,7 +176,7 @@ public class DataSourcesResource{
     		Datasource datasource = dataSourceService.find(datasourceId);
     		
     		if(datasource==null){
-    			LOG.warn("unable to find datasource for id "+datasourceId);
+    			LOG.warn("unable to find datasource for id {}",datasourceId);
     			throw new CustomizedWebException(Response.Status.NOT_FOUND, "datasource not found");
     		}
     		

@@ -32,7 +32,7 @@ public class SelectItemVisitorImpl implements SelectItemVisitor {
 
 	@Override
 	public void visit(AllColumns allColumns) {
-		LOG.info("AllColumns ["+allColumns+"]");
+		LOG.info("AllColumns [{}]",allColumns);
 		Column column = new Column();
 		column.setAllColumn(true);
 		columns.add(column);
@@ -40,7 +40,7 @@ public class SelectItemVisitorImpl implements SelectItemVisitor {
 
 	@Override
 	public void visit(AllTableColumns allTableColumns) {
-		LOG.info("AllTableColumns ["+allTableColumns+"]");
+		LOG.info("AllTableColumns [{}]",allTableColumns);
 		Column column = new Column();
 		column.setTable(allTableColumns.getTable());
 		column.setAllTableColumn(true);
@@ -49,7 +49,7 @@ public class SelectItemVisitorImpl implements SelectItemVisitor {
 
 	@Override
 	public void visit(SelectExpressionItem selectExpressionItem) {
-		LOG.info("SelectExpressionItem ["+selectExpressionItem+"]");
+		LOG.info("SelectExpressionItem [{}]",selectExpressionItem);
 		// Set the expression type so we can use the value while scanning through the list of column names
 		ExpressionType expressionType = EnumUtils.getEnum(ExpressionType.class, selectExpressionItem.getExpression().getClass().getSimpleName());
 		Column column = new Column();
@@ -74,7 +74,7 @@ public class SelectItemVisitorImpl implements SelectItemVisitor {
 				
 			}
 		}else{
-			LOG.warn("Expression Object is Null for the SelectExpressionItem ["+selectExpressionItem+"] ");
+			LOG.warn("Expression Object is Null for the SelectExpressionItem [{}] ",selectExpressionItem);
 		}
 		columns.add(column);
 	}

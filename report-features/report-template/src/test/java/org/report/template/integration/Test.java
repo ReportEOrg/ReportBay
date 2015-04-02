@@ -49,7 +49,7 @@ public class Test {
 				if (selectBody!=null) {
 					SelectItemVisitorImpl selectItemVisitorImpl = new SelectItemVisitorImpl();
 					if (selectBody instanceof PlainSelect) {
-						LOG.info("SelectBody of Type PlainSelect ["+selectBody+"]");
+						LOG.info("SelectBody of Type PlainSelect [{}]",selectBody);
 						PlainSelect plainSelect = (PlainSelect) selectBody;
 						Distinct distinct = plainSelect.getDistinct();
 						//If distinct object is not null, there is distinct clause in the select query
@@ -57,11 +57,11 @@ public class Test {
 							List<SelectItem> distinctSelectItems = distinct.getOnSelectItems();
 							if (CollectionUtils.isNotEmpty(distinctSelectItems)) {
 								for (SelectItem selectItem : distinctSelectItems) {
-									LOG.info("Select Item on Distinct ["+selectItem+"]");
+									LOG.info("Select Item on Distinct [{}]",selectItem);
 									selectItem.accept(selectItemVisitorImpl);
 								}
 							}else{
-								LOG.error("List of DistinctSelectItems is empty for the query ["+query+"]");
+								LOG.error("List of DistinctSelectItems is empty for the query [{}]",query);
 							}
 						}
 						ReportTemplateServiceImpl reportService = new ReportTemplateServiceImpl();
@@ -70,21 +70,21 @@ public class Test {
 						if(CollectionUtils.isNotEmpty(selectItems)){
 							//Loop through each Select Item to construct the list of Select fields
 							for (SelectItem selectItem : selectItems) {
-								LOG.info("Select Field ["+selectItem+"]");
+								LOG.info("Select Field [{}]",selectItem);
 								selectItem.accept(selectItemVisitorImpl);
 							}
 						}else{
-							LOG.error("SelectItems list is empty for the query ["+query+"]");
+							LOG.error("SelectItems list is empty for the query [{}]",query);
 						}
 					}else if(selectBody instanceof SetOperationList){
-						LOG.info("SelectBody of Type SetOperationList ["+selectBody+"]");
+						LOG.info("SelectBody of Type SetOperationList [{}]",selectBody);
 						SetOperationList setOperation = (SetOperationList) selectBody;
 					}else if (selectBody instanceof WithItem) {
-						LOG.info("SelectBody of Type WithItem ["+selectBody+"]");
+						LOG.info("SelectBody of Type WithItem [{}]",selectBody);
 						WithItem withItem = (WithItem) selectBody;
 					}
 				}else{
-					LOG.error("SelectBody object is empty for the query ["+query+"]");
+					LOG.error("SelectBody object is empty for the query [{}]",query);
 				}
 			}
 		} catch (JSQLParserException e) {
@@ -104,7 +104,7 @@ public class Test {
 				//Check if the Query String in not null or empty
 				if(StringUtils.isNoneBlank(model.getQuery().getValue())){
 					String query = model.getQuery().getValue();
-					LOG.info("Model Query ["+query+"]");
+					LOG.info("Model Query [{}]",query);
 					//Parse the query using jsqlParser
 					CCJSqlParserManager sqlParser = new CCJSqlParserManager();
 					try {
@@ -115,7 +115,7 @@ public class Test {
 							if (selectBody!=null) {
 								SelectItemVisitorImpl selectItemVisitorImpl = new SelectItemVisitorImpl();
 								if (selectBody instanceof PlainSelect) {
-									LOG.info("SelectBody of Type PlainSelect ["+selectBody+"]");
+									LOG.info("SelectBody of Type PlainSelect [{}]",selectBody);
 									PlainSelect plainSelect = (PlainSelect) selectBody;
 									Distinct distinct = plainSelect.getDistinct();
 									//If distinct object is not null, there is distinct clause in the select query
@@ -123,32 +123,32 @@ public class Test {
 										List<SelectItem> distinctSelectItems = distinct.getOnSelectItems();
 										if (CollectionUtils.isNotEmpty(distinctSelectItems)) {
 											for (SelectItem selectItem : distinctSelectItems) {
-												LOG.info("Select Item on Distinct ["+selectItem+"]");
+												LOG.info("Select Item on Distinct [{}]",selectItem);
 												selectItem.accept(selectItemVisitorImpl);
 											}
 										}else{
-											LOG.error("List of DistinctSelectItems is empty for the query ["+query+"]");
+											LOG.error("List of DistinctSelectItems is empty for the query [{}]",query);
 										}
 									}
 									List<SelectItem> selectItems = plainSelect.getSelectItems();
 									if(CollectionUtils.isNotEmpty(selectItems)){
 										//Loop through each Select Item to construct the list of Select fields
 										for (SelectItem selectItem : selectItems) {
-											LOG.info("Select Field ["+selectItem+"]");
+											LOG.info("Select Field [{}]",selectItem);
 											selectItem.accept(selectItemVisitorImpl);
 										}
 									}else{
-										LOG.error("SelectItems list is empty for the query ["+query+"]");
+										LOG.error("SelectItems list is empty for the query [{}]",query);
 									}
 								}else if(selectBody instanceof SetOperationList){
-									LOG.info("SelectBody of Type SetOperationList ["+selectBody+"]");
+									LOG.info("SelectBody of Type SetOperationList [{}]",selectBody);
 									SetOperationList setOperation = (SetOperationList) selectBody;
 								}else if (selectBody instanceof WithItem) {
-									LOG.info("SelectBody of Type WithItem ["+selectBody+"]");
+									LOG.info("SelectBody of Type WithItem [{}]",selectBody);
 									WithItem withItem = (WithItem) selectBody;
 								}
 							}else{
-								LOG.error("SelectBody object is empty for the query ["+query+"]");
+								LOG.error("SelectBody object is empty for the query [{}]",query);
 							}
 						}
 					} catch (JSQLParserException e) {

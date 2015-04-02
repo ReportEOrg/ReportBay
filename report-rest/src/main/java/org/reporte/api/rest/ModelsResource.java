@@ -159,7 +159,7 @@ public class ModelsResource{
 			model = modelService.find(modelId);
 		} catch (Exception e) {
 			builder = Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).type(MediaType.TEXT_PLAIN);
-			LOG.warn("unable to find model for id "+modelId);
+			LOG.warn("unable to find model for id {}",modelId);
 		}
 		
 		if(model!=null){
@@ -174,7 +174,7 @@ public class ModelsResource{
 		}
 		else{
 			builder = Response.status(Status.NOT_FOUND);
-			LOG.warn("unable to find model for id "+modelId);
+			LOG.warn("unable to find model for id {}",modelId);
 		}
 		
 		return builder.build();
@@ -237,7 +237,7 @@ public class ModelsResource{
     		//2. find out count of total matched records
     		int matchRecordCount = jdbcClient.findQueryCount(modelDatasource, modelQuery);
     		
-    		LOG.info("match record(s) = "+matchRecordCount);
+    		LOG.info("match record(s) = {}",matchRecordCount);
     		
     		result.setMatchRecordCount(matchRecordCount);
     		
@@ -293,7 +293,7 @@ public class ModelsResource{
     	}
     	
     	if(model==null){
-			LOG.warn("unable to find model for id "+modelId);
+			LOG.warn("unable to find model for id {}",modelId);
 			throw new CustomizedWebException(Response.Status.NOT_FOUND, "model not found");
 		}
     	

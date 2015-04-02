@@ -11,7 +11,6 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.apache.log4j.Logger;
 import org.primefaces.context.RequestContext;
 import org.reporte.reporttemplate.domain.AreaChartTemplate;
 import org.reporte.reporttemplate.domain.BarChartTemplate;
@@ -22,6 +21,8 @@ import org.reporte.reporttemplate.domain.PieChartTemplate;
 import org.reporte.reporttemplate.service.ReportTemplateService;
 import org.reporte.reporttemplate.service.exception.ReportTemplateServiceException;
 import org.reporte.web.common.ChartTypeEnum;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Report Listing JSF Backing bean 
@@ -31,7 +32,7 @@ import org.reporte.web.common.ChartTypeEnum;
 @ViewScoped
 public class ReportListBean implements Serializable{
 
-	private static final Logger LOG = Logger.getLogger(ReportListBean.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ReportListBean.class);
 	/**
 	 * 
 	 */

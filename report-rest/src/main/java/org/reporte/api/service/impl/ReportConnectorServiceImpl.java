@@ -91,7 +91,7 @@ public class ReportConnectorServiceImpl implements ReportConnectorService{
 		}
 		
 		if(reportTemplate==null){
-			LOG.warn("unable to find record for id "+reportConnectorId);
+			LOG.warn("unable to find record for id {}",reportConnectorId);
 			throw new ReportConnectorServiceException("record not found");
 		}
 		//2. converted to REST domain report connector
@@ -459,7 +459,7 @@ public class ReportConnectorServiceImpl implements ReportConnectorService{
 				restReport.setType(TemplateType.CROSSTAB.name());
 				Optional<ReportQuery> reportQuery = reportTemplateService.constructReportQuery(crossTabTemplate);
 				if (reportQuery.isPresent()) {
-					LOG.info("Generated Query "+reportQuery.get().getQuery());
+					LOG.info("Generated Query {}",reportQuery.get().getQuery());
 					//Set the Report Query to crosstabtemplate
 					crossTabTemplate.setReportQuery(reportQuery.get());
 					Optional<CrossTabReport> crossTabReport = reportGenerationService.generateCrossTabReport(crossTabTemplate);

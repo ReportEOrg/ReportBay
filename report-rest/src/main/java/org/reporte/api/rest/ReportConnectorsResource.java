@@ -146,7 +146,7 @@ public class ReportConnectorsResource{
 		} 
 		catch (Exception e) {
 			builder = Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).type(MediaType.TEXT_PLAIN);
-			LOG.error("failed to delete report connector for "+reportConnectorId);
+			LOG.error("failed to delete report connector for {}",reportConnectorId);
 		}
 		
 		return builder.build();

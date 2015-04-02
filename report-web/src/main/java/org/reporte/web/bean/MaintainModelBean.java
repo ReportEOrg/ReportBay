@@ -11,7 +11,6 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.apache.log4j.Logger;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.NodeSelectEvent;
 import org.primefaces.event.SelectEvent;
@@ -22,6 +21,8 @@ import org.reporte.model.domain.SimpleModel;
 import org.reporte.model.service.ModelService;
 import org.reporte.model.service.exception.ModelServiceException;
 import org.reporte.web.util.WebUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Maintain Model JSF Backing bean 
@@ -31,7 +32,7 @@ import org.reporte.web.util.WebUtils;
 @ViewScoped
 public class MaintainModelBean implements Serializable {
 	private static final long serialVersionUID = 696889640817167336L;
-	private static final Logger LOG = Logger.getLogger(MaintainModelBean.class);
+	private static final Logger LOG = LoggerFactory.getLogger(MaintainModelBean.class);
 
 	private TreeNode modelTreeRoot;
 	private TreeNode selectedNode;
@@ -184,7 +185,7 @@ public class MaintainModelBean implements Serializable {
 			
 			WebUtils.addInfoMessage("Model '%s' has been successfully deleted.", tableName);
 		} catch (ModelServiceException e) {
-			LOG.error("Failed to delete Model with given name '" + tableName + "'.", e);
+			LOG.error("Failed to delete Model with given name '{}'.",tableName, e);
 			WebUtils.addErrorMessage("An error was encountered while deleting Model with given name '%s'.",
 					tableName);
 		}

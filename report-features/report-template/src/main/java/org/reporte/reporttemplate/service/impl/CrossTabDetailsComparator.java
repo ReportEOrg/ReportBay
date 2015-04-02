@@ -30,7 +30,7 @@ public class CrossTabDetailsComparator implements Comparator<CrossTabTemplateDet
 		 * Order the object by GroupBy first and its SequenceId then followed by other SqlFunction and its sequence.
 		 * 
 		 */
-		LOG.info("compare(CrossTabTemplateDetail o1 ["+o1.getGroupOrAggregate()+"] CrossTabTemplateDetail o2 ["+o2.getGroupOrAggregate()+"]");
+		LOG.info("compare(CrossTabTemplateDetail o1 [{}] CrossTabTemplateDetail o2 [{}]",o1.getGroupOrAggregate(),o2.getGroupOrAggregate());
 		if (o1.getGroupOrAggregate().equals(o2.getGroupOrAggregate())) {
 			LOG.info("o1 == 02");
 			//Check if both the SQL function are of GroupBy

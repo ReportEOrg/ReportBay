@@ -43,7 +43,7 @@ public class JdbcClientImpl implements JdbcClient {
 	 * @return
 	 */
 	private DataSource getDatasource(Datasource ds) {
-		LOG.trace("Getting datasource for " + ds.getName() + "..");
+		LOG.trace("Getting datasource for {}..",ds.getName());
 
 		BasicDataSource dbcpDs = new BasicDataSource();
 		
@@ -139,7 +139,7 @@ public class JdbcClientImpl implements JdbcClient {
 
 	@Override
 	public List<ColumnMetadata> getColumns(Datasource ds, String tableName) throws JdbcClientException {
-		LOG.debug("Getting existing metadata column names of the given table[" + tableName + "]..");
+		LOG.debug("Getting existing metadata column names of the given table[{}]..",tableName);
 		Connection conn = null;
 		Statement stmt = null;
 		ResultSet rs = null;
@@ -169,7 +169,7 @@ public class JdbcClientImpl implements JdbcClient {
 	
 	@Override
 	public List<ColumnMetadata> getColumnsFromQuery(Datasource ds, String query) throws JdbcClientException {
-		LOG.debug("Getting existing metadata column names of the given query[" + query + "]..");
+		LOG.debug("Getting existing metadata column names of the given query[{}]..",query);
 		Connection conn = null;
 		Statement stmt = null;
 		ResultSet rs = null;

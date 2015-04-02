@@ -48,7 +48,7 @@ public class ReportGenResource{
     		report = reportConnectorService.generateReportPreview(reportConnectorId);
     	}
     	catch(ReportConnectorServiceException e){
-    		LOG.warn("Exception in generating report preview for "+reportConnectorId, e);
+    		LOG.warn("Exception in generating report preview for {}",reportConnectorId, e);
 			throw new CustomizedWebException(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage());
     	}
     	

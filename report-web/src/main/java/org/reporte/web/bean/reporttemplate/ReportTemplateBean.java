@@ -18,7 +18,6 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.apache.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.FlowEvent;
@@ -50,6 +49,8 @@ import org.reporte.reporttemplate.service.ReportTemplateService;
 import org.reporte.reporttemplate.service.exception.ReportTemplateServiceException;
 import org.reporte.web.common.ChartTypeEnum;
 import org.reporte.web.util.ReportUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Report Template JSF Backing bean
@@ -59,7 +60,7 @@ import org.reporte.web.util.ReportUtil;
 @ViewScoped
 public class ReportTemplateBean implements Serializable {
 	private static final long serialVersionUID = 696889640817167123L;
-	private static final Logger LOG = Logger.getLogger(ReportTemplateBean.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ReportTemplateBean.class);
 
 	private String templateName;
 	private List<String> chartTypes;
@@ -323,7 +324,7 @@ public class ReportTemplateBean implements Serializable {
 				}
 			}
 		}
-		if (selectedModelName.equals("Select Model")) {
+		if ("Select Model".equals(selectedModelName)) {
 			showModelDetails = false;
 		}
 	}

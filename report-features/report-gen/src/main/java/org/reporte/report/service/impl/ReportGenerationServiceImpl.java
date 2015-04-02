@@ -436,7 +436,7 @@ public class ReportGenerationServiceImpl implements ReportGenerationService {
 					break;
 				}
 			} catch (NumberFormatException nfe) {
-				LOG.info(valueStr + " can't be converted to Number type " + valueType, nfe);
+				LOG.info("{} can't be converted to Number type {}" ,valueStr, valueType, nfe);
 			}
 		}
 
@@ -491,7 +491,7 @@ public class ReportGenerationServiceImpl implements ReportGenerationService {
 
 	@Override
 	public Optional<CrossTabReport> generateCrossTabReport(int reportTemplateId) throws ReportGenerationServiceException {
-		LOG.info("Generating CrossTab Report for the Template Id "+reportTemplateId);
+		LOG.info("Generating CrossTab Report for the Template Id {} ",reportTemplateId);
 		//Check the input for validity
 		if (reportTemplateId<=0) {
 			throw new IllegalArgumentException("Input ReportTemplate ID must be greater than 0");
@@ -520,7 +520,7 @@ public class ReportGenerationServiceImpl implements ReportGenerationService {
 
 	@Override
 	public Optional<CrossTabReport> generateCrossTabReport(CrossTabTemplate reportTemplate) throws ReportGenerationServiceException {
-		LOG.info("Generating CrossTab Report for the Template "+reportTemplate);
+		LOG.info("Generating CrossTab Report for the Template {} ",reportTemplate);
 		try {
 			CommonUtils.checkForNull(reportTemplate, CrossTabTemplate.class.getSimpleName());
 			CrossTabReport report = new CrossTabReport();
@@ -538,7 +538,7 @@ public class ReportGenerationServiceImpl implements ReportGenerationService {
 			List<CrossTabTemplateDetail> templateDetails  = reportTemplate.getCrossTabDetail();
 			Collections.sort(templateDetails,new CrossTabDetailsComparator());
 			//Execute the query and get the result
-			LOG.info("Executing the query "+reportQuery.getQuery());
+			LOG.info("Executing the query {} ",reportQuery.getQuery());
 			List<Map<ColumnMetadata, String>> resultList = jdbcClient.execute(reportQuery.getDatasource(), reportQuery.getQuery());
 			if (CollectionUtils.isNotEmpty(resultList)) {
 				//verify the column metadata with crosstab template name
@@ -551,7 +551,7 @@ public class ReportGenerationServiceImpl implements ReportGenerationService {
 						ColumnMetadata metaData = map.getKey();
 						if (detail.getModelAttributeName().equalsIgnoreCase(metaData.getLabel())) {
 							matchFound=true;
-							LOG.info("Column Label Matched "+ metaData.getLabel());
+							LOG.info("Column Label Matched {} ", metaData.getLabel());
 							CrossTabAttribute attribute = new CrossTabAttribute();
 							attribute.setAttributeDisplaySequence(detail.getAttributeDisplaySequence());
 							attribute.setFieldType(detail.getFieldType());
@@ -579,7 +579,7 @@ public class ReportGenerationServiceImpl implements ReportGenerationService {
 				}
 				return Optional.of(report);
 			}else{
-				LOG.warn("ResultSet is empty for the query "+reportQuery.getQuery());
+				LOG.warn("ResultSet is empty for the query {} ",reportQuery.getQuery());
 				return Optional.empty();
 			}
 		} catch (ReportQueryDAOException e) {

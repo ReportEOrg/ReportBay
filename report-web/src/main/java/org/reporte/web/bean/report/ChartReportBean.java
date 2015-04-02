@@ -75,7 +75,7 @@ public class ChartReportBean implements Serializable{
 				generatePieChartModel(templateId);
 			}
 		} catch (NumberFormatException e) {
-			LOG.error("invalid template id "+templateIdStr, e);
+			LOG.error("invalid template id {}",templateIdStr, e);
 		} catch (ReportGenerationServiceException e) {
 			LOG.error("error generating report ",e);
 		}
