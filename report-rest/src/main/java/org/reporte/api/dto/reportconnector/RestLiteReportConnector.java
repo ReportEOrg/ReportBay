@@ -11,6 +11,7 @@ public class RestLiteReportConnector implements Serializable{
 	
 	private int id;
 	private String name;
+	private String reportDisplayName;
 	/**
 	 * @return the id
 	 */
@@ -34,5 +35,17 @@ public class RestLiteReportConnector implements Serializable{
 	 */
 	public void setName(String name) {
 		this.name = name;
+	}
+	/**
+	 * @return the reportDisplayName
+	 */
+	public String getReportDisplayName() {
+		return reportDisplayName;
+	}
+	/**
+	 * @param reportDisplayName the reportDisplayName to set
+	 */
+	public void setReportDisplayName(String reportDisplayName) {
+		this.reportDisplayName = reportDisplayName;
 	}
 }

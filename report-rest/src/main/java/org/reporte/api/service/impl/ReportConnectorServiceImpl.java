@@ -232,7 +232,8 @@ public class ReportConnectorServiceImpl implements ReportConnectorService{
     		
     		connector.setId(reportTemplate.getId());
     		connector.setName(reportTemplate.getTemplateName());
-    		
+    		connector.setReportDisplayName(reportTemplate.getReportDisplayName());
+
     		connectors.getConnectors().add(connector);
     	}
     }
