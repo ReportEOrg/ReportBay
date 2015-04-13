@@ -7,6 +7,8 @@
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>report-gen</artifactId>
+	<packaging>ejb</packaging>
+
 	<name>Report Generation Module</name>
 
 	<dependencies>
@@ -15,7 +17,14 @@
 			<groupId>reporte</groupId>
 			<artifactId>report-template</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>reporte</groupId>
+			<artifactId>report-datasource</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
-	<packaging>ejb</packaging>
+	
 </project>

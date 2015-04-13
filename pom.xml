@@ -13,6 +13,8 @@
 		<module>report-web</module>
 		<module>report-ear</module>
 		<module>report-rest</module>
+		<!-- keep log4j2 application level configuration -->
+		<module>log4j2-config</module>
 	</modules>
 
 	<dependencies>
@@ -37,23 +39,36 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 			<version>3.3.2</version>
+			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>commons-collections</groupId>
 			<artifactId>commons-collections</artifactId>
 			<version>3.2.1</version>
+			<scope>provided</scope>
 		</dependency>
 
-		<!-- Slf4j Logger -->
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-			<version>1.7.7</version>
+		<!-- Slf4j to log4j2 Bridge -->
+ 		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-slf4j-impl</artifactId>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 
-
+	<!-- Bill of material -->
+ 	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.apache.logging.log4j</groupId>
+				<artifactId>log4j-bom</artifactId>
+				<version>2.2</version>
+				<scope>import</scope>
+				<type>pom</type>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 	<build>
 		<plugins>
 			<plugin>
@@ -113,31 +128,6 @@
 				<pluginManagement>
 					<plugins>
 						<plugin>
-							<artifactId>maven-war-plugin</artifactId>
-							<configuration>
-								<warName>reporte</warName>
-							</configuration>
-						</plugin>
-					</plugins>
-				</pluginManagement>
-			</build>
-		</profile>
-
-		<!-- openshift jenkins build profile -->
-		<profile>
-			<id>openshift</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
-			<build>
-				<pluginManagement>
-					<plugins>
-						<!-- Git repo is checked out into /var/lib/openshift/54895edffcf933029d000179/app-root/runtime/repo 
-							and Maven is started in this directory. Deployable artifacts, mainly ROOT.war, 
-							must be copiend into /var/lib/openshift/54895edffcf933029d000179/app-root/runtime/repo/webapps/ROOT.war 
-							Because web-app is module in subdirectory and I would expect <outputDirectory>../webapps</outputDirectory> 
-							value but interestingly it is not true and it must be <outputDirectory>webapps</outputDirectory> -->
-						<plugin>
 							<groupId>org.apache.maven.plugins</groupId>
 							<artifactId>maven-ear-plugin</artifactId>
 							<version>2.10</version>
@@ -145,9 +135,33 @@
 							<configuration>
 								<finalName>reporte</finalName>
 								<defaultLibBundleDir>lib</defaultLibBundleDir>
-								<skinnyWars>false</skinnyWars>
+								<skinnyWars>true</skinnyWars>
 								<outputDirectory>deployments</outputDirectory>
 								<modules>
+									<ejbModule>
+										<groupId>reporte</groupId>
+										<artifactId>report-datasource</artifactId>
+									</ejbModule>
+									<ejbModule>
+										<groupId>reporte</groupId>
+										<artifactId>report-model</artifactId>
+									</ejbModule>
+									<ejbModule>
+										<groupId>reporte</groupId>
+										<artifactId>report-template</artifactId>
+									</ejbModule>
+									<ejbModule>
+										<groupId>reporte</groupId>
+										<artifactId>report-gen</artifactId>
+									</ejbModule>
+									<jarModule>
+										<groupId>reporte</groupId>
+										<artifactId>report-common</artifactId>
+									</jarModule>
+									<jarModule>
+										<groupId>reporte</groupId>
+										<artifactId>log4j2-config</artifactId>
+									</jarModule>
 									<webModule>
 										<groupId>reporte</groupId>
 										<artifactId>report-rest</artifactId>
@@ -167,11 +181,88 @@
 							<version>2.5</version>
 							<configuration>
 								<ejbVersion>3.2</ejbVersion>
-								<archive>
-									<manifest>
-										<addClasspath>true</addClasspath>
-									</manifest>
-								</archive>
+							</configuration>
+						</plugin>
+						<plugin>
+							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-enforcer-plugin</artifactId>
+							<configuration>
+								<skip>true</skip>
+							</configuration>
+						</plugin>
+					</plugins>
+				</pluginManagement>
+			</build>
+		</profile>
+
+		<!-- openshift jenkins build profile -->
+		<profile>
+			<id>openshift</id>
+			<!-- <activation>
+				<activeByDefault>true</activeByDefault>
+			</activation> -->
+			<build>
+				<pluginManagement>
+					<plugins>
+						<!-- Git repo is checked out into /var/lib/openshift/54895edffcf933029d000179/app-root/runtime/repo 
+							and Maven is started in this directory. Deployable artifacts, mainly ROOT.war, 
+							must be copiend into /var/lib/openshift/54895edffcf933029d000179/app-root/runtime/repo/webapps/ROOT.war 
+							Because web-app is module in subdirectory and I would expect <outputDirectory>../webapps</outputDirectory> 
+							value but interestingly it is not true and it must be <outputDirectory>webapps</outputDirectory> -->
+						<plugin>
+							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-ear-plugin</artifactId>
+							<version>2.10</version>
+							<!-- configuring the ear plugin -->
+							<configuration>
+								<finalName>reporte</finalName>
+								<defaultLibBundleDir>lib</defaultLibBundleDir>
+								<skinnyWars>false</skinnyWars>
+								<outputDirectory>deployments</outputDirectory>
+								<modules>
+									<ejbModule>
+										<groupId>reporte</groupId>
+										<artifactId>report-datasource</artifactId>
+									</ejbModule>
+									<ejbModule>
+										<groupId>reporte</groupId>
+										<artifactId>report-model</artifactId>
+									</ejbModule>
+									<ejbModule>
+										<groupId>reporte</groupId>
+										<artifactId>report-template</artifactId>
+									</ejbModule>
+									<ejbModule>
+										<groupId>reporte</groupId>
+										<artifactId>report-gen</artifactId>
+									</ejbModule>
+									<jarModule>
+										<groupId>reporte</groupId>
+										<artifactId>report-common</artifactId>
+									</jarModule>
+									<jarModule>
+										<groupId>reporte</groupId>
+										<artifactId>log4j2-config</artifactId>
+									</jarModule>
+									<webModule>
+										<groupId>reporte</groupId>
+										<artifactId>report-rest</artifactId>
+										<contextRoot>reporte-rest</contextRoot>
+									</webModule> 
+									<webModule>
+										<groupId>reporte</groupId>
+										<artifactId>report-web</artifactId>
+										<contextRoot>reporte</contextRoot>
+									</webModule>
+								</modules>
+							</configuration>
+						</plugin>
+						<plugin>
+							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-ejb-plugin</artifactId>
+							<version>2.5</version>
+							<configuration>
+								<ejbVersion>3.2</ejbVersion>
 							</configuration>
 						</plugin>
 						<plugin>

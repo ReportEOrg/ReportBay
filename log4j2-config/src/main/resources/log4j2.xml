@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="INFO">
+	<!-- Appenders -->
+ 	<Appenders>
+ 	
+ 		<!-- TODO: replace the log file base for none jboss server -->
+		<RollingRandomAccessFile name="ReportERollingRandomAccessFileAppender" 
+								 fileName="${sys:jboss.server.base.dir}/log/reporte.log"
+								 filePattern="${sys:jboss.server.base.dir}/log/$${date:yyyy-MM}/reporte-%d{MM-dd-yyyy}-%i.log.gz">
+			<!-- layout pattern -->
+			<PatternLayout>
+				<Pattern>%d{yy-MM-dd HH:mm:ss} %-5p [%x] [%t] (%c{1}) - %m%n</Pattern>
+			</PatternLayout>
+			
+			<!-- rolling policy -->
+			<Policies>
+				<!-- roll over when reach 250 MB -->
+				<SizeBasedTriggeringPolicy size="250 MB"/>
+			</Policies>
+			<!-- max 20 files to keep before discarding -->
+			<DefaultRolloverStrategy max="20"/>
+		</RollingRandomAccessFile>
+		
+		<RollingRandomAccessFile name="ReportEWebRollingRandomAccessFileAppender" 
+								 fileName="${sys:jboss.server.base.dir}/log/reporte-web.log"
+								 filePattern="${sys:jboss.server.base.dir}/log/$${date:yyyy-MM}/reporte-web-%d{MM-dd-yyyy}-%i.log.gz">
+			<!-- layout pattern -->
+			<PatternLayout>
+				<Pattern>%d{yy-MM-dd HH:mm:ss} %-5p [%x] [%t] (%c{1}) - %m%n</Pattern>
+			</PatternLayout>
+			
+			<!-- rolling policy -->
+			<Policies>
+				<!-- roll over when reach 250 MB -->
+				<SizeBasedTriggeringPolicy size="250 MB"/>
+			</Policies>
+			<!-- max 20 files to keep before discarding -->
+			<DefaultRolloverStrategy max="20"/>
+		</RollingRandomAccessFile>
+	</Appenders>
+	<!-- loggers -->
+	<Loggers>
+	
+		<!-- Async Logger -->
+		<AsyncLogger name="org.reporte.web" level="debug" additivity="false">
+			<AppenderRef ref="ReportEWebRollingRandomAccessFileAppender"/>
+		</AsyncLogger>
+	
+		<Root level="info">
+			<AppenderRef ref="ReportERollingRandomAccessFileAppender"/>
+		</Root>
+	</Loggers>
+
+</Configuration>
