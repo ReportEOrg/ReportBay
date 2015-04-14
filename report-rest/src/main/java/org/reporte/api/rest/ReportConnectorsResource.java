@@ -42,7 +42,7 @@ public class ReportConnectorsResource{
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public RestReportConnectors getAllReportConnectors(){
-    	
+    	LOG.info("get all report connectors");
     	RestReportConnectors connectors = new RestReportConnectors();
     	
     	try {
@@ -66,7 +66,7 @@ public class ReportConnectorsResource{
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public RestReportConnector createReportConnector(RestReportConnector connector){
-    	
+    	LOG.info("create report connector");
     	RestReportConnector resultConnector = null;
 
     	try {
@@ -90,7 +90,7 @@ public class ReportConnectorsResource{
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public RestReportConnector updateReportConnector(RestReportConnector connector){
-    	
+    	LOG.info("update report connector");
     	RestReportConnector resultConnector = null;
 
     	try {
@@ -113,6 +113,7 @@ public class ReportConnectorsResource{
     @Path("/{reportConnectorId}")
     @Produces(MediaType.APPLICATION_JSON)
     public RestReportConnector getReportConnector(@PathParam("reportConnectorId") int reportConnectorId){
+    	LOG.info("get report connector");
     	RestReportConnector restConnector = null;
     	
     	try {
@@ -135,7 +136,7 @@ public class ReportConnectorsResource{
     @Path("/{reportConnectorId}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteReportConnector(@PathParam("reportConnectorId") int reportConnectorId){
-    	
+    	LOG.info("delete report connector");
     	Response.ResponseBuilder builder = null;
     	
 		try {

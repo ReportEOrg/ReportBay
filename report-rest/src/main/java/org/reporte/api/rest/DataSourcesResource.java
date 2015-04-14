@@ -43,7 +43,7 @@ public class DataSourcesResource{
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	 public RestDataSources getAllDataSources(){
-		
+		LOG.info("get all data sources");
 		RestDataSources datasources = new RestDataSources();
 		
 		try {
@@ -52,7 +52,8 @@ public class DataSourcesResource{
 			if(datasourceList!=null){
 				datasources.getDatasources().addAll(datasourceList);
 				
-				//TODO: mask off user name and password for security concern
+				//mask off password for security concern
+				maskDataSourcesPassword(datasourceList);
 			}
 		} catch (DatasourceHandlerException e) {
 			LOG.warn("Exception in finding all datasources", e);
@@ -71,6 +72,7 @@ public class DataSourcesResource{
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Datasource createDataSource(Datasource datasource){
+		LOG.info("create data sources");
 		Datasource createdDatasource = null;
 		
 		if(datasource!=null && datasource.getId() == 0){
@@ -92,7 +94,7 @@ public class DataSourcesResource{
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Datasource updateDataSource(Datasource datasource){
-		
+		LOG.info("update data sources");
 		try {
 			if(datasource==null || (dataSourceService.find(datasource.getId()) == null)){
 				String errMsg = "datasource to be updated not found";
@@ -114,6 +116,7 @@ public class DataSourcesResource{
 	@Path("/{datasourceId}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Datasource getDataSource(@PathParam("datasourceId") int datasourceId){
+		LOG.info("get data source");
 		Datasource datasource = null;
     	
     	try {
@@ -136,7 +139,7 @@ public class DataSourcesResource{
     @Path("/{datasourceId}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteDataSource(@PathParam("datasourceId") int datasourceId){
-    	
+		LOG.info("delete data sources");
     	Datasource datasource = null;
     	Response.ResponseBuilder builder = null;
     	
@@ -169,6 +172,8 @@ public class DataSourcesResource{
 	@Path("/{datasourceId}/tables")
 	@Produces(MediaType.APPLICATION_JSON)
 	public RestTables getDataSourceTable(@PathParam("datasourceId") int datasourceId){
+
+		LOG.info("get table(s) of data sources");
 		//create an envelope
 		RestTables tables = new RestTables();
 		try {
@@ -197,5 +202,17 @@ public class DataSourcesResource{
 			throw new CustomizedWebException(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage());
 		}
 		return tables;
+	}
+	
+	/********** private method ******/
+	/**
+	 * 
+	 * @param datasourceList
+	 */
+	private void maskDataSourcesPassword(List<Datasource> datasourceList){
+		
+		for(Datasource dataSource: datasourceList){
+			dataSource.setPassword("********");
+		}
 	}
 }

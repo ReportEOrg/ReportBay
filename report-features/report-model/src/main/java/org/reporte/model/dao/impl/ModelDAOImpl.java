@@ -45,6 +45,7 @@ public class ModelDAOImpl implements ModelDAO, LogInterceptable<Model> {
 	@TransactionAttribute(TransactionAttributeType.REQUIRED)
 	@Override
 	public Model insert(Model model) throws ModelDAOException {
+		LOG.info("create");
 		ModelQuery query = model.getQuery();
 		try {
 			// Below workaround is necessary as cascade operation doesn't work well with auto increment ID column.
@@ -90,6 +91,7 @@ public class ModelDAOImpl implements ModelDAO, LogInterceptable<Model> {
 	@TransactionAttribute(TransactionAttributeType.REQUIRED)
 	@Override
 	public void update(Model model) throws ModelDAOException {
+		LOG.info("update");
 		try {
 			em.merge(model);
 		} catch(PersistenceException e) {
@@ -103,6 +105,7 @@ public class ModelDAOImpl implements ModelDAO, LogInterceptable<Model> {
 	@TransactionAttribute(TransactionAttributeType.REQUIRED)
 	@Override
 	public void delete(Model model) throws ModelDAOException {
+		LOG.info("delete");
 		try {
 			em.remove(em.merge(model));
 		} catch(PersistenceException e) {
@@ -116,6 +119,7 @@ public class ModelDAOImpl implements ModelDAO, LogInterceptable<Model> {
 	 */
 	@Override
 	public Model find(int id) throws ModelDAOException {
+		LOG.info("find");
 		try {
 			return em.find(Model.class, id);
 		} catch(PersistenceException e) {
@@ -128,6 +132,7 @@ public class ModelDAOImpl implements ModelDAO, LogInterceptable<Model> {
 	 */
 	@Override
 	public List<Model> findAll() throws ModelDAOException {
+		LOG.info("findAll");
 		try {
 			return em.createNamedQuery("Model.findAll", Model.class).getResultList();
 		} catch(PersistenceException e) {
@@ -139,7 +144,7 @@ public class ModelDAOImpl implements ModelDAO, LogInterceptable<Model> {
 	 * {@inheritDoc}
 	 */
 	public List<Model> findAllOrderByDatasourceName() throws ModelDAOException{
-		
+		LOG.info("findAllOrderByDatasourceName");
 		try {
 			// Get the criteria builder instance from entity manager
 			final CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();

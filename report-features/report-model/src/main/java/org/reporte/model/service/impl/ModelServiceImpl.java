@@ -38,10 +38,13 @@ import org.reporte.model.service.ModelService;
 import org.reporte.model.service.exception.ModelServiceException;
 import org.reporte.model.service.util.JoinQueryConverter;
 import org.reporte.model.service.util.SelectFieldMatcher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Stateless
 @TransactionManagement(TransactionManagementType.CONTAINER)
 public class ModelServiceImpl implements ModelService {
+	private final Logger LOG = LoggerFactory.getLogger(ModelServiceImpl.class);
 
 	private static final String SELECT_QUERY = "SELECT * FROM %s";
 
@@ -60,6 +63,7 @@ public class ModelServiceImpl implements ModelService {
 	@TransactionAttribute(TransactionAttributeType.REQUIRED)
 	@Override
 	public Model save(Model model) throws ModelServiceException {
+		LOG.info("save");
 		checkForNull(model, "model");
 		
 		try {
@@ -75,6 +79,7 @@ public class ModelServiceImpl implements ModelService {
 	@TransactionAttribute(TransactionAttributeType.REQUIRED)
 	@Override
 	public void update(Model model) throws ModelServiceException {
+		LOG.info("update");
 		checkForNull(model, "model");
 		
 		try {
@@ -90,6 +95,7 @@ public class ModelServiceImpl implements ModelService {
 	@TransactionAttribute(TransactionAttributeType.REQUIRED)
 	@Override
 	public void delete(Model model) throws ModelServiceException {
+		LOG.info("delete");
 		checkForNull(model, "model");
 		
 		try {
@@ -105,6 +111,7 @@ public class ModelServiceImpl implements ModelService {
 	 */
 	@Override
 	public Model find(int id) throws ModelServiceException {
+		LOG.info("find");
 		try {
 			return modelDAO.find(id);
 		} catch (ModelDAOException e) {
@@ -117,6 +124,7 @@ public class ModelServiceImpl implements ModelService {
 	 */
 	@Override
 	public List<Model> findAll() throws ModelServiceException {
+		LOG.info("findAll");
 		try {
 			return modelDAO.findAll();
 		} catch (ModelDAOException e) {
@@ -128,6 +136,7 @@ public class ModelServiceImpl implements ModelService {
 	 * {@inheritDoc}
 	 */
 	public List<Model> findAllOrderByDatasourceName() throws ModelServiceException{
+		LOG.info("findAllOrderByDatasourceName");
 		try {
 			return modelDAO.findAllOrderByDatasourceName();
 		} catch (ModelDAOException e) {
@@ -291,7 +300,7 @@ public class ModelServiceImpl implements ModelService {
 					String quotedIdentifier = jdbcClient.getQuotedIdentifier(model.getDatasource());
 					SelectFieldMatcher matcher = new SelectFieldMatcher(refFieldName,quotedIdentifier);
 					
-					//4. for each selet item
+					//4. for each select item
 					for(SelectItem si : ps.getSelectItems()){
 						si.accept(matcher);
 						

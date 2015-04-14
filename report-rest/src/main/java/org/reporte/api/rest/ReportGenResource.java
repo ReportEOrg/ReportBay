@@ -41,7 +41,7 @@ public class ReportGenResource{
     @Path("/{reportConnectorId}")
     @Produces(MediaType.APPLICATION_JSON)
     public RestReport genReportByID(@PathParam("reportConnectorId") int reportConnectorId){
-    	
+    	LOG.info("generate report by report connector id");
     	RestReport report = null;
     	
     	try{
@@ -65,6 +65,7 @@ public class ReportGenResource{
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public RestReport genReportPreview(RestReportConnector restReportConnector){
+    	LOG.info("generate report preview by connector");
     	RestReport report = null;
 
     	try {

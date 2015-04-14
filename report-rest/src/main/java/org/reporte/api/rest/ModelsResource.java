@@ -55,6 +55,7 @@ public class ModelsResource{
     @Produces(MediaType.APPLICATION_JSON)
     public RestModels getAllModels(){
     	
+    	LOG.info("getAllModels");
     	RestModels models = new RestModels();
     	
     	try {
@@ -79,7 +80,7 @@ public class ModelsResource{
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public RestModel createModel(RestModel restModel){
-    	
+    	LOG.info("create Model");
     	RestModel resultModel = null;
 
     	try {
@@ -111,7 +112,7 @@ public class ModelsResource{
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public RestModel updateModel(RestModel restModel){
-    	
+    	LOG.info("update Model");
     	RestModel resultModel = null;
 
     	try {
@@ -136,6 +137,8 @@ public class ModelsResource{
     @Path("/{modelId}")
     @Produces(MediaType.APPLICATION_JSON)
     public RestModel getModel(@PathParam("modelId") int modelId){
+    	LOG.info("get Model {}", modelId);
+
     	RestModel restModel = null;
     	
     	//1. find model by id
@@ -151,7 +154,7 @@ public class ModelsResource{
     @Path("/{modelId}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteModel(@PathParam("modelId") int modelId){
-    	
+    	LOG.info("delete Model");
     	Model model = null;
     	Response.ResponseBuilder builder = null;
     	
@@ -160,6 +163,7 @@ public class ModelsResource{
 		} catch (Exception e) {
 			builder = Response.status(Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).type(MediaType.TEXT_PLAIN);
 			LOG.warn("unable to find model for id {}",modelId);
+			return builder.build();
 		}
 		
 		if(model!=null){
@@ -191,7 +195,7 @@ public class ModelsResource{
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public RestModel deriveModelAttributes(RestModel restModel){
-    	
+    	LOG.info("derive Model Attributes");
     	RestModel resultModel = null;
     	
     	try {
@@ -222,6 +226,7 @@ public class ModelsResource{
     												   //default max 20 records if not specified
     												   @DefaultValue("20") @QueryParam("maxRow") int maxRow){
     
+    	LOG.info("generate Model Preview");
     	RestModelPreviewResult result = new RestModelPreviewResult();
     	
     	try{
@@ -245,7 +250,6 @@ public class ModelsResource{
     		List<Map<ColumnMetadata, String>> dbResultList = jdbcClient.execute(modelDatasource, modelQuery, maxRow);
     		
     		updateRestModelPreviewResult(result, dbResultList);
-    		
     		
     	}
     	catch(Exception e){
