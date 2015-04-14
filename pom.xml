@@ -10,7 +10,7 @@
 	<modules>
 		<module>report-common</module>
 		<module>report-features</module>
-		<module>report-web</module>
+		<!-- <module>report-web</module> -->
 		<module>report-ear</module>
 		<module>report-rest</module>
 		<!-- keep log4j2 application level configuration -->
@@ -167,11 +167,11 @@
 										<artifactId>report-rest</artifactId>
 										<contextRoot>reporte-rest</contextRoot>
 									</webModule> 
-									<webModule>
+									<!-- <webModule>
 										<groupId>reporte</groupId>
 										<artifactId>report-web</artifactId>
 										<contextRoot>reporte</contextRoot>
-									</webModule>
+									</webModule> -->
 								</modules>
 							</configuration>
 						</plugin>
