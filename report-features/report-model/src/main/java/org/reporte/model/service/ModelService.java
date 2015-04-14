@@ -4,9 +4,6 @@ import java.util.List;
 
 import javax.ejb.Local;
 
-import org.reporte.datasource.service.DatabaseTypeHandler;
-import org.reporte.datasource.service.DatasourceHandler;
-import org.reporte.datasource.service.JdbcClient;
 import org.reporte.model.domain.Model;
 import org.reporte.model.service.exception.ModelServiceException;
 
@@ -54,25 +51,7 @@ public interface ModelService {
 	 * @throws ModelServiceException
 	 */
 	List<Model> findAllOrderByDatasourceName() throws ModelServiceException;
-	/**
-	 * 
-	 * @return
-	 * @throws IllegalStateException if <code>DatasourceHandler</code> object reference couldn't be resolved when requested.
-	 */
-	DatasourceHandler getDatasourceHandler();
-	/**
-	 * 
-	 * @return
-	 * @throws IllegalStateException if <code>DatabaseTypeHandler</code> object reference couldn't be resolved when requested.
-	 */
-	DatabaseTypeHandler getDatabaseTypeHandler();
-	/**
-	 * 
-	 * @return
-	 * @throws IllegalStateException if <code>DatabaseTypeHandler</code> object reference couldn't be resolved when requested.
-	 */
-	JdbcClient getJdbcClient();
-	
+
 	/**
 	 * 
 	 * @param model

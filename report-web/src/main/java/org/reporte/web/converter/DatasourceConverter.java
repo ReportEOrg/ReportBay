@@ -12,15 +12,16 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.reporte.datasource.service.exception.DatasourceHandlerException;
 import org.reporte.datasource.domain.Datasource;
-import org.reporte.model.service.ModelService;
+import org.reporte.datasource.service.DatasourceHandler;
+import org.reporte.datasource.service.exception.DatasourceHandlerException;
 
 @Named
 @ApplicationScoped
 public class DatasourceConverter implements Converter {
+
 	@Inject
-	private ModelService modelService;
+	private DatasourceHandler datasourceHandler;
 
 	@Override
 	public Object getAsObject(FacesContext arg0, UIComponent arg1,
@@ -31,7 +32,7 @@ public class DatasourceConverter implements Converter {
 
 		List<Datasource> datasources;
 		try {
-			datasources = modelService.getDatasourceHandler().findAll();
+			datasources = datasourceHandler.findAll();
 		} catch (DatasourceHandlerException e) {
 			throw new ConverterException("Unable to retrieve all datasources. Thus failed to convert " + submittedValue
 					+ " into Datasource.", e);

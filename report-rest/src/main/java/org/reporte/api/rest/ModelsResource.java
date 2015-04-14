@@ -28,6 +28,7 @@ import org.reporte.api.dto.model.RestModels;
 import org.reporte.api.rest.exception.CustomizedWebException;
 import org.reporte.datasource.domain.ColumnMetadata;
 import org.reporte.datasource.domain.Datasource;
+import org.reporte.datasource.service.DatasourceHandler;
 import org.reporte.datasource.service.JdbcClient;
 import org.reporte.model.domain.ComplexModel;
 import org.reporte.model.domain.Model;
@@ -50,6 +51,9 @@ public class ModelsResource{
 	
 	@Inject
 	private JdbcClient jdbcClient;
+	
+	@Inject
+	private DatasourceHandler dataSourceService;
     
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -232,22 +236,24 @@ public class ModelsResource{
     	try{
     		
     		Datasource modelDatasource = restModel.getDatasource();
+    		
+    		Datasource dbDatasource = dataSourceService.find(modelDatasource.getId());
     		String modelQuery = restModel.getQuery().getValue();
     		
     		//1. find out the result's column in case no result match
-    		List<ColumnMetadata> resultColumnList = jdbcClient.getColumnsFromQuery(modelDatasource, modelQuery);
+    		List<ColumnMetadata> resultColumnList = jdbcClient.getColumnsFromQuery(dbDatasource, modelQuery);
     		
     		updateRestModelPreviewResultColumnName(result, resultColumnList);
     		
     		//2. find out count of total matched records
-    		int matchRecordCount = jdbcClient.findQueryCount(modelDatasource, modelQuery);
+    		int matchRecordCount = jdbcClient.findQueryCount(dbDatasource, modelQuery);
     		
     		LOG.info("match record(s) = {}",matchRecordCount);
     		
     		result.setMatchRecordCount(matchRecordCount);
     		
     		//3. query result with result limit set 
-    		List<Map<ColumnMetadata, String>> dbResultList = jdbcClient.execute(modelDatasource, modelQuery, maxRow);
+    		List<Map<ColumnMetadata, String>> dbResultList = jdbcClient.execute(dbDatasource, modelQuery, maxRow);
     		
     		updateRestModelPreviewResult(result, dbResultList);
     		
@@ -359,6 +365,9 @@ public class ModelsResource{
      * @return
      */
     private RestModel createRestModelFromModel(Model model){
+    	//mask off password of datasource befor returning via REST
+    	maskDataSourcePassword(model.getDatasource());
+
     	RestModel restModel = new RestModel(model);
     	
     	if(model instanceof SimpleModel){
@@ -406,5 +415,11 @@ public class ModelsResource{
     		}
     	}
     }
-    
+	/**
+	 * 
+	 * @param datasource
+	 */
+	private void maskDataSourcePassword(Datasource dataSource){
+		dataSource.setPassword("********");
+	}
 }

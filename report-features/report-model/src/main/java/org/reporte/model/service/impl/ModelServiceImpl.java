@@ -23,10 +23,10 @@ import net.sf.jsqlparser.statement.select.SelectBody;
 import net.sf.jsqlparser.statement.select.SelectItem;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.reporte.datasource.dao.DatasourceDAO;
+import org.reporte.datasource.dao.exception.DatasourceDAOException;
 import org.reporte.datasource.domain.ColumnMetadata;
 import org.reporte.datasource.domain.Datasource;
-import org.reporte.datasource.service.DatabaseTypeHandler;
-import org.reporte.datasource.service.DatasourceHandler;
 import org.reporte.datasource.service.JdbcClient;
 import org.reporte.datasource.service.exception.JdbcClientException;
 import org.reporte.model.dao.ModelDAO;
@@ -50,10 +50,10 @@ public class ModelServiceImpl implements ModelService {
 
 	@Inject
 	private ModelDAO modelDAO;
+
 	@Inject
-	private DatasourceHandler datasourceHandler;
-	@Inject
-	private DatabaseTypeHandler databaseTypeHandler;
+	private DatasourceDAO dataSourceDAO;
+
 	@Inject
 	private JdbcClient jdbcClient;
 	
@@ -144,42 +144,9 @@ public class ModelServiceImpl implements ModelService {
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public DatasourceHandler getDatasourceHandler() {
-		if (datasourceHandler == null) {
-			throw new IllegalStateException("DatasourceHandler reference must not be null.");
-		}
-		return datasourceHandler;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public DatabaseTypeHandler getDatabaseTypeHandler() {
-		if (databaseTypeHandler == null) {
-			throw new IllegalStateException("DatabaseTypeHandler reference must not be null.");
-		}
-		return databaseTypeHandler;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public JdbcClient getJdbcClient() {
-		if (jdbcClient == null) {
-			throw new IllegalStateException("JdbcClient reference must not be null.");
-		}
-		return jdbcClient;
-	}
-
 	@Override
 	public void updateModelQueryFromJoinQuery(Model model) throws ModelServiceException {
-		JoinQueryConverter jqConverter = new JoinQueryConverter(model.getDatasource(), jdbcClient);
+		JoinQueryConverter jqConverter = new JoinQueryConverter(getModelDataSource(model), jdbcClient);
 		
 		CCJSqlParserManager pm = new CCJSqlParserManager();
 		
@@ -204,7 +171,7 @@ public class ModelServiceImpl implements ModelService {
 	@Override
 	public void updateModelQueryFromSimpleQuery(Model model) throws ModelServiceException {
 		String tableName = ((SimpleModel) model).getTable();
-		JoinQueryConverter jqConverter = new JoinQueryConverter(model.getDatasource(), jdbcClient);
+		JoinQueryConverter jqConverter = new JoinQueryConverter(getModelDataSource(model), jdbcClient);
 		
 		CCJSqlParserManager pm = new CCJSqlParserManager();
 		//1. construct into select * from table query string
@@ -236,7 +203,7 @@ public class ModelServiceImpl implements ModelService {
 	 */
 	private void updateModelAttributeMapping(Model model) throws ModelServiceException{
 		try {
-			List<ColumnMetadata> columns = jdbcClient.getColumnsFromQuery(model.getDatasource(), model.getQuery().getValue());
+			List<ColumnMetadata> columns = jdbcClient.getColumnsFromQuery(getModelDataSource(model), model.getQuery().getValue());
 
 			List<AttributeMapping> attributeMapingList = convertIntoAttributeMappings(columns);
 			
@@ -297,7 +264,7 @@ public class ModelServiceImpl implements ModelService {
 					PlainSelect ps = (PlainSelect)selectBody;
 
 					//3. create selectItemVisitor for reference field name
-					String quotedIdentifier = jdbcClient.getQuotedIdentifier(model.getDatasource());
+					String quotedIdentifier = jdbcClient.getQuotedIdentifier(getModelDataSource(model));
 					SelectFieldMatcher matcher = new SelectFieldMatcher(refFieldName,quotedIdentifier);
 					
 					//4. for each select item
@@ -319,7 +286,7 @@ public class ModelServiceImpl implements ModelService {
 						ps.getSelectItems().add(matchedSelectItem);
 						ps.setDistinct(new Distinct());
 						
-						uniqueValueList.addAll(retrieveFieldUniqueValue(model.getDatasource(),statement.toString()));
+						uniqueValueList.addAll(retrieveFieldUniqueValue(getModelDataSource(model),statement.toString()));
 					}
 				}
 			}
@@ -375,5 +342,25 @@ public class ModelServiceImpl implements ModelService {
 		}
 		
 		return referenceFieldName;
+	}
+	
+	/**
+	 * 
+	 * @param model
+	 * @return
+	 * @throws ModelServiceException
+	 */
+	private Datasource getModelDataSource(Model model) throws ModelServiceException{
+		try{
+			
+			if(model.getDatasource()==null){
+				throw new ModelServiceException("Model does not contain datasource");
+			}
+			
+			return dataSourceDAO.find(model.getDatasource().getId());
+		}
+		catch(DatasourceDAOException dde){
+			throw new ModelServiceException("Error finding model ["+model.getId()+"] datasource", dde);
+		}
 	}
 }

@@ -17,6 +17,9 @@ import org.junit.Test;
 import org.reporte.datasource.domain.ColumnMetadata;
 import org.reporte.datasource.domain.DatabaseType;
 import org.reporte.datasource.domain.Datasource;
+import org.reporte.datasource.service.DatabaseTypeHandler;
+import org.reporte.datasource.service.DatasourceHandler;
+import org.reporte.datasource.service.JdbcClient;
 import org.reporte.datasource.service.exception.DatabaseTypeHandlerException;
 import org.reporte.datasource.service.exception.DatasourceHandlerException;
 import org.reporte.datasource.service.exception.JdbcClientException;
@@ -33,6 +36,12 @@ import org.reporte.model.service.exception.ModelServiceException;
 public class ModelServiceIntegrationTest extends TestCase {
 	@Inject
 	private ModelService modelService;
+	@Inject
+	private DatasourceHandler datasourceHandler;
+	@Inject
+	private DatabaseTypeHandler databaseTypeHandler;
+	@Inject
+	private JdbcClient jdbcClient;
 
 	private static int modelId = 0;
 	private static int datasourceId = 0;
@@ -90,14 +99,14 @@ public class ModelServiceIntegrationTest extends TestCase {
 		
 		DatabaseType type = null;
 		try {
-			type = modelService.getDatabaseTypeHandler().find(1);
+			type = databaseTypeHandler.find(1);
 		} catch (DatabaseTypeHandlerException e) {
 			fail("Failed to load existing DatabaseType from database.");
 		}
 			
 		ds.setType(type);
 		try {
-			ds = modelService.getDatasourceHandler().save(ds);
+			ds = datasourceHandler.save(ds);
 			datasourceId = ds.getId();
 		} catch (DatasourceHandlerException e) {
 			fail("Failed to save new Datasource.");
@@ -106,7 +115,7 @@ public class ModelServiceIntegrationTest extends TestCase {
 		model.setDatasource(ds);
 		String table = null;
 		try {
-			table = modelService.getJdbcClient().getTableNames(ds).get(0);
+			table = jdbcClient.getTableNames(ds).get(0);
 		} catch (JdbcClientException e) {
 			fail("Failed to get metadata table names.");
 		}
@@ -117,7 +126,7 @@ public class ModelServiceIntegrationTest extends TestCase {
 		model.setQuery(query);
 				
 		try {
-			List<ColumnMetadata> columns = modelService.getJdbcClient().getColumns(ds, table);
+			List<ColumnMetadata> columns = jdbcClient.getColumns(ds, table);
 			List<AttributeMapping> attributeBindings = new ArrayList<AttributeMapping>();
 			for (ColumnMetadata column : columns) {
 				AttributeMapping am = new AttributeMapping();
@@ -147,8 +156,8 @@ public class ModelServiceIntegrationTest extends TestCase {
 			Model model = modelService.find(modelId);
 			modelService.delete(model);
 
-			Datasource ds = modelService.getDatasourceHandler().find(datasourceId);
-			modelService.getDatasourceHandler().delete(ds);
+			Datasource ds = datasourceHandler.find(datasourceId);
+			datasourceHandler.delete(ds);
 		} catch (DatasourceHandlerException e) {
 			fail("Failed to delete existing datasource..");
 		} catch (ModelServiceException e) {

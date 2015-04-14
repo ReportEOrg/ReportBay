@@ -386,7 +386,7 @@ public class ReportConnectorServiceImpl implements ReportConnectorService{
     	target.setShowDataLabel(source.isShowDataLabel());
 
     	target.setShowXAxis(source.isShowXAxis());
-    	target.setShowXAxis(source.isShowYAxis());
+    	target.setShowYAxis(source.isShowYAxis());
 
     	target.setXAxisTitle(source.getXAxisTitle());
     	target.setYAxisTitle(source.getYAxisTitle());

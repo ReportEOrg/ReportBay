@@ -23,6 +23,8 @@ import org.primefaces.event.FlowEvent;
 import org.primefaces.event.ReorderEvent;
 import org.reporte.datasource.domain.ColumnMetadata;
 import org.reporte.datasource.domain.Datasource;
+import org.reporte.datasource.service.DatasourceHandler;
+import org.reporte.datasource.service.JdbcClient;
 import org.reporte.datasource.service.exception.DatasourceHandlerException;
 import org.reporte.datasource.service.exception.JdbcClientException;
 import org.reporte.model.domain.AttributeMapping;
@@ -77,6 +79,10 @@ public class ModelWizardBean implements Serializable {
 
 	@Inject
 	private ModelService modelService;
+	@Inject
+	private DatasourceHandler datasourceHandler;
+	@Inject
+	private JdbcClient jdbcClient;
 
 	@PostConstruct
 	public void init() {
@@ -93,14 +99,14 @@ public class ModelWizardBean implements Serializable {
 			}
 
 			try {
-				tableNames = modelService.getJdbcClient().getTableNames(model.getDatasource());
+				tableNames = jdbcClient.getTableNames(model.getDatasource());
 			} catch (JdbcClientException e) {
 				LOG.error("Error loading available table names from target datasource[{}].",model.getDatasource().getName(), e);
 			}
 
 			try {
 				if (model.getApproach().equals(Approach.SINGLE_TABLE)) {
-					columnNames = convertIntoAttributeMappings(modelService.getJdbcClient().getColumns(model.getDatasource(),
+					columnNames = convertIntoAttributeMappings(jdbcClient.getColumns(model.getDatasource(),
 																									   ((SimpleModel) model).getTable()));
 				} else {
 					columnNames = model.getAttributeBindings();
@@ -124,7 +130,7 @@ public class ModelWizardBean implements Serializable {
 		}
 
 		try {
-			datasources = modelService.getDatasourceHandler().findAll();
+			datasources = datasourceHandler.findAll();
 		} catch (DatasourceHandlerException e) {
 			LOG.error("Failed to load existing datasources.", e);
 		}
@@ -352,7 +358,7 @@ public class ModelWizardBean implements Serializable {
 		Datasource selectedDatasource = model.getDatasource();
 		if (selectedDatasource != null) {
 			try {
-				tableNames = modelService.getJdbcClient().getTableNames(selectedDatasource);
+				tableNames = jdbcClient.getTableNames(selectedDatasource);
 			} catch (JdbcClientException e) {
 				LOG.error("Failed to load available table names for selected Datasource with name[{}].",selectedDatasource.getName(), e);
 				tableNames = new ArrayList<String>();
@@ -431,7 +437,7 @@ public class ModelWizardBean implements Serializable {
 	private void deriveColumnsFromQuery(String query)
 			throws JdbcClientException {
 
-		originalResultSet = modelService.getJdbcClient().execute(model.getDatasource(), query, MAX_SAMPLE_ROW);
+		originalResultSet = jdbcClient.execute(model.getDatasource(), query, MAX_SAMPLE_ROW);
 
 		resultSet = applyLimit(originalResultSet, limit);
 
@@ -446,7 +452,7 @@ public class ModelWizardBean implements Serializable {
 	 * @throws JdbcClientException
 	 */
 	private int findResultMatchedCount(Model model) throws JdbcClientException{
-		return modelService.getJdbcClient().findQueryCount(model.getDatasource(), model.getQuery().getValue());
+		return jdbcClient.findQueryCount(model.getDatasource(), model.getQuery().getValue());
 	}
 
 	public void verify() {
