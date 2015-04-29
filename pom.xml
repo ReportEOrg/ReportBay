@@ -1,16 +1,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>reporte</groupId>
-	<artifactId>reporte</artifactId>
+	<groupId>reportbay</groupId>
+	<artifactId>reportbay</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
-	<name>Report Project</name>
+	<name>Report Bay Project</name>
 
 	<modules>
 		<module>report-common</module>
 		<module>report-features</module>
-		<!-- <module>report-web</module> -->
 		<module>report-ear</module>
 		<module>report-rest</module>
 		<!-- keep log4j2 application level configuration -->
@@ -133,49 +132,44 @@
 							<version>2.10</version>
 							<!-- configuring the ear plugin -->
 							<configuration>
-								<finalName>reporte</finalName>
+								<finalName>reportbay</finalName>
 								<defaultLibBundleDir>lib</defaultLibBundleDir>
 								<skinnyWars>true</skinnyWars>
 								<outputDirectory>deployments</outputDirectory>
 								<modules>
 									<ejbModule>
-										<groupId>reporte</groupId>
+										<groupId>reportbay</groupId>
 										<artifactId>report-datasource</artifactId>
 									</ejbModule>
 									<ejbModule>
-										<groupId>reporte</groupId>
+										<groupId>reportbay</groupId>
 										<artifactId>report-model</artifactId>
 									</ejbModule>
 									<ejbModule>
-										<groupId>reporte</groupId>
+										<groupId>reportbay</groupId>
 										<artifactId>report-template</artifactId>
 									</ejbModule>
 									<ejbModule>
-										<groupId>reporte</groupId>
+										<groupId>reportbay</groupId>
 										<artifactId>report-gen</artifactId>
 									</ejbModule>
 									<jarModule>
-										<groupId>reporte</groupId>
+										<groupId>reportbay</groupId>
 										<artifactId>report-common</artifactId>
 									</jarModule>
 									<jarModule>
-										<groupId>reporte</groupId>
+										<groupId>reportbay</groupId>
 										<artifactId>report-publish</artifactId>
 									</jarModule>
 									<jarModule>
-										<groupId>reporte</groupId>
+										<groupId>reportbay</groupId>
 										<artifactId>log4j2-config</artifactId>
 									</jarModule>
 									<webModule>
-										<groupId>reporte</groupId>
+										<groupId>reportbay</groupId>
 										<artifactId>report-rest</artifactId>
-										<contextRoot>reporte-rest</contextRoot>
+										<contextRoot>reportbay-rest</contextRoot>
 									</webModule> 
-									<!-- <webModule>
-										<groupId>reporte</groupId>
-										<artifactId>report-web</artifactId>
-										<contextRoot>reporte</contextRoot>
-									</webModule> -->
 								</modules>
 							</configuration>
 						</plugin>
@@ -219,49 +213,44 @@
 							<version>2.10</version>
 							<!-- configuring the ear plugin -->
 							<configuration>
-								<finalName>reporte</finalName>
+								<finalName>reportbay</finalName>
 								<defaultLibBundleDir>lib</defaultLibBundleDir>
 								<skinnyWars>false</skinnyWars>
 								<outputDirectory>deployments</outputDirectory>
 								<modules>
 									<ejbModule>
-										<groupId>reporte</groupId>
+										<groupId>reportbay</groupId>
 										<artifactId>report-datasource</artifactId>
 									</ejbModule>
 									<ejbModule>
-										<groupId>reporte</groupId>
+										<groupId>reportbay</groupId>
 										<artifactId>report-model</artifactId>
 									</ejbModule>
 									<ejbModule>
-										<groupId>reporte</groupId>
+										<groupId>reportbay</groupId>
 										<artifactId>report-template</artifactId>
 									</ejbModule>
 									<ejbModule>
-										<groupId>reporte</groupId>
+										<groupId>reportbay</groupId>
 										<artifactId>report-gen</artifactId>
 									</ejbModule>
 									<jarModule>
-										<groupId>reporte</groupId>
+										<groupId>reportbay</groupId>
 										<artifactId>report-common</artifactId>
 									</jarModule>
 									<jarModule>
-										<groupId>reporte</groupId>
+										<groupId>reportbay</groupId>
 										<artifactId>log4j2-config</artifactId>
 									</jarModule>
 									<jarModule>
-										<groupId>reporte</groupId>
+										<groupId>reportbay</groupId>
 										<artifactId>report-publish</artifactId>
 									</jarModule>
 									<webModule>
-										<groupId>reporte</groupId>
+										<groupId>reportbay</groupId>
 										<artifactId>report-rest</artifactId>
-										<contextRoot>reporte-rest</contextRoot>
+										<contextRoot>reportbay-rest</contextRoot>
 									</webModule> 
-									<!-- <webModule>
-										<groupId>reporte</groupId>
-										<artifactId>report-web</artifactId>
-										<contextRoot>reporte</contextRoot>
-									</webModule> -->
 								</modules>
 							</configuration>
 						</plugin>
@@ -292,11 +281,11 @@
 		</profile>
 	</profiles>
 
-	<repositories>
+	<!-- <repositories>
 		<repository>
 			<id>prime-repo</id>
 			<name>Prime Repo</name>
 			<url>http://repository.primefaces.org</url>
 		</repository>
-	</repositories>
+	</repositories> -->
 </project>

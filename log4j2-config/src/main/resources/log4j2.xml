@@ -4,9 +4,9 @@
  	<Appenders>
  	
  		<!-- TODO: replace the log file base for none jboss server -->
-		<RollingRandomAccessFile name="ReportERollingRandomAccessFileAppender" 
-								 fileName="${sys:jboss.server.base.dir}/log/reporte.log"
-								 filePattern="${sys:jboss.server.base.dir}/log/$${date:yyyy-MM}/reporte-%d{MM-dd-yyyy}-%i.log.gz">
+		<RollingRandomAccessFile name="ReportBayRollingRandomAccessFileAppender" 
+								 fileName="${sys:jboss.server.base.dir}/log/reportbay.log"
+								 filePattern="${sys:jboss.server.base.dir}/log/$${date:yyyy-MM}/reportbay-%d{MM-dd-yyyy}-%i.log.gz">
 			<!-- layout pattern -->
 			<PatternLayout>
 				<Pattern>%d{yy-MM-dd HH:mm:ss} %-5p [%x] [%t] (%c{1}) - %m%n</Pattern>
@@ -21,9 +21,9 @@
 			<DefaultRolloverStrategy max="20"/>
 		</RollingRandomAccessFile>
 		
-		<RollingRandomAccessFile name="ReportEWebRollingRandomAccessFileAppender" 
-								 fileName="${sys:jboss.server.base.dir}/log/reporte-web.log"
-								 filePattern="${sys:jboss.server.base.dir}/log/$${date:yyyy-MM}/reporte-web-%d{MM-dd-yyyy}-%i.log.gz">
+		<RollingRandomAccessFile name="ReportBayRESTRollingRandomAccessFileAppender" 
+								 fileName="${sys:jboss.server.base.dir}/log/reportbay-rest.log"
+								 filePattern="${sys:jboss.server.base.dir}/log/$${date:yyyy-MM}/reportbay-rest-%d{MM-dd-yyyy}-%i.log.gz">
 			<!-- layout pattern -->
 			<PatternLayout>
 				<Pattern>%d{yy-MM-dd HH:mm:ss} %-5p [%x] [%t] (%c{1}) - %m%n</Pattern>
@@ -42,12 +42,12 @@
 	<Loggers>
 	
 		<!-- Async Logger -->
-		<AsyncLogger name="org.reporte.web" level="debug" additivity="false">
-			<AppenderRef ref="ReportEWebRollingRandomAccessFileAppender"/>
+		<AsyncLogger name="org.reportbay.api" level="debug" additivity="false">
+			<AppenderRef ref="ReportBayRESTRollingRandomAccessFileAppender"/>
 		</AsyncLogger>
 	
 		<Root level="info">
-			<AppenderRef ref="ReportERollingRandomAccessFileAppender"/>
+			<AppenderRef ref="ReportBayRollingRandomAccessFileAppender"/>
 		</Root>
 	</Loggers>
 

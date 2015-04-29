@@ -17,14 +17,14 @@ import net.sf.jsqlparser.statement.select.WithItem;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.reporte.model.domain.Model;
-import org.reporte.reporttemplate.domain.CrossTabTemplate;
-import org.reporte.reporttemplate.domain.CrossTabTemplateDetail;
-import org.reporte.reporttemplate.domain.ReportQuery;
-import org.reporte.reporttemplate.service.exception.ReportTemplateServiceException;
-import org.reporte.reporttemplate.service.impl.CrossTabDetailsComparator;
-import org.reporte.reporttemplate.service.impl.ReportTemplateServiceImpl;
-import org.reporte.reporttemplate.visitor.SelectItemVisitorImpl;
+import org.reportbay.model.domain.Model;
+import org.reportbay.reporttemplate.domain.CrossTabTemplate;
+import org.reportbay.reporttemplate.domain.CrossTabTemplateDetail;
+import org.reportbay.reporttemplate.domain.ReportQuery;
+import org.reportbay.reporttemplate.service.exception.ReportTemplateServiceException;
+import org.reportbay.reporttemplate.service.impl.CrossTabDetailsComparator;
+import org.reportbay.reporttemplate.service.impl.ReportTemplateServiceImpl;
+import org.reportbay.reporttemplate.visitor.SelectItemVisitorImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

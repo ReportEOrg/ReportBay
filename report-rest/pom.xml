@@ -2,8 +2,8 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>reporte</groupId>
-		<artifactId>reporte</artifactId>
+		<groupId>reportbay</groupId>
+		<artifactId>reportbay</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>report-rest</artifactId>
@@ -21,37 +21,37 @@
 		
 		<!-- InterModule dependencies -->
 		<dependency>
-			<groupId>reporte</groupId>
+			<groupId>reportbay</groupId>
 			<artifactId>report-gen</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>reporte</groupId>
+			<groupId>reportbay</groupId>
 			<artifactId>report-template</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>reporte</groupId>
+			<groupId>reportbay</groupId>
 			<artifactId>report-model</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>reporte</groupId>
+			<groupId>reportbay</groupId>
 			<artifactId>report-datasource</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>reporte</groupId>
+			<groupId>reportbay</groupId>
 			<artifactId>report-publish</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>reporte</groupId>
+			<groupId>reportbay</groupId>
 			<artifactId>report-common</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 			<scope>provided</scope>

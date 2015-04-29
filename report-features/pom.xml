@@ -2,8 +2,8 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>reporte</groupId>
-		<artifactId>reporte</artifactId>
+		<groupId>reportbay</groupId>
+		<artifactId>reportbay</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>report-features</artifactId>
@@ -15,12 +15,12 @@
 		<module>report-model</module>
 		<module>report-template</module>
 		<module>report-gen</module>
-		<module>report-schedule</module>
+		<!-- <module>report-schedule</module> -->
 		<module>report-publish</module>
 	</modules>
 	<dependencies>
 		<dependency>
-			<groupId>reporte</groupId>
+			<groupId>reportbay</groupId>
 			<artifactId>report-common</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 			<scope>provided</scope>

@@ -6,66 +6,58 @@
 	<name>Report Ear Module</name>
 
 	<parent>
-		<groupId>reporte</groupId>
-		<artifactId>reporte</artifactId>
+		<groupId>reportbay</groupId>
+		<artifactId>reportbay</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 
 	<dependencies>
 		<!-- web and ejb modules -->
 		<dependency>
-			<groupId>reporte</groupId>
+			<groupId>reportbay</groupId>
 			<artifactId>report-model</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 			<type>ejb</type>
 		</dependency>
 		<dependency>
-			<groupId>reporte</groupId>
+			<groupId>reportbay</groupId>
 			<artifactId>report-datasource</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 			<type>ejb</type>
 		</dependency>
 		<dependency>
-			<groupId>reporte</groupId>
+			<groupId>reportbay</groupId>
 			<artifactId>report-template</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 			<type>ejb</type>
 		</dependency>
 
-		<!-- to be removed later -->		
-	<!-- 	<dependency>
-			<groupId>reporte</groupId>
-			<artifactId>report-web</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-			<type>war</type>
-		</dependency> -->
-		
 		<dependency>
-			<groupId>reporte</groupId>
+			<groupId>reportbay</groupId>
 			<artifactId>report-rest</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 			<type>war</type>
 		</dependency>
 		<dependency>
-			<groupId>reporte</groupId>
+			<groupId>reportbay</groupId>
 			<artifactId>report-gen</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 			<type>ejb</type>
 		</dependency>
 		<dependency>
-			<groupId>reporte</groupId>
+			<groupId>reportbay</groupId>
 			<artifactId>report-common</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 			<type>jar</type>
 		</dependency>
 		<dependency>
-			<groupId>reporte</groupId>
+			<groupId>reportbay</groupId>
 			<artifactId>report-publish</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 			<type>jar</type>
 		</dependency>
 		<dependency>
-			<groupId>reporte</groupId>
+			<groupId>reportbay</groupId>
 			<artifactId>log4j2-config</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 			<type>jar</type>
@@ -104,31 +96,4 @@
 		</dependency>
 	</dependencies>
 
-	<build>
-		<plugins>
-			<!-- <plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-ear-plugin</artifactId>
-				<version>2.10</version>
-				configuring the ear plugin
-				<configuration>
-					<defaultLibBundleDir>APP-INF/lib</defaultLibBundleDir>
-					<skinnyWars>false</skinnyWars>
-					<outputDirectory></outputDirectory>
-					<modules>
-						<webModule>
-							<groupId>reporte</groupId>
-							<artifactId>report-web</artifactId>
-						</webModule>
-						<ejbModule>
-							<groupId>reporte</groupId>
-							<artifactId>report-model</artifactId>
-						</ejbModule>
-						extra libraries into lib directory <jarModule> <groupId>mysql</groupId> 
-							<artifactId>mysql-connector-java</artifactId> </jarModule>
-					</modules>
-				</configuration>
-			</plugin> -->
-		</plugins>
-	</build>
 </project>
