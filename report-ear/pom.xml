@@ -60,6 +60,12 @@
 		</dependency>
 		<dependency>
 			<groupId>reporte</groupId>
+			<artifactId>report-publish</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>reporte</groupId>
 			<artifactId>log4j2-config</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 			<type>jar</type>

@@ -160,6 +160,10 @@
 									</jarModule>
 									<jarModule>
 										<groupId>reporte</groupId>
+										<artifactId>report-publish</artifactId>
+									</jarModule>
+									<jarModule>
+										<groupId>reporte</groupId>
 										<artifactId>log4j2-config</artifactId>
 									</jarModule>
 									<webModule>
@@ -243,6 +247,10 @@
 									<jarModule>
 										<groupId>reporte</groupId>
 										<artifactId>log4j2-config</artifactId>
+									</jarModule>
+									<jarModule>
+										<groupId>reporte</groupId>
+										<artifactId>report-publish</artifactId>
 									</jarModule>
 									<webModule>
 										<groupId>reporte</groupId>
