@@ -286,11 +286,10 @@ public class ModelsResource{
     		Model model = modelService.find(id);
     		Datasource modelDatasource = model.getDatasource();
     		
-    		Datasource dbDatasource = dataSourceService.find(modelDatasource.getId());
     		String modelQuery = model.getQuery().getValue();
     		
     		//1. Fetch data for the query with max row set 
-    		dbResultList = jdbcClient.execute(dbDatasource, modelQuery, maxRow);
+    		dbResultList = jdbcClient.execute(modelDatasource, modelQuery, maxRow);
     		if (CollectionUtils.isEmpty(dbResultList)) {
 				LOG.info("Returned Collection is empty");
 				dbResultList = new ArrayList<Map<ColumnMetadata,String>>();
