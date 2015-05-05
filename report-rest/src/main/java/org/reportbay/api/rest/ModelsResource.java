@@ -22,7 +22,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import javax.xml.ws.soap.AddressingFeature.Responses;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.reportbay.api.dto.model.RestModel;
