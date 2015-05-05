@@ -1,5 +1,6 @@
 package org.reportbay.api.rest;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +22,9 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import javax.xml.ws.soap.AddressingFeature.Responses;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.reportbay.api.dto.model.RestModel;
 import org.reportbay.api.dto.model.RestModelPreviewResult;
 import org.reportbay.api.dto.model.RestModels;
@@ -264,6 +267,44 @@ public class ModelsResource{
     	}
     	
     	return result;
+    }
+    
+    @GET
+    @Path("/{modelId}/previewData")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public List<Map<ColumnMetadata, String>> previewModelData(@PathParam("modelId") int id,
+    												   //default max 20 records if not specified
+    													//Set maxRow=-1 to retrieve all data
+    												   @DefaultValue("20") @QueryParam("maxRow") int maxRow){
+    	List<Map<ColumnMetadata, String>> dbResultList = null;
+    	try{
+    		LOG.info("Previewing Model Data");
+        	LOG.info("Model Id ["+id+"] and Maxrow ["+maxRow+"]");
+    		if (id<=0) {
+				throw new CustomizedWebException(Status.BAD_REQUEST, "ModelId must be > 0");
+			}
+    		Model model = modelService.find(id);
+    		Datasource modelDatasource = model.getDatasource();
+    		
+    		Datasource dbDatasource = dataSourceService.find(modelDatasource.getId());
+    		String modelQuery = model.getQuery().getValue();
+    		
+    		//1. Fetch data for the query with max row set 
+    		dbResultList = jdbcClient.execute(dbDatasource, modelQuery, maxRow);
+    		if (CollectionUtils.isEmpty(dbResultList)) {
+				LOG.info("Returned Collection is empty");
+				dbResultList = new ArrayList<Map<ColumnMetadata,String>>();
+			}
+    		    		
+    	}catch(CustomizedWebException e){
+    		LOG.info("Exception while previewing Model Data..", e);
+    		throw e;
+    	}catch(Exception e){
+    		LOG.warn("Exception while previewing Model Data..", e);
+			throw new CustomizedWebException(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage());
+    	}
+    	return dbResultList;
     }
     
     @GET
