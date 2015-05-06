@@ -32,6 +32,7 @@ import org.reportbay.datasource.domain.ColumnMetadata;
 import org.reportbay.datasource.domain.Datasource;
 import org.reportbay.datasource.service.DatasourceHandler;
 import org.reportbay.datasource.service.JdbcClient;
+import org.reportbay.model.domain.AttributeMapping;
 import org.reportbay.model.domain.ComplexModel;
 import org.reportbay.model.domain.Model;
 import org.reportbay.model.domain.SimpleModel;
@@ -284,6 +285,14 @@ public class ModelsResource{
 				throw new CustomizedWebException(Status.BAD_REQUEST, "ModelId must be > 0");
 			}
     		Model model = modelService.find(id);
+    		List<AttributeMapping> attributes = model.getAttributeBindings();
+    		Map<String, String> fieldNames = new HashMap<String, String>();
+    		//Fetch all the reference column names and alias name into map.
+    		//referecnce column name as key and alias name as value
+    		for (AttributeMapping attributeMapping : attributes) {
+				fieldNames.put(attributeMapping.getReferencedColumn(), attributeMapping.getAlias());
+			}
+    		LOG.info("Number of fiedlName "+ fieldNames.size());
     		Datasource modelDatasource = model.getDatasource();
     		
     		String modelQuery = model.getQuery().getValue();
@@ -297,7 +306,7 @@ public class ModelsResource{
 					for (Map.Entry<ColumnMetadata, String> field : map.entrySet()) {
 						//pass only the lable name and the value
 						ColumnMetadata meta = field.getKey();
-						row.put(meta.getLabel(), field.getValue());
+						row.put(fieldNames.get(meta.getLabel()), field.getValue());
 					}
 					modelData.add(row);
 				}
