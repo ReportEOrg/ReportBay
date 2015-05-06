@@ -272,11 +272,11 @@ public class ModelsResource{
     @Path("/{modelId}/previewData")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public List<Map<ColumnMetadata, String>> previewModelData(@PathParam("modelId") int id,
+    public List<Map<String, String>> previewModelData(@PathParam("modelId") int id,
     												   //default max 20 records if not specified
     													//Set maxRow=-1 to retrieve all data
     												   @DefaultValue("20") @QueryParam("maxRow") int maxRow){
-    	List<Map<ColumnMetadata, String>> dbResultList = null;
+    	List<Map<String, String>> modelData = new ArrayList<Map<String,String>>();
     	try{
     		LOG.info("Previewing Model Data");
         	LOG.info("Model Id ["+id+"] and Maxrow ["+maxRow+"]");
@@ -289,12 +289,19 @@ public class ModelsResource{
     		String modelQuery = model.getQuery().getValue();
     		
     		//1. Fetch data for the query with max row set 
-    		dbResultList = jdbcClient.execute(modelDatasource, modelQuery, maxRow);
-    		if (CollectionUtils.isEmpty(dbResultList)) {
-				LOG.info("Returned Collection is empty");
-				dbResultList = new ArrayList<Map<ColumnMetadata,String>>();
+    		List<Map<ColumnMetadata, String>> dbResultList = jdbcClient.execute(modelDatasource, modelQuery, maxRow);
+    		if (CollectionUtils.isNotEmpty(dbResultList)) {
+    			LOG.info("Iterating Collection");
+				for (Map<ColumnMetadata, String> map : dbResultList) {
+					Map<String, String> row = new HashMap<String, String>();
+					for (Map.Entry<ColumnMetadata, String> field : map.entrySet()) {
+						//pass only the lable name and the value
+						ColumnMetadata meta = field.getKey();
+						row.put(meta.getLabel(), field.getValue());
+					}
+					modelData.add(row);
+				}
 			}
-    		    		
     	}catch(CustomizedWebException e){
     		LOG.info("Exception while previewing Model Data..", e);
     		throw e;
@@ -302,7 +309,7 @@ public class ModelsResource{
     		LOG.warn("Exception while previewing Model Data..", e);
 			throw new CustomizedWebException(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage());
     	}
-    	return dbResultList;
+    	return modelData;
     }
     
     @GET
