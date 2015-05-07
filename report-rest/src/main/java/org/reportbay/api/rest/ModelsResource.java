@@ -2,8 +2,12 @@ package org.reportbay.api.rest;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.Properties;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -28,6 +32,7 @@ import org.reportbay.api.dto.model.RestModel;
 import org.reportbay.api.dto.model.RestModelPreviewResult;
 import org.reportbay.api.dto.model.RestModels;
 import org.reportbay.api.rest.exception.CustomizedWebException;
+import org.reportbay.common.util.SystemProperties;
 import org.reportbay.datasource.domain.ColumnMetadata;
 import org.reportbay.datasource.domain.Datasource;
 import org.reportbay.datasource.service.DatasourceHandler;
@@ -45,7 +50,7 @@ import org.slf4j.LoggerFactory;
 @Path("models")
 public class ModelsResource{
 	private final Logger LOG = LoggerFactory.getLogger(ModelsResource.class);
-
+	
     @Context
     ResourceContext rc;
     
@@ -286,36 +291,48 @@ public class ModelsResource{
 			}
     		Model model = modelService.find(id);
     		if (model==null) {
-				throw new CustomizedWebException(Status.INTERNAL_SERVER_ERROR, "No Matching Model found for the given Id ["+id+"]");
+				throw new CustomizedWebException(Status.INTERNAL_SERVER_ERROR, "No Model found for the given Id ["+id+"]");
 			}
+    		//Get the attribute Mapping for the particular model
     		List<AttributeMapping> attributes = model.getAttributeBindings();
+    		//Below map will store each field reference name as key in the attribute mapping along with its alias name as Value
     		Map<String, String> fieldNames = new HashMap<String, String>();
     		//Fetch all the reference column names and alias name into map.
-    		//referecnce column name as key and alias name as value
+    		//reference column name as key and alias name as value
     		for (AttributeMapping attributeMapping : attributes) {
 				fieldNames.put(attributeMapping.getReferencedColumn(), attributeMapping.getAlias());
 			}
     		LOG.debug("Attribute Mappings "+fieldNames);
     		LOG.info("Number of fiedlName "+ fieldNames.size());
+    		//We expect the datastore object to be not null
     		Datasource modelDatasource = model.getDatasource();
-    		
     		String modelQuery = model.getQuery().getValue();
-    		LOG.info("Model Query ["+modelQuery+"]");
+    		LOG.info("Model Query ["+modelQuery.replace("", "")+"]");
     		//1. Fetch data for the query with max row set 
     		List<Map<ColumnMetadata, String>> dbResultList = jdbcClient.execute(modelDatasource, modelQuery, maxRow);
     		if (CollectionUtils.isNotEmpty(dbResultList)) {
-    			LOG.info("Iterating Collection");
+    			//Store the colummetadata in a map for faster processing
+    			Map<String, Integer> columnMeta = new LinkedHashMap<String, Integer>();
+    			LOG.debug("columMeta values are ["+columnMeta+"]");
+    			LOG.info("Iterating Collection for each row");
 				for (Map<ColumnMetadata, String> map : dbResultList) {
 					Map<String, String> row = new HashMap<String, String>();
-					for (Map.Entry<ColumnMetadata, String> field : map.entrySet()) {
-						//pass only the lable name and the value
-						ColumnMetadata meta = field.getKey();
-						row.put(fieldNames.get(meta.getLabel()), field.getValue());
+					for (Map.Entry<String, String> field : fieldNames.entrySet()) {
+						//Use stream api to find the particular search field in the map and return if found
+						Optional<Entry<ColumnMetadata, String>> column = map.entrySet().stream()
+						.filter(m -> m.getKey().getLabel().equalsIgnoreCase(field.getKey()))
+						.findFirst();
+						if (column.isPresent()) {
+							LOG.debug("Column Name ["+field.getValue()+"] and Value is ["+column.get().getValue()+"]");
+							row.put(field.getValue(), column.get().getValue());
+						}else{
+							LOG.warn("Field ["+field.getValue()+"] Not found");
+						}
 					}
 					modelData.add(row);
 				}
 			}else{
-				LOG.info("Results for above Model Query is Empty");
+				LOG.warn("Results for above Model Query is Empty");
 			}
     	}catch(CustomizedWebException e){
     		LOG.info("Exception while previewing Model Data..", e);

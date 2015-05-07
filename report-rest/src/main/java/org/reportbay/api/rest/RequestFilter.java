@@ -19,12 +19,12 @@ public class RequestFilter implements ContainerRequestFilter {
 
     @Override
     public void filter( ContainerRequestContext requestCtx ) throws IOException {
-        LOG.info( "Executing REST request filter for method ["+requestCtx.getRequest().getMethod()+"]" );
+        LOG.debug( "Executing REST request filter for method ["+requestCtx.getRequest().getMethod()+"]" );
         // When HttpMethod comes as OPTIONS, just acknowledge that it accepts...
         if ( requestCtx.getRequest().getMethod().equals( "OPTIONS" ) ) {
             LOG.info( "HTTP Method (OPTIONS) - Detected! Aborting Request with Status 200" );
             // Just send a OK signal back to the browser
-            requestCtx.abortWith( Response.status( Response.Status.OK ).build() );
+            //requestCtx.abortWith( Response.status( Response.Status.OK ).build() );
         }
     }
 
