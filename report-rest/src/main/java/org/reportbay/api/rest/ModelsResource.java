@@ -285,6 +285,9 @@ public class ModelsResource{
 				throw new CustomizedWebException(Status.BAD_REQUEST, "ModelId must be > 0");
 			}
     		Model model = modelService.find(id);
+    		if (model==null) {
+				throw new CustomizedWebException(Status.INTERNAL_SERVER_ERROR, "No Matching Model found for the given Id ["+id+"]");
+			}
     		List<AttributeMapping> attributes = model.getAttributeBindings();
     		Map<String, String> fieldNames = new HashMap<String, String>();
     		//Fetch all the reference column names and alias name into map.
@@ -292,11 +295,12 @@ public class ModelsResource{
     		for (AttributeMapping attributeMapping : attributes) {
 				fieldNames.put(attributeMapping.getReferencedColumn(), attributeMapping.getAlias());
 			}
+    		LOG.debug("Attribute Mappings "+fieldNames);
     		LOG.info("Number of fiedlName "+ fieldNames.size());
     		Datasource modelDatasource = model.getDatasource();
     		
     		String modelQuery = model.getQuery().getValue();
-    		
+    		LOG.info("Model Query ["+modelQuery+"]");
     		//1. Fetch data for the query with max row set 
     		List<Map<ColumnMetadata, String>> dbResultList = jdbcClient.execute(modelDatasource, modelQuery, maxRow);
     		if (CollectionUtils.isNotEmpty(dbResultList)) {
@@ -310,6 +314,8 @@ public class ModelsResource{
 					}
 					modelData.add(row);
 				}
+			}else{
+				LOG.info("Results for above Model Query is Empty");
 			}
     	}catch(CustomizedWebException e){
     		LOG.info("Exception while previewing Model Data..", e);
