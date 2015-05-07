@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.Properties;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -32,7 +31,6 @@ import org.reportbay.api.dto.model.RestModel;
 import org.reportbay.api.dto.model.RestModelPreviewResult;
 import org.reportbay.api.dto.model.RestModels;
 import org.reportbay.api.rest.exception.CustomizedWebException;
-import org.reportbay.common.util.SystemProperties;
 import org.reportbay.datasource.domain.ColumnMetadata;
 import org.reportbay.datasource.domain.Datasource;
 import org.reportbay.datasource.service.DatasourceHandler;
