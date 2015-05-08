@@ -325,6 +325,7 @@ public class ModelsResource{
 							row.put(field.getValue(), column.get().getValue());
 						}else{
 							LOG.warn("Field ["+field.getValue()+"] Not found");
+							row.put(field.getValue(), "");
 						}
 					}
 					modelData.add(row);
