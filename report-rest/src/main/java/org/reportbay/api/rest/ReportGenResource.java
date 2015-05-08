@@ -14,6 +14,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.reportbay.api.dto.report.RestReport;
+import org.reportbay.api.dto.report.RestReports;
 import org.reportbay.api.dto.reportconnector.RestReportConnector;
 import org.reportbay.api.rest.exception.CustomizedWebException;
 import org.reportbay.api.service.ReportConnectorService;
@@ -77,5 +78,68 @@ public class ReportGenResource{
     	}
     	
     	return report;
+    }
+    
+    /**
+     * 
+     * @param reportConnectorId
+     * @return
+     */
+    @POST
+    @Path("/gensnapshots/{reportConnectorId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public RestReport genReportSnapshot(@PathParam("reportConnectorId") int reportConnectorId){
+    	LOG.info("generate report snapshot by connector {}",reportConnectorId);
+    	
+    	RestReport report = null;
+    	
+    	try {
+    		report = reportConnectorService.generateReportSnapshot(reportConnectorId);
+		} 
+    	catch(ReportConnectorServiceException e){
+    		LOG.warn("Exception in generating report snapshot ", e);
+			throw new CustomizedWebException(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage());
+    	}
+    	
+    	return report;
+    }
+    
+    @GET
+    @Path("/snapshots/{reportId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public RestReport retrieveReportSnapshot(@PathParam("reportId") int reportId){
+    	LOG.info("retrieve report snapshot by reportid {}", reportId);
+    	
+    	RestReport report = null;
+    	
+    	try {
+    		report = reportConnectorService.getReportSnapshot(reportId);
+		} 
+    	catch(ReportConnectorServiceException e){
+    		LOG.warn("Exception in retrieving report snapshot ", e);
+			throw new CustomizedWebException(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage());
+    	}
+    	
+    	return report;
+    }
+    
+    @GET
+    @Path("/reports")
+    @Produces(MediaType.APPLICATION_JSON)
+    public RestReports retrieveReportSnapshots(){
+    	LOG.info("retrieve report snapshots and one demand reports");
+    	
+    	RestReports reports = null;
+    	
+    	try {
+    		//TODO: obtain by profile
+    		reports = reportConnectorService.getReports();
+		} 
+    	catch(ReportConnectorServiceException e){
+    		LOG.warn("Exception in retrieving report snapshots ", e);
+			throw new CustomizedWebException(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage());
+    	}
+    	
+    	return reports;
     }
 }

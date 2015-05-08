@@ -122,20 +122,45 @@ public class DAOLogger {
 		Object returnObj = null;
 		
 		Logger logger = getLogger(context);
-		if (logger != null) {
-			Map<String, String> logMsgTemplate = getPreOperationLogMsgTemplate(context.getMethod().getName());
+		Map<String, String> logMsgTemplate = getPreOperationLogMsgTemplate(context.getMethod().getName());
+		
+		//log pre operation if required
+		logPreOperation(logger, logMsgTemplate, context);
+		
+		returnObj = context.proceed();
+
+		//log post operation if required
+		logPostOperation(logger, logMsgTemplate);
+
+		return returnObj;
+	}
+	/**
+	 * 
+	 * @param logger
+	 * @param logMsgTemplate
+	 * @param context
+	 */
+	private void logPreOperation(Logger logger, Map<String, String> logMsgTemplate, InvocationContext context){
+		
+		if(logger!=null){
 			String logMsgTemplateString = logMsgTemplate.get(KEY_PRE_OPERATION_MSG);
-			if (StringUtils.isEmpty(logMsgTemplateString)) {
-				// method is not supported by DAOLogger. Just proceed.
-				returnObj = context.proceed();
-			} else {
+			
+			if(StringUtils.isEmpty(logMsgTemplateString)){
 				logger.debug(logMsgTemplateString, getTargetEntityName(context.getTarget().getClass()));
 				logger.trace(getLogMsgTemplateForParamDetails(context), context.getParameters());
-				returnObj = context.proceed();
-				logger.debug(POST_OPERATION, logMsgTemplate.get(KEY_POST_OPREATION_ARG));
 			}
 		}
-		return returnObj;
+	}
+	
+	/**
+	 * 
+	 * @param logger
+	 * @param logMsgTemplate
+	 */
+	private void logPostOperation(Logger logger,Map<String, String> logMsgTemplate){
+		if(logger!=null){
+			logger.debug(POST_OPERATION, logMsgTemplate.get(KEY_POST_OPREATION_ARG));
+		}
 	}
 
 }

@@ -1,6 +1,7 @@
 package org.reportbay.api.service;
 
 import org.reportbay.api.dto.report.RestReport;
+import org.reportbay.api.dto.report.RestReports;
 import org.reportbay.api.dto.reportconnector.RestReportConnector;
 import org.reportbay.api.dto.reportconnector.RestReportConnectors;
 import org.reportbay.api.service.exception.ReportConnectorServiceException;
@@ -60,4 +61,27 @@ public interface ReportConnectorService{
 	 * @throws ReportConnectorServiceException
 	 */
 	RestReportConnector update(RestReportConnector restReportConnector) throws ReportConnectorServiceException;
+	
+	/**
+	 * 
+	 * @param reportConnectorId
+	 * @return
+	 * @throws ReportConnectorServiceException
+	 */
+	RestReport generateReportSnapshot(int reportConnectorId) throws ReportConnectorServiceException;
+	
+	/**
+	 * 
+	 * @param reportId
+	 * @return
+	 * @throws ReportConnectorServiceException
+	 */
+	RestReport getReportSnapshot(int reportId) throws ReportConnectorServiceException;
+	
+	/**
+	 * 
+	 * @return
+	 * @throws ReportConnectorServiceException
+	 */
+	RestReports getReports() throws ReportConnectorServiceException;
 }

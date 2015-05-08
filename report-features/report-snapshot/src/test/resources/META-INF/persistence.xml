@@ -14,12 +14,6 @@
 		<class>org.reportbay.datasource.domain.Datasource</class>
 		<class>org.reportbay.datasource.domain.ColumnMetadata</class>
 		
-		<class>org.reportbay.model.domain.AttributeMapping</class>
-		<class>org.reportbay.model.domain.ComplexModel</class>
-		<class>org.reportbay.model.domain.Model</class>
-		<class>org.reportbay.model.domain.ModelQuery</class>
-		<class>org.reportbay.model.domain.SimpleModel</class>
-		
 		<class>org.reportbay.reporttemplate.domain.BaseReportTemplate</class>
 		<class>org.reportbay.reporttemplate.domain.TemplateSeries</class>
 		<class>org.reportbay.reporttemplate.domain.AreaChartTemplate</class>

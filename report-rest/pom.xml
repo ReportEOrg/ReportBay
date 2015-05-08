@@ -56,6 +56,11 @@
 			<version>0.0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
-		
+		<dependency>
+			<groupId>reportbay</groupId>
+			<artifactId>report-snapshot</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
 	</dependencies>
 </project>

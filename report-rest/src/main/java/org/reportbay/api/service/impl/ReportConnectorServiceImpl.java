@@ -1,5 +1,7 @@
 package org.reportbay.api.service.impl;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
@@ -8,7 +10,9 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.SerializationUtils;
 import org.reportbay.api.dto.report.RestReport;
+import org.reportbay.api.dto.report.RestReports;
 import org.reportbay.api.dto.reportconnector.RestLiteReportConnector;
 import org.reportbay.api.dto.reportconnector.RestReportConnector;
 import org.reportbay.api.dto.reportconnector.RestReportConnectors;
@@ -29,9 +33,14 @@ import org.reportbay.reporttemplate.domain.LineChartTemplate;
 import org.reportbay.reporttemplate.domain.PieChartTemplate;
 import org.reportbay.reporttemplate.domain.ReportQuery;
 import org.reportbay.reporttemplate.domain.ReportTemplateTypeEnum;
+import org.reportbay.reporttemplate.domain.TemplateDiscriminatorConstants;
 import org.reportbay.reporttemplate.domain.TemplateSeries;
 import org.reportbay.reporttemplate.service.ReportTemplateService;
 import org.reportbay.reporttemplate.service.exception.ReportTemplateServiceException;
+import org.reportbay.snapshot.domain.ReportSnapShot;
+import org.reportbay.snapshot.domain.ReportSnapShotBase;
+import org.reportbay.snapshot.service.SnapShotService;
+import org.reportbay.snapshot.service.exception.SnapShotServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,6 +59,9 @@ public class ReportConnectorServiceImpl implements ReportConnectorService{
 	
 	@Inject
 	private ReportGenerationService reportGenerationService;
+	
+	@Inject 
+	private SnapShotService reportSnapShotService;
 	
 	/**
 	 * {@inheritDoc}
@@ -429,7 +441,12 @@ public class ReportConnectorServiceImpl implements ReportConnectorService{
     	target.setReportDisplayName(source.getReportDisplayName());
     	target.setModelId(source.getModelId());
     }
-
+    /**
+     * 
+     * @param reportTemplate
+     * @return
+     * @throws ReportConnectorServiceException
+     */
     private RestReport generateReport(BaseReportTemplate reportTemplate) throws ReportConnectorServiceException{
     	RestReport restReport = new RestReport();
     	
@@ -541,5 +558,151 @@ public class ReportConnectorServiceImpl implements ReportConnectorService{
 		//reserved for other type
 		
 		return resultTemplate;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public RestReport generateReportSnapshot(int reportConnectorId) throws ReportConnectorServiceException {
+		
+		RestReport report = null;
+
+		try{
+			//1. retrieve the template base on the id
+    		BaseReportTemplate reportTemplate = reportTemplateService.findReportTemplate(reportConnectorId);
+    		
+    		if(reportTemplate == null){
+    			throw new ReportConnectorServiceException("report template not found for "+reportConnectorId);
+    		}
+    		//2. generate the report based on template
+    		report = generateReport(reportTemplate);
+    		
+    		//3. take a snap shot and store
+    		ReportSnapShot reportSnapShot = new ReportSnapShot();
+    		
+    		reportSnapShot.setCreationDate(new Date());
+    		reportSnapShot.setReportName(reportTemplate.getReportDisplayName());
+    		reportSnapShot.setTemplateType(deriveTemplateType(reportTemplate));
+    		reportSnapShot.setTemplateId(reportConnectorId);
+    		reportSnapShot.setSnapShot(SerializationUtils.serialize(report));
+    		
+    		reportSnapShotService.save(reportSnapShot);
+
+    		
+		}
+		catch(SnapShotServiceException ssse){
+			throw new ReportConnectorServiceException("exception in saving report snapshot for  "+reportConnectorId,ssse);
+		}
+		catch(ReportTemplateServiceException rtse ){
+			throw new ReportConnectorServiceException("exception in finding report template for  "+reportConnectorId,rtse);
+		}
+		
+		return report;
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public RestReport getReportSnapshot(int reportId) throws ReportConnectorServiceException {
+		
+		RestReport report = null;
+		
+		try {
+			ReportSnapShot reportSnapShot = reportSnapShotService.findReportSnapShot(reportId);
+			
+			report = (RestReport)SerializationUtils.deserialize(reportSnapShot.getSnapShot());
+		} 
+		catch (SnapShotServiceException e) {
+			throw new ReportConnectorServiceException("exception in finding snap shot for report",e);
+		}
+		
+		return report;
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public RestReports getReports() throws ReportConnectorServiceException {
+		
+		RestReports reports = new RestReports();
+		
+		try {
+			//TODO: by profile
+			
+			//1. obtain all snap shot reports
+			List<ReportSnapShotBase> reportSnapShotBaseList = reportSnapShotService.findAllReportSnapShotBase();
+			
+			reports.getLiteReports().addAll(reportSnapShotBaseList);
+			
+			//2. obtain all on demand report (report template)
+			List<BaseReportTemplate> reportTemplateList = reportTemplateService.findAllReportTemplate();
+			
+			reports.getLiteReports().addAll(mapReportTemplatesToLiteReports(reportTemplateList));
+		} 
+		catch (SnapShotServiceException ssse) {
+			throw new ReportConnectorServiceException("exception in get report snapshots ", ssse);
+		} 
+		catch (ReportTemplateServiceException rtse) {
+			throw new ReportConnectorServiceException("exception in get report connector ", rtse);
+		}
+
+		return reports;
+	}
+	
+	/**
+	 * 
+	 * @param reportTemplate
+	 * @return
+	 * @throws ReportConnectorServiceException
+	 */
+	private char deriveTemplateType(BaseReportTemplate reportTemplate) throws ReportConnectorServiceException{
+		if(reportTemplate instanceof AreaChartTemplate){
+			return TemplateDiscriminatorConstants.AREA.charAt(0);
+		}
+		else if (reportTemplate instanceof BarChartTemplate){
+			return TemplateDiscriminatorConstants.BAR.charAt(0);
+		}
+		else if (reportTemplate instanceof ColumnChartTemplate){
+			return TemplateDiscriminatorConstants.COLUMN.charAt(0);
+		}
+		else if (reportTemplate instanceof LineChartTemplate){
+			return TemplateDiscriminatorConstants.LINE.charAt(0);
+		}
+		else if (reportTemplate instanceof PieChartTemplate){
+			return TemplateDiscriminatorConstants.PIE.charAt(0);
+		}
+		else if(reportTemplate instanceof CrossTabTemplate){
+			return TemplateDiscriminatorConstants.CROSSTAB.charAt(0);
+		}
+		else{
+			throw new ReportConnectorServiceException("Unrecognized template type");
+		}
+	}
+	
+	/**
+	 * convert the reporttemplate in report snap shot form (exclude id and creation date)
+	 * @param reportTemplateList
+	 * @return
+	 * @throws ReportConnectorServiceException
+	 */
+	private List<ReportSnapShotBase> mapReportTemplatesToLiteReports(List<BaseReportTemplate> reportTemplateList) 
+		throws ReportConnectorServiceException{
+
+		List<ReportSnapShotBase> reportSnapShotBaseList = new ArrayList<ReportSnapShotBase>();
+		
+		for(BaseReportTemplate reportTemplate: reportTemplateList){
+			if(reportTemplate!=null){
+				ReportSnapShotBase report = new ReportSnapShotBase();
+				
+				report.setReportName(reportTemplate.getReportDisplayName());
+				report.setTemplateId(reportTemplate.getId());
+				report.setTemplateType(deriveTemplateType(reportTemplate));
+				
+				reportSnapShotBaseList.add(report);
+			}
+		}
+		
+		return reportSnapShotBaseList;
 	}
 }
