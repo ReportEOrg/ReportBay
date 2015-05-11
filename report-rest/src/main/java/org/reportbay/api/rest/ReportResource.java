@@ -23,10 +23,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @ApplicationScoped
-@Path("reportgen")
-public class ReportGenResource{
+@Path("reports")
+public class ReportResource{
 	
-	private final Logger LOG = LoggerFactory.getLogger(ReportGenResource.class);
+	private final Logger LOG = LoggerFactory.getLogger(ReportResource.class);
 
     @Context
     ResourceContext rc;
@@ -35,11 +35,56 @@ public class ReportGenResource{
     
     /**
      * 
+     * @return
+     */
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public RestReports retrieveReportSnapshots(){
+    	LOG.info("retrieve report snapshots and one demand reports");
+    	
+    	RestReports reports = null;
+    	
+    	try {
+    		//TODO: obtain by profile
+    		reports = reportConnectorService.getReports();
+		} 
+    	catch(ReportConnectorServiceException e){
+    		LOG.warn("Exception in retrieving report snapshots ", e);
+			throw new CustomizedWebException(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage());
+    	}
+    	
+    	return reports;
+    }
+    /**
+     * 
+     * @param reportId
+     * @return
+     */
+    @GET
+    @Path("/{reportId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public RestReport retrieveReportSnapshot(@PathParam("reportId") int reportId){
+    	LOG.info("retrieve report snapshot by reportid {}", reportId);
+    	
+    	RestReport report = null;
+    	
+    	try {
+    		report = reportConnectorService.getReportSnapshot(reportId);
+		} 
+    	catch(ReportConnectorServiceException e){
+    		LOG.warn("Exception in retrieving report snapshot ", e);
+			throw new CustomizedWebException(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage());
+    	}
+    	
+    	return report;
+    }
+    /**
+     * 
      * @param reportConnectorId
      * @return
      */
     @GET
-    @Path("/{reportConnectorId}")
+    @Path("/previewconnector/{reportConnectorId}")
     @Produces(MediaType.APPLICATION_JSON)
     public RestReport genReportByID(@PathParam("reportConnectorId") int reportConnectorId){
     	LOG.info("generate report by report connector id");
@@ -62,7 +107,7 @@ public class ReportGenResource{
      * @return
      */
     @POST
-    @Path("/generateReportPreview")
+    @Path("/preview")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public RestReport genReportPreview(RestReportConnector restReportConnector){
@@ -86,7 +131,7 @@ public class ReportGenResource{
      * @return
      */
     @POST
-    @Path("/gensnapshots/{reportConnectorId}")
+    @Path("/snapshots/{reportConnectorId}")
     @Produces(MediaType.APPLICATION_JSON)
     public RestReport genReportSnapshot(@PathParam("reportConnectorId") int reportConnectorId){
     	LOG.info("generate report snapshot by connector {}",reportConnectorId);
@@ -102,44 +147,5 @@ public class ReportGenResource{
     	}
     	
     	return report;
-    }
-    
-    @GET
-    @Path("/snapshots/{reportId}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public RestReport retrieveReportSnapshot(@PathParam("reportId") int reportId){
-    	LOG.info("retrieve report snapshot by reportid {}", reportId);
-    	
-    	RestReport report = null;
-    	
-    	try {
-    		report = reportConnectorService.getReportSnapshot(reportId);
-		} 
-    	catch(ReportConnectorServiceException e){
-    		LOG.warn("Exception in retrieving report snapshot ", e);
-			throw new CustomizedWebException(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage());
-    	}
-    	
-    	return report;
-    }
-    
-    @GET
-    @Path("/reports")
-    @Produces(MediaType.APPLICATION_JSON)
-    public RestReports retrieveReportSnapshots(){
-    	LOG.info("retrieve report snapshots and one demand reports");
-    	
-    	RestReports reports = null;
-    	
-    	try {
-    		//TODO: obtain by profile
-    		reports = reportConnectorService.getReports();
-		} 
-    	catch(ReportConnectorServiceException e){
-    		LOG.warn("Exception in retrieving report snapshots ", e);
-			throw new CustomizedWebException(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage());
-    	}
-    	
-    	return reports;
     }
 }

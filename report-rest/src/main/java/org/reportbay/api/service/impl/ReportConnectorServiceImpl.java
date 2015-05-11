@@ -19,7 +19,10 @@ import org.reportbay.api.dto.reportconnector.RestReportConnectors;
 import org.reportbay.api.dto.reportconnector.TemplateType;
 import org.reportbay.api.service.ReportConnectorService;
 import org.reportbay.api.service.exception.ReportConnectorServiceException;
+import org.reportbay.report.domain.BaseReport;
+import org.reportbay.report.domain.CartesianChartReport;
 import org.reportbay.report.domain.CrossTabReport;
+import org.reportbay.report.domain.PieChartReport;
 import org.reportbay.report.service.ReportGenerationService;
 import org.reportbay.report.service.exception.ReportGenerationServiceException;
 import org.reportbay.reporttemplate.domain.AreaChartTemplate;
@@ -501,6 +504,73 @@ public class ReportConnectorServiceImpl implements ReportConnectorService{
 		}
     	return restReport;
     }
+    
+    /**
+     * 
+     * @param restReport
+     * @return
+     */
+    private BaseReport getReportFromRestReport(RestReport restReport){
+    	
+    	BaseReport report = null; 
+    	TemplateType type = TemplateType.fromName(restReport.getType());
+    	
+    	if(type!=null){
+    		switch(type){
+    			case AREA:
+    			case BAR:
+    			case COLUMN:
+    			case LINE:
+    				report = restReport.getCartesianChartReport();
+    				break;
+    			case PIE:
+    				report = restReport.getPieChartReport();
+    				break;
+    			case CROSSTAB:
+    				report = restReport.getCrossTabReport();
+    				break;
+    			default:
+    				break;
+    		}
+    	}
+    	
+    	return report;
+    }
+    
+    /**
+     * 
+     * @param report
+     * @param type
+     * @return
+     */
+    private RestReport constructRestReport(BaseReport report, TemplateType type){
+    	
+    	RestReport restReport = new RestReport();
+    	
+    	if(type!=null){
+    		switch(type){
+    			case AREA:
+    			case BAR:
+    			case COLUMN:
+    			case LINE:
+    				restReport.setType(type.name());
+    				restReport.setCartesianChartReport((CartesianChartReport)report);
+    				break;
+    			case PIE:
+    				restReport.setType(type.name());
+    				restReport.setPieChartReport((PieChartReport)report);
+    				break;
+    			case CROSSTAB:
+    				restReport.setType(type.name());
+    				restReport.setCrossTabReport((CrossTabReport)report);
+    				break;
+    			default:
+    				break;
+    		}
+    	}
+    	
+    	return restReport;
+    }
 
     /**
      * 
@@ -585,7 +655,7 @@ public class ReportConnectorServiceImpl implements ReportConnectorService{
     		reportSnapShot.setReportName(reportTemplate.getReportDisplayName());
     		reportSnapShot.setTemplateType(deriveTemplateType(reportTemplate));
     		reportSnapShot.setTemplateId(reportConnectorId);
-    		reportSnapShot.setSnapShot(SerializationUtils.serialize(report));
+    		reportSnapShot.setSnapShot(SerializationUtils.serialize(getReportFromRestReport(report)));
     		
     		reportSnapShotService.save(reportSnapShot);
 
@@ -611,7 +681,10 @@ public class ReportConnectorServiceImpl implements ReportConnectorService{
 		try {
 			ReportSnapShot reportSnapShot = reportSnapShotService.findReportSnapShot(reportId);
 			
-			report = (RestReport)SerializationUtils.deserialize(reportSnapShot.getSnapShot());
+			BaseReport baseReport = (BaseReport)SerializationUtils.deserialize(reportSnapShot.getSnapShot());
+			
+			report = constructRestReport(baseReport, deriveRestTemplateType(reportSnapShot.getTemplateType()));
+			
 		} 
 		catch (SnapShotServiceException e) {
 			throw new ReportConnectorServiceException("exception in finding snap shot for report",e);
@@ -674,6 +747,36 @@ public class ReportConnectorServiceImpl implements ReportConnectorService{
 		}
 		else if(reportTemplate instanceof CrossTabTemplate){
 			return TemplateDiscriminatorConstants.CROSSTAB.charAt(0);
+		}
+		else{
+			throw new ReportConnectorServiceException("Unrecognized template type");
+		}
+	}
+	
+	/**
+	 * 
+	 * @param templateType
+	 * @return
+	 * @throws ReportConnectorServiceException
+	 */
+	private TemplateType deriveRestTemplateType(char templateType) throws ReportConnectorServiceException{
+		if(TemplateDiscriminatorConstants.AREA.charAt(0) == templateType){
+			return TemplateType.AREA;
+		}
+		else if (TemplateDiscriminatorConstants.BAR.charAt(0) ==  templateType){
+			return TemplateType.BAR;
+		}
+		else if (TemplateDiscriminatorConstants.COLUMN.charAt(0) == templateType){
+			return TemplateType.COLUMN;
+		}
+		else if (TemplateDiscriminatorConstants.LINE.charAt(0) == templateType){
+			return TemplateType.LINE;
+		}
+		else if (TemplateDiscriminatorConstants.PIE.charAt(0) == templateType){
+			return TemplateType.PIE;
+		}
+		else if(TemplateDiscriminatorConstants.CROSSTAB.charAt(0) == templateType){
+			return TemplateType.CROSSTAB;
 		}
 		else{
 			throw new ReportConnectorServiceException("Unrecognized template type");

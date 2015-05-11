@@ -201,7 +201,7 @@ public class ModelsResource{
      * @return
      */
     @PUT
-    @Path("/deriveModelAttributes")
+    @Path("/derivemodelattributes")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public RestModel deriveModelAttributes(RestModel restModel){
@@ -229,7 +229,7 @@ public class ModelsResource{
     }
     
     @POST
-    @Path("/generatePreview")
+    @Path("/preview")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public RestModelPreviewResult generateModelPreview(RestModel restModel,
@@ -273,7 +273,7 @@ public class ModelsResource{
     }
     
     @GET
-    @Path("/{modelId}/previewData")
+    @Path("/{modelId}/previewdata")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public List<Map<String, String>> previewModelData(@PathParam("modelId") int id,
@@ -344,7 +344,7 @@ public class ModelsResource{
     }
     
     @GET
-    @Path("/{modelId}/uniqueDataField")
+    @Path("/{modelId}/uniquedatafield")
     @Produces(MediaType.APPLICATION_JSON)
     public RestModelPreviewResult getUniqueDataFieldValue(@PathParam("modelId") int modelId,
     													  @QueryParam("dataField") String aliasDataField){
