@@ -12,13 +12,6 @@ public interface SnapShotDAO extends BaseDAO<ReportSnapShot, SnapShotDAOExceptio
 	
 	/**
 	 * 
-	 * @param entity
-	 * @return
-	 * @throws SnapShotDAOException
-	 */
-	ReportSnapShot updateEntity(ReportSnapShot entity) throws SnapShotDAOException;
-	/**
-	 * 
 	 * @return
 	 * @throws SnapShotDAOException
 	 */

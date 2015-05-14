@@ -142,7 +142,7 @@ public class ReportTemplateServiceImpl implements ReportTemplateService {
 			// operation on entity no longer exist
 
 			ReportQuery reportQuery = reportTemplate.getReportQuery();
-			managedReportTemplate = reportTemplateDAO.updateEntity(reportTemplate);
+			managedReportTemplate = reportTemplateDAO.update(reportTemplate);
 
 			if (reportQuery != null) {
 
@@ -276,7 +276,7 @@ public class ReportTemplateServiceImpl implements ReportTemplateService {
 	@TransactionAttribute(TransactionAttributeType.REQUIRED)
 	public AreaChartTemplate updateAreaChartTemplate(AreaChartTemplate reportTemplate) throws ReportTemplateServiceException {
 		try {
-			return (AreaChartTemplate) reportTemplateDAO.updateEntity(reportTemplate);
+			return (AreaChartTemplate) reportTemplateDAO.update(reportTemplate);
 		} catch (ReportTemplateDAOException rtde) {
 			throw new ReportTemplateServiceException("err", rtde);
 		}

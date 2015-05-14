@@ -18,6 +18,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import org.reportbay.common.dao.impl.BaseDAOImpl;
 import org.reportbay.common.interceptor.DAOLogger;
 import org.reportbay.common.interceptor.LogInterceptable;
 import org.reportbay.datasource.domain.Datasource;
@@ -33,7 +34,9 @@ import org.slf4j.LoggerFactory;
 @Stateless
 @TransactionManagement(TransactionManagementType.CONTAINER)
 @Interceptors(DAOLogger.class)
-public class ModelDAOImpl implements ModelDAO, LogInterceptable<Model> {
+public class ModelDAOImpl extends BaseDAOImpl<Model,ModelDAOException> 
+	implements ModelDAO, LogInterceptable<Model> {
+	
 	private final Logger LOG = LoggerFactory.getLogger(ModelDAOImpl.class);
 	
 	@PersistenceContext(unitName="reportbay")
@@ -88,61 +91,6 @@ public class ModelDAOImpl implements ModelDAO, LogInterceptable<Model> {
 	/**
 	 * {@inheritDoc}
 	 */
-	@TransactionAttribute(TransactionAttributeType.REQUIRED)
-	@Override
-	public void update(Model model) throws ModelDAOException {
-		LOG.info("update");
-		try {
-			em.merge(model);
-		} catch(PersistenceException e) {
-			throw new ModelDAOException("Failed to update Model with given name[" + model.getName() + "].", e);
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@TransactionAttribute(TransactionAttributeType.REQUIRED)
-	@Override
-	public void delete(Model model) throws ModelDAOException {
-		LOG.info("delete");
-		try {
-			em.remove(em.merge(model));
-		} catch(PersistenceException e) {
-			throw new ModelDAOException("Failed to delete Model with given id[" + model.getId() + "].", e);
-		}
-		
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public Model find(int id) throws ModelDAOException {
-		LOG.info("find");
-		try {
-			return em.find(Model.class, id);
-		} catch(PersistenceException e) {
-			throw new ModelDAOException("Failed to find Model with given id[" + id + "].", e);
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public List<Model> findAll() throws ModelDAOException {
-		LOG.info("findAll");
-		try {
-			return em.createNamedQuery("Model.findAll", Model.class).getResultList();
-		} catch(PersistenceException e) {
-			throw new ModelDAOException("Failed to find all Models.", e);
-		}
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 */
 	public List<Model> findAllOrderByDatasourceName() throws ModelDAOException{
 		LOG.info("findAllOrderByDatasourceName");
 		try {
@@ -183,6 +131,38 @@ public class ModelDAOImpl implements ModelDAO, LogInterceptable<Model> {
 	@Override
 	public Logger getLogger() {
 		return LOG;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public EntityManager getEntityManager() {
+		return em;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public ModelDAOException createException(String msg, Throwable e) {
+		return new ModelDAOException(msg,e);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Class<Model> getEntityClass() {
+		return Model.class;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String getFindAllNamedQuery() {
+		return "Model.findAll";
 	}
 	
 }

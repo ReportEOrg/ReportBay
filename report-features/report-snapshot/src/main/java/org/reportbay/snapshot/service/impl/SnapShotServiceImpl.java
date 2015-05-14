@@ -54,7 +54,7 @@ public class SnapShotServiceImpl implements SnapShotService{
 		LOG.debug("update");
 		
 		try{
-			return snapShotDAO.updateEntity(reportSnapShot);
+			return snapShotDAO.update(reportSnapShot);
 		}
 		catch(SnapShotDAOException ssde){
 			throw new SnapShotServiceException(ssde);
