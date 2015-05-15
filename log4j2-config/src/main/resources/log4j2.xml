@@ -37,6 +37,12 @@
 			<!-- max 20 files to keep before discarding -->
 			<DefaultRolloverStrategy max="20"/>
 		</RollingRandomAccessFile>
+		
+		<Console name="Console" target="SYSTEM_OUT">
+	     	<PatternLayout>
+				<Pattern>%d{yy-MM-dd HH:mm:ss} %-5p [%X] [%t] (%c{1}) - %m%n</Pattern>
+			</PatternLayout>
+	    </Console>
 	</Appenders>
 	<!-- loggers -->
 	<Loggers>
