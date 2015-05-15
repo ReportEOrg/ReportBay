@@ -46,6 +46,12 @@
 		</dependency>
 		<dependency>
 			<groupId>reportbay</groupId>
+			<artifactId>report-snapshot</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<type>ejb</type>
+		</dependency>
+		<dependency>
+			<groupId>reportbay</groupId>
 			<artifactId>report-common</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 			<type>jar</type>
