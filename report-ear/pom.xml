@@ -91,7 +91,6 @@
 			<artifactId>log4j-web</artifactId>
 			<scope>runtime</scope>
 		</dependency>
-		
 		<!-- lmax disruptor for log4j2 async logger -->		
 		<dependency>
 			<groupId>com.lmax</groupId>
