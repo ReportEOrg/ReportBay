@@ -153,6 +153,10 @@
 										<groupId>reportbay</groupId>
 										<artifactId>report-gen</artifactId>
 									</ejbModule>
+									<ejbModule>
+										<groupId>reportbay</groupId>
+										<artifactId>report-snapshot</artifactId>
+									</ejbModule>
 									<jarModule>
 										<groupId>reportbay</groupId>
 										<artifactId>report-common</artifactId>
@@ -233,6 +237,10 @@
 									<ejbModule>
 										<groupId>reportbay</groupId>
 										<artifactId>report-gen</artifactId>
+									</ejbModule>
+									<ejbModule>
+										<groupId>reportbay</groupId>
+										<artifactId>report-snapshot</artifactId>
 									</ejbModule>
 									<jarModule>
 										<groupId>reportbay</groupId>

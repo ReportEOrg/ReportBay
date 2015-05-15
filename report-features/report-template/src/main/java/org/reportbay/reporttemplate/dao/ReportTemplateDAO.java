@@ -10,5 +10,5 @@ import org.reportbay.reporttemplate.domain.BaseReportTemplate;
  *
  */
 public interface ReportTemplateDAO extends BaseDAO<BaseReportTemplate, ReportTemplateDAOException>{
-	BaseReportTemplate updateEntity(BaseReportTemplate entity)	throws ReportTemplateDAOException;
+
 }

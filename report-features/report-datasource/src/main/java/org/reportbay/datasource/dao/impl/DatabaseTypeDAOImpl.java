@@ -1,18 +1,14 @@
 package org.reportbay.datasource.dao.impl;
 
-import java.util.List;
-
 import javax.ejb.Local;
 import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 import javax.interceptor.Interceptors;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceException;
 
+import org.reportbay.common.dao.impl.BaseDAOImpl;
 import org.reportbay.common.interceptor.DAOLogger;
 import org.reportbay.common.interceptor.LogInterceptable;
 import org.reportbay.datasource.dao.DatabaseTypeDAO;
@@ -25,7 +21,9 @@ import org.slf4j.LoggerFactory;
 @Stateless
 @TransactionManagement(TransactionManagementType.CONTAINER)
 @Interceptors(DAOLogger.class)
-public class DatabaseTypeDAOImpl implements DatabaseTypeDAO, LogInterceptable<DatabaseType> {
+public class DatabaseTypeDAOImpl extends BaseDAOImpl<DatabaseType,DatabaseTypeDAOException> 
+	implements DatabaseTypeDAO, LogInterceptable<DatabaseType> {
+
 	private final Logger LOG = LoggerFactory.getLogger(DatabaseTypeDAOImpl.class);
 
 	@PersistenceContext(unitName="reportbay")
@@ -34,72 +32,40 @@ public class DatabaseTypeDAOImpl implements DatabaseTypeDAO, LogInterceptable<Da
 	/**
 	 * {@inheritDoc}
 	 */
-	@TransactionAttribute(TransactionAttributeType.REQUIRED)
-	@Override
-	public DatabaseType insert(DatabaseType databaseType) throws DatabaseTypeDAOException {
-		try {
-			em.persist(databaseType);
-		} catch (PersistenceException e) {
-			throw new DatabaseTypeDAOException("Failed to persist DatabaseType with given name[" + databaseType.getName() + "].", e);
-		}
-		return databaseType;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@TransactionAttribute(TransactionAttributeType.REQUIRED)
-	@Override
-	public void update(DatabaseType databaseType) throws DatabaseTypeDAOException {
-		try {
-			em.merge(databaseType);
-		} catch (PersistenceException e) {
-			throw new DatabaseTypeDAOException("Failed to update DatabaseType with given name[" + databaseType.getName() + "].", e);
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@TransactionAttribute(TransactionAttributeType.REQUIRED)
-	@Override
-	public void delete(DatabaseType databaseType) throws DatabaseTypeDAOException {
-		try {
-			em.remove(em.merge(databaseType));
-		} catch (PersistenceException e) {
-			throw new DatabaseTypeDAOException("Failed to delete DatabaseType with given id[" + databaseType.getId() + "].", e);
-		}
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public DatabaseType find(int id) throws DatabaseTypeDAOException {
-		try {
-			return em.find(DatabaseType.class, id);
-		} catch (PersistenceException e) {
-			throw new DatabaseTypeDAOException("Failed to find DatabaseType with given id[" + id + "].", e);
-		}
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public List<DatabaseType> findAll() throws DatabaseTypeDAOException {
-		try {
-			return em.createNamedQuery("DatabaseType.findAll", DatabaseType.class).getResultList();
-		} catch (PersistenceException e) {
-			throw new DatabaseTypeDAOException("Failed to get all DatabaseTypes.", e);
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public Logger getLogger() {
 		return LOG;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public EntityManager getEntityManager() {
+		return em;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public DatabaseTypeDAOException createException(String msg, Throwable e) {
+		return new DatabaseTypeDAOException(msg, e);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Class<DatabaseType> getEntityClass() {
+		return DatabaseType.class;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String getFindAllNamedQuery() {
+		return "DatabaseType.findAll";
 	}
 }

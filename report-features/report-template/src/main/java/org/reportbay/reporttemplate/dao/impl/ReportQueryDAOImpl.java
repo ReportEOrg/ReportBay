@@ -13,6 +13,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 
+import org.reportbay.common.dao.impl.BaseDAOImpl;
 import org.reportbay.common.interceptor.DAOLogger;
 import org.reportbay.common.interceptor.LogInterceptable;
 import org.reportbay.reporttemplate.dao.ReportQueryDAO;
@@ -28,7 +29,8 @@ import org.slf4j.LoggerFactory;
 //container managed trancaction manager
 @TransactionManagement(TransactionManagementType.CONTAINER)
 @Interceptors(DAOLogger.class)
-public class ReportQueryDAOImpl implements ReportQueryDAO, LogInterceptable<ReportQuery>{
+public class ReportQueryDAOImpl extends BaseDAOImpl<ReportQuery, ReportQueryDAOException> 
+	implements ReportQueryDAO, LogInterceptable<ReportQuery>{
 
 	private final Logger LOG = LoggerFactory.getLogger(ReportQueryDAOImpl.class);
 	
@@ -36,57 +38,13 @@ public class ReportQueryDAOImpl implements ReportQueryDAO, LogInterceptable<Repo
 	private EntityManager em;
 	
 	/**
-	 * {@inheritDoc}
-	 */
-	@TransactionAttribute(TransactionAttributeType.REQUIRED)
-	@Override
-	public ReportQuery insert(ReportQuery entity) throws ReportQueryDAOException {
-
-		try {
-			em.persist(entity);
-		}
-		catch (PersistenceException e) {
-			throw new ReportQueryDAOException("Failed creating Report query "+entity.getId(), e);
-		}
-		
-		return entity;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@TransactionAttribute(TransactionAttributeType.REQUIRED)
-	@Override
-	public void update(ReportQuery entity) throws ReportQueryDAOException {
-		try {
-			em.merge(entity);
-		}
-		catch(PersistenceException e){
-			throw new ReportQueryDAOException("Failed updating Report query "+entity.getId(), e);
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@TransactionAttribute(TransactionAttributeType.REQUIRED)
-	@Override
-	public void delete(ReportQuery entity) throws ReportQueryDAOException {
-		try {
-			em.remove(em.merge(entity));
-		}
-		catch(PersistenceException e){
-			throw new ReportQueryDAOException("Failed deleting Report query "+entity.getId(), e);
-		}
-	}
-	/**
 	 * as the find method will be used in transaction context, added required transaction attribute type
 	 */
 	@TransactionAttribute(TransactionAttributeType.REQUIRED)
 	@Override
 	public ReportQuery find(int id) throws ReportQueryDAOException {
 		try {
-			return em.find(ReportQuery.class, id);
+			return super.find(id);
 		}
 		catch (PersistenceException e) {
 			throw new ReportQueryDAOException("Failed finding Report query "+id, e);
@@ -106,5 +64,38 @@ public class ReportQueryDAOImpl implements ReportQueryDAO, LogInterceptable<Repo
 	@Override
 	public Logger getLogger() {
 		return LOG;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public EntityManager getEntityManager() {
+		return em;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public ReportQueryDAOException createException(String msg, Throwable e) {
+		return new ReportQueryDAOException(msg, e);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Class<ReportQuery> getEntityClass() {
+		return ReportQuery.class;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String getFindAllNamedQuery() {
+		//find all not supported, so passed null 
+		return null;
 	}
 }
