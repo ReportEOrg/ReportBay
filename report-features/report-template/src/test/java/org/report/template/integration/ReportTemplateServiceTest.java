@@ -22,7 +22,7 @@ import org.reportbay.reporttemplate.dao.ReportTemplateDAO;
 import org.reportbay.reporttemplate.domain.CrossTabFieldType;
 import org.reportbay.reporttemplate.domain.CrossTabTemplate;
 import org.reportbay.reporttemplate.domain.CrossTabTemplateDetail;
-import org.reportbay.reporttemplate.domain.GroupOrAggregate;
+import org.reportbay.reporttemplate.domain.GroupOrSum;
 import org.reportbay.reporttemplate.domain.ReportTemplateTypeEnum;
 import org.reportbay.reporttemplate.domain.SqlFunction;
 import org.reportbay.reporttemplate.service.ReportTemplateService;
@@ -103,7 +103,7 @@ public class ReportTemplateServiceTest{
 		templateDetail.setAttributeDisplayName("country");
 		templateDetail.setAttributeDisplaySequence(1);
 		templateDetail.setFieldType(CrossTabFieldType.COLUMN);
-		templateDetail.setGroupOrAggregate(GroupOrAggregate.GROUPING);
+		templateDetail.setGroupOrAggregate(GroupOrSum.GROUPING);
 		templateDetail.setSqlFunction(SqlFunction.GROUPBY);
 		templateDetail.setSqltype(SqlTypeEnum.VARCHAR);
 		templateDetail.setModelAttributeName("country");
@@ -111,7 +111,7 @@ public class ReportTemplateServiceTest{
 		templateDetail1.setAttributeDisplayName("location");
 		templateDetail1.setAttributeDisplaySequence(2);
 		templateDetail1.setFieldType(CrossTabFieldType.COLUMN);
-		templateDetail1.setGroupOrAggregate(GroupOrAggregate.GROUPING);
+		templateDetail1.setGroupOrAggregate(GroupOrSum.GROUPING);
 		templateDetail1.setSqlFunction(SqlFunction.GROUPBY);
 		templateDetail1.setSqltype(SqlTypeEnum.VARCHAR);
 		templateDetail1.setModelAttributeName("location");
@@ -119,7 +119,7 @@ public class ReportTemplateServiceTest{
 		templateDetail2.setAttributeDisplayName("Number of Track");
 		templateDetail2.setAttributeDisplaySequence(1);
 		templateDetail2.setFieldType(CrossTabFieldType.COLUMN);
-		templateDetail2.setGroupOrAggregate(GroupOrAggregate.AGGREGATE);
+		templateDetail2.setGroupOrAggregate(GroupOrSum.SUM);
 		templateDetail2.setSqlFunction(SqlFunction.COUNT);
 		templateDetail2.setSqltype(SqlTypeEnum.VARCHAR);
 		templateDetail2.setModelAttributeName("name");

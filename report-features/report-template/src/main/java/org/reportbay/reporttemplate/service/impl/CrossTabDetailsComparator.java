@@ -6,7 +6,7 @@ package org.reportbay.reporttemplate.service.impl;
 import java.util.Comparator;
 
 import org.reportbay.reporttemplate.domain.CrossTabTemplateDetail;
-import org.reportbay.reporttemplate.domain.GroupOrAggregate;
+import org.reportbay.reporttemplate.domain.GroupOrSum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +34,7 @@ public class CrossTabDetailsComparator implements Comparator<CrossTabTemplateDet
 		if (o1.getGroupOrAggregate().equals(o2.getGroupOrAggregate())) {
 			LOG.info("o1 == 02");
 			//Check if both the SQL function are of GroupBy
-			if(o1.getGroupOrAggregate().equals(GroupOrAggregate.GROUPING)){
+			if(o1.getGroupOrAggregate().equals(GroupOrSum.GROUPING)){
 				//Lower the sequence Id should come first.
 				//Eg. 1 should come before 2. in the order of sequence number
 				if (o1.getAttributeDisplaySequence()<o2.getAttributeDisplaySequence()) {
@@ -44,7 +44,7 @@ public class CrossTabDetailsComparator implements Comparator<CrossTabTemplateDet
 					LOG.info("o1 > o2. Return 1");
 					return 1;
 				}
-			}else if(o1.getGroupOrAggregate().equals(GroupOrAggregate.AGGREGATE)){
+			}else if(o1.getGroupOrAggregate().equals(GroupOrSum.SUM)){
 				//If the SQL function is other then type GroupBy. Sort them by Sequence Id.
 				if (o1.getAttributeDisplaySequence()<o2.getAttributeDisplaySequence()) {
 					LOG.info("o1 < o2. Return -1");
@@ -56,10 +56,10 @@ public class CrossTabDetailsComparator implements Comparator<CrossTabTemplateDet
 			}
 		}else if (!o1.getGroupOrAggregate().equals(o2.getGroupOrAggregate())){
 			LOG.info("o1 != 02");
-			if(o1.getGroupOrAggregate().equals(GroupOrAggregate.GROUPING)){
+			if(o1.getGroupOrAggregate().equals(GroupOrSum.GROUPING)){
 				LOG.info("o1 has GroupBy. Hence Return -1");
 				return -1;
-			}else if(o2.getGroupOrAggregate().equals(GroupOrAggregate.GROUPING)){
+			}else if(o2.getGroupOrAggregate().equals(GroupOrSum.GROUPING)){
 				LOG.info("o2 has GroupBy. Hence Return 1");
 				return 1;
 			}

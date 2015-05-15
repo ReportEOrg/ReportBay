@@ -3,20 +3,20 @@ package org.reportbay.report.domain;
 import org.reportbay.common.domain.SqlTypeEnum;
 import org.reportbay.datasource.domain.ColumnMetadata;
 import org.reportbay.reporttemplate.domain.CrossTabFieldType;
-import org.reportbay.reporttemplate.domain.GroupOrAggregate;
+import org.reportbay.reporttemplate.domain.GroupOrSum;
 
 public class CrossTabAttribute {
 	
-	private GroupOrAggregate groupOrAggregate;
+	private GroupOrSum groupOrAggregate;
 	private CrossTabFieldType fieldType;
 	private int attributeDisplaySequence;
 	private SqlTypeEnum type;
 	private ColumnMetadata metaData;
 	
-	public GroupOrAggregate getGroupOrAggregate() {
+	public GroupOrSum getGroupOrAggregate() {
 		return groupOrAggregate;
 	}
-	public void setGroupOrAggregate(GroupOrAggregate groupOrAggregate) {
+	public void setGroupOrAggregate(GroupOrSum groupOrAggregate) {
 		this.groupOrAggregate = groupOrAggregate;
 	}
 	public CrossTabFieldType getFieldType() {

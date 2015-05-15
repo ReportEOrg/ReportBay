@@ -7,13 +7,13 @@ package org.reportbay.reporttemplate.domain;
  * @author ahamed.nijamudeen
  *
  */
-public enum GroupOrAggregate {
+public enum GroupOrSum {
 	
-	GROUPING("grouping"),AGGREGATE("aggregate");
+	GROUPING("grouping"),SUM("sum");
 	
 	private String value;
 	
-	private GroupOrAggregate(String value){
+	private GroupOrSum(String value){
 		this.value = value;
 	}
 	

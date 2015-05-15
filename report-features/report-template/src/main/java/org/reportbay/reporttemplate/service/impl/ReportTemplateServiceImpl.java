@@ -58,7 +58,7 @@ import org.reportbay.reporttemplate.domain.CartesianChartTemplate;
 import org.reportbay.reporttemplate.domain.ColumnChartTemplate;
 import org.reportbay.reporttemplate.domain.CrossTabTemplate;
 import org.reportbay.reporttemplate.domain.CrossTabTemplateDetail;
-import org.reportbay.reporttemplate.domain.GroupOrAggregate;
+import org.reportbay.reporttemplate.domain.GroupOrSum;
 import org.reportbay.reporttemplate.domain.LineChartTemplate;
 import org.reportbay.reporttemplate.domain.PieChartTemplate;
 import org.reportbay.reporttemplate.domain.ReportQuery;
@@ -950,10 +950,10 @@ public class ReportTemplateServiceImpl implements ReportTemplateService {
 					if (selectItem.isPresent()) {
 						LOG.info("Computed SelectItem is not empty");
 						//check if the crosstabdetail is of aggregate or grouping
-						if (crossTabDetail.getGroupOrAggregate().equals(GroupOrAggregate.AGGREGATE)){
+						if (crossTabDetail.getGroupOrAggregate().equals(GroupOrSum.SUM)){
 							//construct a aggregate function of select item
 							selects.add(constructAggregate(selectItem.get().getExpression(), crossTabDetail.getSqlFunction()));
-						}else if (crossTabDetail.getGroupOrAggregate().equals(GroupOrAggregate.GROUPING)) {
+						}else if (crossTabDetail.getGroupOrAggregate().equals(GroupOrSum.GROUPING)) {
 							//Add the selectItem to the list
 							selects.add(selectItem.get());
 							//Construct a grouping item

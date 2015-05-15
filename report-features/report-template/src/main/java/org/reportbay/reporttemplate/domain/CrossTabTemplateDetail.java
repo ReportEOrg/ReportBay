@@ -42,7 +42,7 @@ public class CrossTabTemplateDetail extends BaseJPAEntity{
 	private int attributeDisplaySequence;
 	@Column(name="group_or_aggregate",nullable=false)
 	@Enumerated(EnumType.STRING)
-	private GroupOrAggregate groupOrAggregate;
+	private GroupOrSum groupOrAggregate;
 	
 	public CrossTabTemplateDetail(){
 		super();
@@ -52,7 +52,7 @@ public class CrossTabTemplateDetail extends BaseJPAEntity{
 	public CrossTabTemplateDetail(String modelAttributeName,
 			String attributeDisplayName, CrossTabFieldType fieldType,
 			SqlTypeEnum sqltype, SqlFunction sqlFunction,
-			int attributeDisplaySequence, GroupOrAggregate groupOrAggregate) {
+			int attributeDisplaySequence, GroupOrSum groupOrAggregate) {
 		super();
 		this.modelAttributeName = modelAttributeName;
 		this.attributeDisplayName = attributeDisplayName;
@@ -102,12 +102,12 @@ public class CrossTabTemplateDetail extends BaseJPAEntity{
 	public void setAttributeDisplaySequence(int attributeDisplaySequence) {
 		this.attributeDisplaySequence = attributeDisplaySequence;
 	}
-	public GroupOrAggregate getGroupOrAggregate() {
+	public GroupOrSum getGroupOrAggregate() {
 		return groupOrAggregate;
 	}
 
 
-	public void setGroupOrAggregate(GroupOrAggregate groupOrAggregate) {
+	public void setGroupOrAggregate(GroupOrSum groupOrAggregate) {
 		this.groupOrAggregate = groupOrAggregate;
 	}
 
