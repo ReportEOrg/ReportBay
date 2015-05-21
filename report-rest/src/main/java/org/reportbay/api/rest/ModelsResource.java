@@ -313,23 +313,52 @@ public class ModelsResource{
     			Map<String, Integer> columnMeta = new LinkedHashMap<String, Integer>();
     			LOG.debug("columMeta values are ["+columnMeta+"]");
     			LOG.info("Iterating Collection for each row");
-				for (Map<ColumnMetadata, String> map : dbResultList) {
-					Map<String, String> row = new HashMap<String, String>();
-					for (Map.Entry<String, String> field : fieldNames.entrySet()) {
-						//Use stream api to find the particular search field in the map and return if found
-						Optional<Entry<ColumnMetadata, String>> column = map.entrySet().stream()
-						.filter(m -> m.getKey().getLabel().equalsIgnoreCase(field.getKey()))
-						.findFirst();
-						if (column.isPresent()) {
-							LOG.debug("Column Name ["+field.getValue()+"] and Value is ["+column.get().getValue()+"]");
-							row.put(field.getValue(), column.get().getValue());
-						}else{
-							LOG.warn("Field ["+field.getValue()+"] Not found");
-							row.put(field.getValue(), "");
-						}
-					}
-					modelData.add(row);
-				}
+//				for (Map<ColumnMetadata, String> map : dbResultList) {
+//					Map<String, String> row = new HashMap<String, String>();
+//					for (Map.Entry<String, String> field : fieldNames.entrySet()) {
+//						//Use stream api to find the particular search field in the map and return if found
+//						Optional<Entry<ColumnMetadata, String>> column = map.entrySet().stream()
+//						.filter(m -> m.getKey().getLabel().equalsIgnoreCase(field.getKey()))
+//						.findFirst();
+//						if (column.isPresent()) {
+//							LOG.debug("Column Name ["+field.getValue()+"] and Value is ["+column.get().getValue()+"]");
+//							row.put(field.getValue(), column.get().getValue());
+//						}else{
+//							LOG.warn("Field ["+field.getValue()+"] Not found");
+//							row.put(field.getValue(), "");
+//						}
+//					}
+//					modelData.add(row);
+//				}
+    			//Above commented logic is rewritten using Java Stream below
+    			//Need to confirm the working functionality before removing above code
+    			//Get Stream for dbResultList and run foreach instead of traditional For each
+    			dbResultList
+    			.stream()
+    			.forEach(dbList -> 
+    				{
+    					Map<String, String> row = new HashMap<String, String>();
+    					//Use Stream API to loop through each fieldNames as foreach
+    					fieldNames.entrySet()
+    					.stream()
+    					.forEach(fields ->{
+    						//Use stream api to find the particular search field in the map and return if found
+    						//Find the matching value and return the first find
+    						Optional<Entry<ColumnMetadata, String>> column = dbList.entrySet()
+    								.stream()
+    								.filter(m -> m.getKey().getLabel().equalsIgnoreCase(fields.getKey()))
+    								.findFirst();
+    						if (column.isPresent()) {
+    							LOG.debug("Column Name ["+fields.getValue()+"] and Value is ["+column.get().getValue()+"]");
+    							row.put(fields.getValue(), column.get().getValue());
+    						}else{
+    							//Add empty string for the particular field if it is not found
+    							LOG.warn("Field ["+fields.getValue()+"] Not found");
+    							row.put(fields.getValue(), "");
+    						}    						    						
+    					});
+    					modelData.add(row);
+    				});
 			}else{
 				LOG.warn("Results for above Model Query is Empty");
 			}
