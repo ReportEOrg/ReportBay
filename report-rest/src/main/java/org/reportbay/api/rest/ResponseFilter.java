@@ -21,10 +21,15 @@ public class ResponseFilter implements ContainerResponseFilter{
 			ContainerResponseContext responseContext) throws IOException {
 		
 		MultivaluedMap<String, Object> headers = responseContext.getHeaders();
+		
 		//TODO: put in proper domain
-
+		//1. supported origin site
 		headers.add("Access-Control-Allow-Origin", "*");
-		headers.add("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT");	
+		//2. supported methods
+		headers.add("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT");
+		//3. supported headers
+		headers.add("Access-Control-Allow-Headers", "origin, content-type, accept, authorization");
+		
 		
 		LOG.debug("setting response header: {}",headers.toString());
 	}
