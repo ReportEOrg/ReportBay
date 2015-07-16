@@ -51,9 +51,10 @@ public class DataSourcesResource{
 			
 			if(datasourceList!=null){
 				datasources.getDatasources().addAll(datasourceList);
-				
+
+				// *** display password for edit data source UI ***
 				//mask off password for security concern
-				maskDataSourcesPassword(datasourceList);
+				//maskDataSourcesPassword(datasourceList);
 			}
 		} catch (DatasourceHandlerException e) {
 			LOG.warn("Exception in finding all datasources", e);
@@ -98,7 +99,7 @@ public class DataSourcesResource{
 		try {
 			if(datasource==null || (dataSourceService.find(datasource.getId()) == null)){
 				String errMsg = "datasource to be updated not found";
-				LOG.warn(errMsg);
+				LOG.warn(errMsg); 
 				throw new CustomizedWebException(Response.Status.BAD_REQUEST, errMsg);
 			}
 			
