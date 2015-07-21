@@ -72,11 +72,12 @@ public class DataSourcesResource{
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Datasource createDataSource(Datasource datasource){
+	public Datasource createDataSource(Datasource datasource) {
 		LOG.info("create data sources");
+
 		Datasource createdDatasource = null;
 		
-		if(datasource!=null && datasource.getId() == 0){
+		if (datasource != null && datasource.getId() != 0) {
 			LOG.warn("datasource id [{}] not 0 during creation ",datasource.getId());
 			throw new CustomizedWebException(Response.Status.BAD_REQUEST,"datasource id ["+datasource.getId()+"] not 0 during creation ");
 		}
