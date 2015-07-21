@@ -210,6 +210,7 @@ public class DataSourcesResource{
 	 * 
 	 * @param datasourceList
 	 */
+	@SuppressWarnings("unused")
 	private void maskDataSourcesPassword(List<Datasource> datasourceList){
 		
 		for(Datasource dataSource: datasourceList){

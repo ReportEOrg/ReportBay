@@ -39,6 +39,7 @@ public class Datasource extends BaseJPAEntity{
 	private String password;
 	@Column(name = "schema_name")
 	private String schema;
+	private String url;
 
 	public int getId() {
 		return id;
@@ -112,6 +113,14 @@ public class Datasource extends BaseJPAEntity{
 		this.schema = schema;
 	}
 
+	public String getUrl() {
+		return url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -129,7 +138,8 @@ public class Datasource extends BaseJPAEntity{
 		   .append(port)
 		   .append(schema)
 		   .append(getType())
-		   .append(username);
+		   .append(username)
+		   .append(url);
 		
 		return hcb.toHashCode();
 	}
@@ -157,7 +167,8 @@ public class Datasource extends BaseJPAEntity{
 		  .append(port, testRef.port)
 		  .append(schema, testRef.schema)
 		  .append(getType(), testRef.getType())
-		  .append(username, testRef.username);
+		  .append(username, testRef.username)
+		  .append(url, testRef.url);
 
 		return eb.isEquals();
 	}
@@ -167,7 +178,7 @@ public class Datasource extends BaseJPAEntity{
 		return "Datasource [id=" + id + ", name=" + name + ", description="
 				+ description + ", type=" + type + ", hostname=" + hostname
 				+ ", port=" + port + ", username=" + username + ", password="
-				+ password + ", schema=" + schema + "]";
+				+ password + ", schema=" + schema + ", url=" + url + "]";
 	}
 	
 	
