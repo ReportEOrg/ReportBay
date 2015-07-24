@@ -595,6 +595,13 @@ public class ReportConnectorServiceImpl implements ReportConnectorService{
 		}
 		else if (template instanceof PieChartTemplate){
 			resultTemplate = reportTemplateService.save((PieChartTemplate)template);
+		}else if (template instanceof CrossTabTemplate){
+			LOG.debug("Saving CrossTabTemplate");
+			Optional<CrossTabTemplate> crossTabTemplate = reportTemplateService.save((CrossTabTemplate) template);
+			if (crossTabTemplate.isPresent()) {
+				LOG.debug("CrossTabTemplate is present");
+				resultTemplate = crossTabTemplate.get();
+			}		
 		}
 		//reserved for other type
 		

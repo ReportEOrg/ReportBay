@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import javax.ejb.Stateless;
@@ -245,7 +246,7 @@ public class ReportTemplateServiceImpl implements ReportTemplateService {
 	public Optional<CrossTabTemplate> save(CrossTabTemplate crossTabTemplate) throws ReportTemplateServiceException {
 		try {
 			//Check for illegal argument
-			CommonUtils.checkForNull(crossTabTemplate, CrossTabTemplate.class.getSimpleName());
+			Objects.requireNonNull(crossTabTemplate, CrossTabTemplate.class.getSimpleName()+" must not be null");
 			// Construct the crosstab query and validate it
 			Optional<ReportQuery> query = constructReportQuery(crossTabTemplate);
 			if (query.isPresent()) {
@@ -789,7 +790,7 @@ public class ReportTemplateServiceImpl implements ReportTemplateService {
 	@Override
 	public Optional<ReportQuery> constructReportQuery(CrossTabTemplate crossTabTemplate)throws ReportTemplateServiceException {
 		try {
-			CommonUtils.checkForNull(crossTabTemplate, CrossTabTemplate.class.getSimpleName());
+			Objects.requireNonNull(crossTabTemplate, CrossTabTemplate.class.getSimpleName()+" must not be null");
 			return constructCrossTabReportQuery(crossTabTemplate);
 		} catch (ReportTemplateServiceException e) {
 			throw e;
@@ -801,7 +802,6 @@ public class ReportTemplateServiceImpl implements ReportTemplateService {
 
 	private Optional<ReportQuery> constructCrossTabReportQuery(CrossTabTemplate crossTabTemplate)throws ReportTemplateServiceException{
 		LOG.info("Construct Cross Tab Report Query {}",crossTabTemplate);
-		CommonUtils.checkForNull(crossTabTemplate, "CrossTabTemplate");
 		if (crossTabTemplate.getModelId()>0) {
 			LOG.info("Construct CrossTab Query from the model [{}]",crossTabTemplate.getModelId());
 			Model model = null;
