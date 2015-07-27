@@ -9,6 +9,7 @@ import javax.persistence.CollectionTable;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.Table;
 
@@ -32,8 +33,8 @@ public class CrossTabTemplate extends BaseReportTemplate implements Serializable
 		super();
 	}
    
-	@ElementCollection(targetClass=CrossTabTemplateDetail.class)
-	@CollectionTable(name="crosstab_template_details",
+	@ElementCollection(targetClass=CrossTabTemplateDetail.class, fetch=FetchType.EAGER)
+	@CollectionTable(name="crosstab_template_details", 
 						joinColumns=@JoinColumn(name="crosstab_template_id",referencedColumnName="id"))
 	private List<CrossTabTemplateDetail> crossTabDetail;
 
