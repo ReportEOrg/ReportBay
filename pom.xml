@@ -15,6 +15,11 @@
 		<!-- keep log4j2 application level configuration -->
 		<module>log4j2-config</module>
 	</modules>
+	
+	<properties>
+		<jdk.version>1.8</jdk.version>
+		<owb.version>1.2.6</owb.version>
+	</properties>
 
 	<dependencies>
 		<!-- CDI -->
@@ -80,6 +85,87 @@
 				</configuration>
 			</plugin>
 		</plugins>
+		
+		<pluginManagement>
+			<plugins>
+				<!-- Git repo is checked out into /var/lib/openshift/54895edffcf933029d000179/app-root/runtime/repo 
+					and Maven is started in this directory. Deployable artifacts, mainly ROOT.war, 
+					must be copiend into /var/lib/openshift/54895edffcf933029d000179/app-root/runtime/repo/webapps/ROOT.war 
+					Because web-app is module in subdirectory and I would expect <outputDirectory>../webapps</outputDirectory> 
+					value but interestingly it is not true and it must be <outputDirectory>webapps</outputDirectory> -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-ear-plugin</artifactId>
+					<version>2.10</version>
+					<!-- configuring the ear plugin -->
+					<configuration>
+						<finalName>reportbay</finalName>
+						<defaultLibBundleDir>lib</defaultLibBundleDir>
+						<skinnyWars>false</skinnyWars>
+						<outputDirectory>deployments</outputDirectory>
+						<modules>
+							<ejbModule>
+								<groupId>reportbay</groupId>
+								<artifactId>report-datasource</artifactId>
+							</ejbModule>
+							<ejbModule>
+								<groupId>reportbay</groupId>
+								<artifactId>report-model</artifactId>
+							</ejbModule>
+							<ejbModule>
+								<groupId>reportbay</groupId>
+								<artifactId>report-template</artifactId>
+							</ejbModule>
+							<ejbModule>
+								<groupId>reportbay</groupId>
+								<artifactId>report-gen</artifactId>
+							</ejbModule>
+							<ejbModule>
+								<groupId>reportbay</groupId>
+								<artifactId>report-snapshot</artifactId>
+							</ejbModule>
+							<ejbModule>
+								<groupId>reportbay</groupId>
+								<artifactId>report-schedule</artifactId>
+							</ejbModule>
+							<jarModule>
+								<groupId>reportbay</groupId>
+								<artifactId>report-common</artifactId>
+							</jarModule>
+							<jarModule>
+								<groupId>reportbay</groupId>
+								<artifactId>log4j2-config</artifactId>
+							</jarModule>
+							<jarModule>
+								<groupId>reportbay</groupId>
+								<artifactId>report-publish</artifactId>
+							</jarModule>
+							<webModule>
+								<groupId>reportbay</groupId>
+								<artifactId>report-rest</artifactId>
+								<contextRoot>reportbay-rest</contextRoot>
+							</webModule> 
+						</modules>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-ejb-plugin</artifactId>
+					<version>2.5</version>
+					<configuration>
+						<ejbVersion>3.2</ejbVersion>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-enforcer-plugin</artifactId>
+					<configuration>
+						<skip>true</skip>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+			
 	</build>
 
 	<profiles>
@@ -88,6 +174,11 @@
 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>
+			
+			<properties>
+				<nexus.url>http://code.it.savvis.net/nexus/content</nexus.url>
+			</properties>
+			
 			<repositories>
 				<repository>
 					<id>savvis-cto-metagroup</id>
@@ -96,7 +187,6 @@
 						<enabled>false</enabled>
 					</snapshots>
 				</repository>
-
 			</repositories>
 
 			<!-- Centurylink internal repo for plugin -->
@@ -116,85 +206,6 @@
 					</releases>
 				</pluginRepository>
 			</pluginRepositories>
-
-			<properties>
-				<jdk.version>1.8</jdk.version>
-				<nexus.url>http://code.it.savvis.net/nexus/content</nexus.url>
-				<owb.version>1.2.6</owb.version>
-			</properties>
-
-			<build>
-				<pluginManagement>
-					<plugins>
-						<plugin>
-							<groupId>org.apache.maven.plugins</groupId>
-							<artifactId>maven-ear-plugin</artifactId>
-							<version>2.10</version>
-							<!-- configuring the ear plugin -->
-							<configuration>
-								<finalName>reportbay</finalName>
-								<defaultLibBundleDir>lib</defaultLibBundleDir>
-								<skinnyWars>true</skinnyWars>
-								<outputDirectory>deployments</outputDirectory>
-								<modules>
-									<ejbModule>
-										<groupId>reportbay</groupId>
-										<artifactId>report-datasource</artifactId>
-									</ejbModule>
-									<ejbModule>
-										<groupId>reportbay</groupId>
-										<artifactId>report-model</artifactId>
-									</ejbModule>
-									<ejbModule>
-										<groupId>reportbay</groupId>
-										<artifactId>report-template</artifactId>
-									</ejbModule>
-									<ejbModule>
-										<groupId>reportbay</groupId>
-										<artifactId>report-gen</artifactId>
-									</ejbModule>
-									<ejbModule>
-										<groupId>reportbay</groupId>
-										<artifactId>report-snapshot</artifactId>
-									</ejbModule>
-									<jarModule>
-										<groupId>reportbay</groupId>
-										<artifactId>report-common</artifactId>
-									</jarModule>
-									<jarModule>
-										<groupId>reportbay</groupId>
-										<artifactId>report-publish</artifactId>
-									</jarModule>
-									<jarModule>
-										<groupId>reportbay</groupId>
-										<artifactId>log4j2-config</artifactId>
-									</jarModule>
-									<webModule>
-										<groupId>reportbay</groupId>
-										<artifactId>report-rest</artifactId>
-										<contextRoot>reportbay-rest</contextRoot>
-									</webModule> 
-								</modules>
-							</configuration>
-						</plugin>
-						<plugin>
-							<groupId>org.apache.maven.plugins</groupId>
-							<artifactId>maven-ejb-plugin</artifactId>
-							<version>2.5</version>
-							<configuration>
-								<ejbVersion>3.2</ejbVersion>
-							</configuration>
-						</plugin>
-						<plugin>
-							<groupId>org.apache.maven.plugins</groupId>
-							<artifactId>maven-enforcer-plugin</artifactId>
-							<configuration>
-								<skip>true</skip>
-							</configuration>
-						</plugin>
-					</plugins>
-				</pluginManagement>
-			</build>
 		</profile>
 
 		<!-- openshift jenkins build profile -->
@@ -203,97 +214,6 @@
 			<!-- <activation>
 				<activeByDefault>true</activeByDefault>
 			</activation> -->
-			<build>
-				<pluginManagement>
-					<plugins>
-						<!-- Git repo is checked out into /var/lib/openshift/54895edffcf933029d000179/app-root/runtime/repo 
-							and Maven is started in this directory. Deployable artifacts, mainly ROOT.war, 
-							must be copiend into /var/lib/openshift/54895edffcf933029d000179/app-root/runtime/repo/webapps/ROOT.war 
-							Because web-app is module in subdirectory and I would expect <outputDirectory>../webapps</outputDirectory> 
-							value but interestingly it is not true and it must be <outputDirectory>webapps</outputDirectory> -->
-						<plugin>
-							<groupId>org.apache.maven.plugins</groupId>
-							<artifactId>maven-ear-plugin</artifactId>
-							<version>2.10</version>
-							<!-- configuring the ear plugin -->
-							<configuration>
-								<finalName>reportbay</finalName>
-								<defaultLibBundleDir>lib</defaultLibBundleDir>
-								<skinnyWars>false</skinnyWars>
-								<outputDirectory>deployments</outputDirectory>
-								<modules>
-									<ejbModule>
-										<groupId>reportbay</groupId>
-										<artifactId>report-datasource</artifactId>
-									</ejbModule>
-									<ejbModule>
-										<groupId>reportbay</groupId>
-										<artifactId>report-model</artifactId>
-									</ejbModule>
-									<ejbModule>
-										<groupId>reportbay</groupId>
-										<artifactId>report-template</artifactId>
-									</ejbModule>
-									<ejbModule>
-										<groupId>reportbay</groupId>
-										<artifactId>report-gen</artifactId>
-									</ejbModule>
-									<ejbModule>
-										<groupId>reportbay</groupId>
-										<artifactId>report-snapshot</artifactId>
-									</ejbModule>
-									<jarModule>
-										<groupId>reportbay</groupId>
-										<artifactId>report-common</artifactId>
-									</jarModule>
-									<jarModule>
-										<groupId>reportbay</groupId>
-										<artifactId>log4j2-config</artifactId>
-									</jarModule>
-									<jarModule>
-										<groupId>reportbay</groupId>
-										<artifactId>report-publish</artifactId>
-									</jarModule>
-									<webModule>
-										<groupId>reportbay</groupId>
-										<artifactId>report-rest</artifactId>
-										<contextRoot>reportbay-rest</contextRoot>
-									</webModule> 
-								</modules>
-							</configuration>
-						</plugin>
-						<plugin>
-							<groupId>org.apache.maven.plugins</groupId>
-							<artifactId>maven-ejb-plugin</artifactId>
-							<version>2.5</version>
-							<configuration>
-								<ejbVersion>3.2</ejbVersion>
-							</configuration>
-						</plugin>
-						<plugin>
-							<groupId>org.apache.maven.plugins</groupId>
-							<artifactId>maven-enforcer-plugin</artifactId>
-							<configuration>
-								<skip>true</skip>
-							</configuration>
-						</plugin>
-					</plugins>
-				</pluginManagement>
-			</build>
-
-			<properties>
-				<jdk.version>1.8</jdk.version>
-				<owb.version>1.2.6</owb.version>
-			</properties>
-
 		</profile>
 	</profiles>
-
-	<!-- <repositories>
-		<repository>
-			<id>prime-repo</id>
-			<name>Prime Repo</name>
-			<url>http://repository.primefaces.org</url>
-		</repository>
-	</repositories> -->
 </project>

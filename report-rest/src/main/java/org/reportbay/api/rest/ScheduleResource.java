@@ -1,6 +1,7 @@
 package org.reportbay.api.rest;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -15,19 +16,25 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.reportbay.api.dto.schedule.Schedule;
 import org.reportbay.api.dto.schedule.ScheduleTask;
 import org.reportbay.api.dto.schedule.ScheduleTasks;
 import org.reportbay.api.rest.exception.CustomizedWebException;
+import org.reportbay.schedule.domain.ScheduleJob;
+import org.reportbay.schedule.service.SchedulerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @ApplicationScoped
-@Path("schedule")
+@Path("schedules")
 public class ScheduleResource{
 	private final Logger LOG = LoggerFactory.getLogger(ScheduleResource.class);
 
     @Context
     ResourceContext rc;
+    
+    @Inject
+    private SchedulerService schedulerService;
     
     /**
 	 * 
@@ -67,7 +74,14 @@ public class ScheduleResource{
     	ScheduleTask result = null;
     	
     	try{
-    		//TODO:
+    		//1. transform schedule task to scheduler POJO
+    		ScheduleJob scheduler = mapScheduleTaskToScheduler(scheduleTask); 
+
+    		//2. create scheduler entry
+    		scheduler = schedulerService.save(scheduler);
+    		
+    		//3. transform schedule POJO to schedule task
+    		result = mapSchedulerToScheduleTask(scheduler);
     	}
     	catch(Exception e) {
 			LOG.error("Exception in creating schedule task", e);
@@ -151,4 +165,28 @@ public class ScheduleResource{
 		
 		return builder.build();
     }
+    
+    /************ private methods *************/
+    
+    private ScheduleJob mapScheduleTaskToScheduler(ScheduleTask restTask){
+    	ScheduleJob job = new ScheduleJob();
+    	
+    	job.setName(restTask.getName());
+    	job.setTemplateId(restTask.getReportConnectorId());
+    	job.setCallbackUrl(restTask.getCallbackUrl());
+    	job.setSchedule(deriveSchedule(restTask.getSchedule()));
+    	return job;
+    }
+    
+    private String deriveSchedule(Schedule schedule){
+    	//TODO:
+    	return null;
+    }
+    
+    private ScheduleTask mapSchedulerToScheduleTask(ScheduleJob scheduleJob){
+    	
+    	//TODO:
+    	return null; 
+    }
+    
 }

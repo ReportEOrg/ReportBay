@@ -32,6 +32,8 @@
 		
 		<class>org.reportbay.snapshot.domain.ReportSnapShot</class>
 		
+		<!-- <class>org.reportbay.schedule.domain.ScheduleJob</class> -->
+		
 		<properties>
 			<property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
 			<property name="hibernate.show_sql" value="true" />

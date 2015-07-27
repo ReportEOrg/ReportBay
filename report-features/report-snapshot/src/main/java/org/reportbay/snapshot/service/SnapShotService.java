@@ -2,10 +2,13 @@ package org.reportbay.snapshot.service;
 
 import java.util.List;
 
+import javax.ejb.Local;
+
 import org.reportbay.snapshot.domain.ReportSnapShot;
 import org.reportbay.snapshot.domain.ReportSnapShotBase;
 import org.reportbay.snapshot.service.exception.SnapShotServiceException;
 
+@Local
 public interface SnapShotService{
 	
 	/**

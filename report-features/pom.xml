@@ -15,7 +15,7 @@
 		<module>report-model</module>
 		<module>report-template</module>
 		<module>report-gen</module>
-		<!-- <module>report-schedule</module> -->
+		<module>report-schedule</module>
 		<module>report-snapshot</module>
 		<module>report-publish</module>
 	</modules>

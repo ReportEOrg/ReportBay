@@ -31,13 +31,6 @@
 			<version>0.0.1-SNAPSHOT</version>
 			<type>ejb</type>
 		</dependency>
-
-		<dependency>
-			<groupId>reportbay</groupId>
-			<artifactId>report-rest</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-			<type>war</type>
-		</dependency>
 		<dependency>
 			<groupId>reportbay</groupId>
 			<artifactId>report-gen</artifactId>
@@ -50,6 +43,20 @@
 			<version>0.0.1-SNAPSHOT</version>
 			<type>ejb</type>
 		</dependency>
+		<dependency>
+			<groupId>reportbay</groupId>
+			<artifactId>report-schedule</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<type>ejb</type>
+		</dependency>
+
+		<dependency>
+			<groupId>reportbay</groupId>
+			<artifactId>report-rest</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<type>war</type>
+		</dependency>
+		
 		<dependency>
 			<groupId>reportbay</groupId>
 			<artifactId>report-common</artifactId>
